@@ -14,6 +14,7 @@ module.exports = {
 				acm: {
 					thirdary: "#1976d2",
 					secondary: "#4577F8",
+					main: "#404C6C",
 					DEFAULT: "#3E476F",
 				},
 			},
