@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Navbar } from "./components/Navbar";
 
 import Card from "./components/Card";
+import Filter from "./components/Filter";
 
 export default function Home() {
   const [scrollTop, setScrollTop] = useState(0);
@@ -33,19 +34,52 @@ export default function Home() {
       {/* MAIN CONTENT CONTAINER */}
       <div className="w-full flex-1 justify-self-stretch self-stretch flex flex-row items-center">
         {/* SIDEBAR */}
-        <div className="w-52 h-full bg-slate-300">SIDE BAR</div>
+        <div className=" flex-shrink-0 w-72 h-full px-4 py-7 bg-slate-300">
+          <Filter />
+        </div>
 
         {/* CONTENT CONTAINER */}
-        <div className="h-full bg-slate-200 flex-1 justify-self-stretch self-stretch flex flex-col justify-items-center items-stretch px-40 py-8 gap-3">
+        <div className=" h-full bg-slate-200 flex-1 flex-shrink-1 self-stretch flex flex-col justify-items-center items-stretch px-40 py-8 gap-3 relative">
           <input
             type="text"
             placeholder="Type here"
             className="w-100 h-7 flex-shrink rounded-xl leading-loose text-sm border-2 border-slate-300 focus:outline-none bg-slate-200 px-4 py-5"
           />
-          <div className="flex-1 w-100 flex gap-4">
+          <div className="flex-shrink flex-1 w-100 flex gap-4">
             <Card />
             <Card />
             <Card />
+          </div>
+
+          {/* PAGINATION */}
+          <div className=" w-40 z-10 absolute bottom-10 ml-auto mr-auto left-0 right-0 flex ">
+            <button className="flex gap-2 mr-5 select-none leading-7 p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                strokeWidth={0.5}
+                stroke="currentColor"
+                className="w-5 h-7"
+              >
+                <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+              </svg>
+            </button>
+            <button className="flex gap-2 mr-5 select-none leading-7 p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400 pointer-events-none text-xl">
+              69
+            </button>
+            <button className="flex gap-2 mr-5 select-none leading-7 p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                strokeWidth={0.5}
+                stroke="currentColor"
+                className="w-5 h-7"
+              >
+                <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>

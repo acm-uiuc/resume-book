@@ -1,6 +1,6 @@
 import React from "react";
-
 import Logo from "./Logo";
+import Link from "next/link";
 
 interface NavbarProps {
   setLightMode: React.Dispatch<React.SetStateAction<boolean>>;
@@ -10,7 +10,9 @@ interface NavbarProps {
 export function Navbar({ setLightMode, lightMode }: NavbarProps) {
   return (
     <div className="h-fit w-full z-10 bg-acm p-4 flex items-center">
-      <Logo width={130} height={130} />
+      <Link href="/">
+        <Logo width={130} height={130} />
+      </Link>
       <h1 className="text-3xl font-bold text-white pl-5">Resume Book</h1>
 
       {/* SPACER */}
@@ -23,6 +25,21 @@ export function Navbar({ setLightMode, lightMode }: NavbarProps) {
         <button className="mr-5 select-none	p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
           Student Login
         </button>
+        <Link href="/profile">
+          <button className="flex gap-2 mr-5 select-none leading-7 p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-5 h-7"
+            >
+              <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+            </svg>
+            Profile
+          </button>
+        </Link>
 
         {/* LIGHT / DARK MODE */}
         <div
