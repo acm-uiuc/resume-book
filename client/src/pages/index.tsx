@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Navbar } from "./components/Navbar";
 
 import Card from "./components/Card";
+import Filter from "./components/Filter";
 
 export default function Home() {
   const [scrollTop, setScrollTop] = useState(0);
@@ -33,16 +34,18 @@ export default function Home() {
       {/* MAIN CONTENT CONTAINER */}
       <div className="w-full flex-1 justify-self-stretch self-stretch flex flex-row items-center">
         {/* SIDEBAR */}
-        <div className="w-52 h-full bg-slate-300">SIDE BAR</div>
+        <div className=" flex-shrink-0 w-72 h-full px-4 py-7 bg-slate-300">
+          <Filter />
+        </div>
 
         {/* CONTENT CONTAINER */}
-        <div className="h-full bg-slate-200 flex-1 justify-self-stretch self-stretch flex flex-col justify-items-center items-stretch px-40 py-8 gap-3">
+        <div className=" h-full bg-slate-200 flex-1 flex-shrink-1 self-stretch flex flex-col justify-items-center items-stretch px-40 py-8 gap-3">
           <input
             type="text"
             placeholder="Type here"
             className="w-100 h-7 flex-shrink rounded-xl leading-loose text-sm border-2 border-slate-300 focus:outline-none bg-slate-200 px-4 py-5"
           />
-          <div className="flex-1 w-100 flex gap-4">
+          <div className="flex-shrink flex-1 w-100 flex gap-4">
             <Card />
             <Card />
             <Card />
