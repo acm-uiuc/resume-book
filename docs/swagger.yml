@@ -1,0 +1,39 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+openapi: 3.0.3
+info:
+  title: ACM UIUC Resume Book APi
+  version: "1.0.0"
+  contact:
+    name: ACM Infrastructure Team
+    email: infra@acm.illinois.edu
+
+servers:
+  - url: api.resumes.acm.illinois.edu
+
+tags:
+  - name: Student
+    description: Endpoint for Students
+  - name: Recruiter
+    description: Endpoint for Recruiters
+
+basePath: /api/v1/
+paths:
+
+  /api/v1/healthz:
+    get:
+      summary: Ping the API
+      operationId: ping
+
+      x-amazon-apigateway-auth:
+        type: NONE
+
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:298118738376:function:infra-resume-book-api-lambda/invocations

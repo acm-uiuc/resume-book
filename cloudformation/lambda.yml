@@ -1,0 +1,109 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Resume Book API Lambda
+
+Parameters:
+  LambdaFunctionName:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+    Default: infra-resume-book-api-lambda
+
+  S3Bucket:
+    Type: String
+    Default: acm-uiuc-code
+
+  LambdaS3Key:
+    Type: String
+    Default: resume-book.zip
+
+  ApiSpecS3Key:
+    Type: String
+    Default: swagger.yml
+  
+
+Resources:
+  ResumeBookApiLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref LambdaS3Key
+      Runtime: python3.9
+      Description: Resume Book API Lambda
+      FunctionName: !Ref LambdaFunctionName
+      Handler: api.lambda_handler
+      MemorySize: 2048
+      Role: !GetAtt ResumeBookApiLambdaIAMRole.Arn
+      Timeout: 60
+
+  ResumeBookApiLambdaIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Effect: Allow
+                Resource:
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunctionName}:*
+          PolicyName: lambda
+
+  ResumeBookApiLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}
+      RetentionInDays: 7
+
+  ResumeBookApiGateway:
+    Type: AWS::ApiGateway::RestApi
+    DependsOn: 
+      - ResumeBookApiLambdaFunction
+    Properties:
+      Name: infra-resume-book-api-gw
+      BodyS3Location:
+        Bucket: !Ref S3Bucket
+        Key: !Ref ApiSpecS3Key
+
+  ResumeBookApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref ResumeBookApiGateway
+
+  ResumeBookApiStage:
+    Type: AWS::ApiGateway::Stage
+    DependsOn:
+      - ResumeBookApiGatewayDeployment
+    Properties:
+      DeploymentId: !Ref ResumeBookApiGatewayDeployment
+      RestApiId: !Ref ResumeBookApiGateway
+      StageName: stage1
+
+  ResumeBookLambdaApiGatewayHealthz:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ResumeBookApiGateway
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt ResumeBookApiLambdaFunction.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/*/GET/api/v1/healthz
+
+
+Outputs:
+  ApiUrl:
+    Value: !Sub
+      - https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/${StageName}
+      - ApiId: !Ref ResumeBookApiGateway
+        StageName: !Ref ResumeBookApiStage
