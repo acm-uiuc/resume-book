@@ -114,6 +114,13 @@ Resources:
       CertificateArn: >-
         arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
 
+  ResumeBookApiMapping:
+    Type: 'AWS::ApiGatewayV2::ApiMapping'
+    Properties:
+      DomainName: resume-api.acm.illinois.edu
+      ApiId: !Ref ResumeBookApiGateway
+      Stage: !Ref ResumeBookApiStage
+
 
 Outputs:
   ApiUrl:
