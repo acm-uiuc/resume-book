@@ -14,7 +14,7 @@ Parameters:
 
   ApiSpecS3Key:
     Type: String
-    Default: infra-resume-book/swagger.yml
+    Default: swagger-resume-book.yml
   
 
 Resources:
