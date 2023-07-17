@@ -1,5 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Resume Book API Lambda
+Transform: AWS::Serverless-2016-10-31
 
 Parameters:
   LambdaFunctionName:
@@ -11,10 +12,6 @@ Parameters:
     Type: String
     Default: acm-uiuc-code
 
-  LambdaS3Key:
-    Type: String
-    Default: resume-book.zip
-
   ApiSpecS3Key:
     Type: String
     Default: swagger.yml
@@ -22,12 +19,11 @@ Parameters:
 
 Resources:
   ResumeBookApiLambdaFunction:
-    Type: AWS::Lambda::Function
+    Type: AWS::Serverless::Function
     Properties:
-      Code:
-        S3Bucket: !Ref S3Bucket
-        S3Key: !Ref LambdaS3Key
-      Runtime: python3.9
+      CodeUri: ../code 
+      AutoPublishAlias: live
+      Runtime: python3.10
       Description: Resume Book API Lambda
       FunctionName: !Ref LambdaFunctionName
       Handler: api.lambda_handler
@@ -76,6 +72,7 @@ Resources:
         Bucket: !Ref S3Bucket
         Key: !Ref ApiSpecS3Key
 
+
   ResumeBookApiGatewayDeployment:
     Type: AWS::ApiGateway::Deployment
     Properties:
@@ -88,7 +85,7 @@ Resources:
     Properties:
       DeploymentId: !Ref ResumeBookApiGatewayDeployment
       RestApiId: !Ref ResumeBookApiGateway
-      StageName: stage1
+      StageName: default
 
   ResumeBookLambdaApiGatewayHealthz:
     Type: AWS::Lambda::Permission

@@ -1,0 +1,10 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "infra-resume-book"
+resolve_s3 = true
+s3_prefix = "infra-resume-book"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "LambdaFunctionName=\"infra-resume-book-api-lambda\" S3Bucket=\"acm-uiuc-code\" LambdaS3Key=\"resume-book.zip\" ApiSpecS3Key=\"swagger.yml\""
+image_repositories = []
