@@ -14,7 +14,7 @@ Parameters:
 
   ApiSpecS3Key:
     Type: String
-    Default: swagger.yml
+    Default: infra-resume-book/swagger.yml
   
 
 Resources:
@@ -96,6 +96,23 @@ Resources:
       FunctionName: !GetAtt ResumeBookApiLambdaFunction.Arn
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/*/GET/api/v1/healthz
+
+  ResumeBookLambdaApiGatewayStudentUploadURL:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ResumeBookApiGateway
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt ResumeBookApiLambdaFunction.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/*/GET/api/v1/student/getUploadURL
+
+  ResumeBookApiGatewayDomainName:
+    Type: 'AWS::ApiGateway::DomainName'
+    Properties:
+      DomainName: resume-api.acm.illinois.edu
+      CertificateArn: >-
+        arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
 
 
 Outputs:

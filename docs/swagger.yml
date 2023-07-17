@@ -17,13 +17,29 @@ tags:
   - name: Recruiter
     description: Endpoint for Recruiters
 
-basePath: /api/v1/
 paths:
-
   /api/v1/healthz:
     get:
       summary: Ping the API
       operationId: ping
+
+      x-amazon-apigateway-auth:
+        type: NONE
+
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:298118738376:function:infra-resume-book-api-lambda/invocations
+
+  /api/v1/student/getUploadURL:
+    get:
+      summary: Ping the API
+      operationId: studentGetUploadURL
 
       x-amazon-apigateway-auth:
         type: NONE
