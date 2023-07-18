@@ -95,6 +95,7 @@ Resources:
             Principal:
               Service:
                 - lambda.amazonaws.com
+                - apigateway.amazonaws.com
       Policies:
         - PolicyDocument:
             Version: 2012-10-17
