@@ -1,3 +1,5 @@
+name: Deploy Resources to AWS
+run-name: Deploy resources to AWS by @${{ github.actor }}
 on:
   push:
     branches:
