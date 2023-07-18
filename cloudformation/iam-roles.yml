@@ -41,6 +41,7 @@ Resources:
                       Action:
                           - "iam:GetRole"
                           - "iam:PassRole"
+                          - "iam:CreateRole"
                       Resource:
                           - !Sub "arn:aws:iam::*"
 
