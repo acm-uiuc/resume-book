@@ -107,6 +107,16 @@ Resources:
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/*/GET/api/v1/student/getUploadURL
 
+  ResumeBookLambdaApiGatewayRecruiterGetURL:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ResumeBookApiGateway
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt ResumeBookApiLambdaFunction.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/*/GET/api/v1/recruiter/getResumeListings
+
   ResumeBookApiGatewayDomainName:
     Type: 'AWS::ApiGateway::DomainName'
     Properties:
