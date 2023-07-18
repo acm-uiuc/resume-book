@@ -40,7 +40,7 @@ paths:
       operationId: studentGetUploadURL
 
       x-amazon-apigateway-auth:
-        type: NONE
+        type: AADAuthorizer
 
       x-amazon-apigateway-integration:
         responses:

@@ -8,6 +8,11 @@ Parameters:
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-api-lambda
 
+  AADLambdaFunctionName:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+    Default: infra-resume-book-aad-auth-lambda
+
   S3Bucket:
     Type: String
     Default: acm-uiuc-code
@@ -18,6 +23,7 @@ Parameters:
   
 
 Resources:
+  # API Lambda
   ResumeBookApiLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -62,6 +68,53 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}
       RetentionInDays: 7
 
+# AAD Authorizer
+
+  ResumeBookAADLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../code/authorizers/
+      AutoPublishAlias: live
+      Runtime: python3.10
+      Description: Resume Book AAD Auth Lambda
+      FunctionName: !Ref AADLambdaFunctionName
+      Handler: aad.lambda_handler
+      MemorySize: 2048
+      Role: !GetAtt ResumeBookAADLambdaIAMRole.Arn
+      Timeout: 60
+    
+  ResumeBookAADLambdaIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Effect: Allow
+                Resource:
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AADLambdaFunctionName}:*
+          PolicyName: lambda
+
+  ResumeBookAADLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${AADLambdaFunctionName}
+      RetentionInDays: 7
+
+# API Gateway
   ResumeBookApiGateway:
     Type: AWS::ApiGateway::RestApi
     DependsOn: 
@@ -130,6 +183,27 @@ Resources:
       DomainName: resume-api.acm.illinois.edu
       RestApiId: !Ref ResumeBookApiGateway
       Stage: !Ref ResumeBookApiStage
+    
+  AadAuthorizer:
+    Type: 'AWS::ApiGateway::Authorizer'
+    Properties:
+      AuthorizerCredentials: !GetAtt 
+        - ResumeBookAADLambdaIAMRole
+        - Arn
+      AuthorizerResultTtlInSeconds: '300'
+      AuthorizerUri: !Join 
+        - ''
+        - - 'arn:aws:apigateway:'
+          - !Ref 'AWS::Region'
+          - ':lambda:path/2015-03-31/functions/'
+          - !GetAtt 
+            - ResumeBookAADLambdaFunction
+            - Arn
+          - /invocations
+      Type: TOKEN
+      IdentitySource: method.request.header.Auth
+      Name: AADAuthorizer
+      RestApiId: !Ref ResumeBookApiGateway
 
 
 Outputs:
