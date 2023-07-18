@@ -25,6 +25,7 @@ Resources:
                           - "cloudformation:CreateChangeSet"
                           - "cloudformation:ExecuteChangeSet"
                           - "cloudformation:DescribeChangeSet"
+                          - "cloudformation:DescribeStackEvents"
                       Resource:
                           - !Sub "arn:aws:cloudformation:*"
                           - "arn:aws:cloudformation:us-east-1:aws:transform/Serverless-2016-10-31"
@@ -54,5 +55,6 @@ Resources:
                           - "lambda:ListVersionsByFunction"
                           - "lambda:UpdateAlias"
                           - "lambda:PublishVersion"
+                          - "lambda:AddPermission"
                       Resource:
                           - !Sub "arn:aws:lambda:*"
