@@ -206,6 +206,15 @@ Resources:
       Name: AADAuthorizer
       RestApiId: !Ref ResumeBookApiGateway
 
+  AadAuthorizerPermissions:
+    Type: "AWS::Lambda::Permission"
+    DependsOn:
+    - ResumeBookApiGateway
+    - ResumeBookAADLambdaFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref AADLambdaFunctionName
+      Principal: apigateway.amazonaws.com
 
 Outputs:
   ApiUrl:
