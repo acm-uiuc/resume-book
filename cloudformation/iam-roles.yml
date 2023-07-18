@@ -49,14 +49,6 @@ Resources:
                   -
                       Effect: "Allow"
                       Action:
-                          - "lambda:UpdateFunctionCode"
-                          - "lambda:ListTags"
-                          - "lambda:TagResource"
-                          - "lambda:UntagResource"
-                          - "lambda:GetFunctionConfiguration"
-                          - "lambda:ListVersionsByFunction"
-                          - "lambda:UpdateAlias"
-                          - "lambda:PublishVersion"
-                          - "lambda:AddPermission"
+                          - "lambda:*"
                       Resource:
                           - !Sub "arn:aws:lambda:*"
