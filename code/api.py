@@ -1,6 +1,6 @@
+import mapper
 def lambda_handler(event, context):
-    print(event['httpMethod'], event['pathParameters'], event['queryStringParameters'])
-    return {
-        "statusCode": 200,
-        "body": "UP"
-    }
+    method = event['httpMethod']
+    path = event['path']
+    mapper.ge
+    print(event['httpMethod'], event)
