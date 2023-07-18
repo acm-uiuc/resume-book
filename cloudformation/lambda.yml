@@ -118,7 +118,7 @@ Resources:
     Type: 'AWS::ApiGateway::BasePathMapping'
     Properties:
       DomainName: resume-api.acm.illinois.edu
-      ApiId: !Ref ResumeBookApiGateway
+      RestApiId: !Ref ResumeBookApiGateway
       Stage: !Ref ResumeBookApiStage
 
 
