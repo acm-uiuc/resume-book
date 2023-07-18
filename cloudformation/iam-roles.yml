@@ -39,9 +39,10 @@ Resources:
                   -
                       Effect: "Allow"
                       Action:
-                          - "iam:GetRole"
-                          - "iam:PassRole"
-                          - "iam:CreateRole"
+                          - "iam:Get*"
+                          - "iam:Pass*"
+                          - "iam:Create*"
+                          - "iam:Update*"
                       Resource:
                           - !Sub "arn:aws:iam::*"
 
