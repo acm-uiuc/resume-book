@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Resume Book IAM Roles
+
+Resources:
+  AdditionalPermissionPolicy:
+      Type: "AWS::IAM::ManagedPolicy"
+      Properties:
+          ManagedPolicyName: "ACMSamDeployCICD"
+          PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                  -
+                      Effect: "Allow"
+                      Action:
+                          - "s3:PutObject"
+                          - "s3:GetObject"
+                          - "s3:CreateMultipartUpload"
+                      Resource:
+                          - "arn:aws:s3:::*"
+
+                  -
+                      Effect: "Allow"
+                      Action:
+                          - "cloudformation:DescribeStacks"
+                          - "cloudformation:CreateChangeSet"
+                          - "cloudformation:ExecuteChangeSet"
+                          - "cloudformation:DescribeChangeSet"
+                      Resource:
+                          - !Sub "arn:aws:cloudformation:*"
+                          - "arn:aws:cloudformation:us-east-1:aws:transform/Serverless-2016-10-31"
+
+                  -
+                      Effect: "Allow"
+                      Action:
+                          - "cloudformation:GetTemplateSummary"
+                      Resource: "*"
+
+                  -
+                      Effect: "Allow"
+                      Action:
+                          - "iam:GetRole"
+                          - "iam:PassRole"
+                      Resource:
+                          - !Sub "arn:aws:iam::*"
+
+                  -
+                      Effect: "Allow"
+                      Action:
+                          - "lambda:UpdateFunctionCode"
+                          - "lambda:ListTags"
+                          - "lambda:TagResource"
+                          - "lambda:UntagResource"
+                          - "lambda:GetFunctionConfiguration"
+                          - "lambda:ListVersionsByFunction"
+                          - "lambda:UpdateAlias"
+                          - "lambda:PublishVersion"
+                      Resource:
+                          - !Sub "arn:aws:lambda:*"
