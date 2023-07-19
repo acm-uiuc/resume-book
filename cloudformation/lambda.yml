@@ -125,29 +125,17 @@ Resources:
       Description: Resume Book API Gateway
       AlwaysDeploy: True
       DefinitionUri: ../docs/swagger-resume-book.yml
+      Auth:
+        Authorizers:
+          AADAuthorizer:
+            FunctionArn: !GetAtt ResumeBookAADLambdaFunction.Arn
       Domain: 
         DomainName: resume-api.acm.illinois.edu
         CertificateArn: >-
           arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
       StageName: default
     
-  AADAuthorizer:
-    Type: 'AWS::ApiGateway::Authorizer'
-    Properties:
-      AuthorizerResultTtlInSeconds: '300'
-      AuthorizerUri: !Join 
-        - ''
-        - - 'arn:aws:apigateway:'
-          - !Ref 'AWS::Region'
-          - ':lambda:path/2015-03-31/functions/'
-          - !GetAtt 
-            - ResumeBookAADLambdaFunction
-            - Arn
-          - /invocations
-      Type: TOKEN
-      IdentitySource: method.request.header.Auth
-      Name: AADAuthorizer
-      RestApiId: !Ref ResumeBookApiGateway
+
 
   AadAuthorizerPermission:
     Type: AWS::Lambda::Permission
