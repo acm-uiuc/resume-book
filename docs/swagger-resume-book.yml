@@ -47,6 +47,9 @@ paths:
         200:
           description: OK
 
+      security:
+        - AADAuthorizer: []
+
       x-amazon-apigateway-integration:
         responses:
           default:
