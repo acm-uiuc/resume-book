@@ -117,73 +117,19 @@ Resources:
 
 # API Gateway
   ResumeBookApiGateway:
-    Type: AWS::ApiGateway::RestApi
+    Type: AWS::Serverless::Api
     DependsOn: 
       - ResumeBookApiLambdaFunction
     Properties:
       Name: infra-resume-book-api-gw
-      BodyS3Location:
-        Bucket: !Ref S3Bucket
-        Key: !Ref ApiSpecS3Key
-
-
-  ResumeBookApiGatewayDeployment:
-    Type: AWS::ApiGateway::Deployment
-    Properties:
-      RestApiId: !Ref ResumeBookApiGateway
-
-  ResumeBookApiStage:
-    Type: AWS::ApiGateway::Stage
-    DependsOn:
-      - ResumeBookApiGatewayDeployment
-    Properties:
-      DeploymentId: !Ref ResumeBookApiGatewayDeployment
-      RestApiId: !Ref ResumeBookApiGateway
+      Description: Resume Book API Gateway
+      AlwaysDeploy: True
+      DefinitionUri: ../docs/swagger-resume-book.yml
+      Domain: 
+        DomainName: resume-api.acm.illinois.edu
+        CertificateArn: >-
+          arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
       StageName: default
-
-  ResumeBookLambdaApiGatewayHealthz:
-    Type: AWS::Lambda::Permission
-    DependsOn:
-      - ResumeBookApiGateway
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !GetAtt ResumeBookApiLambdaFunction.Arn
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/*/GET/api/v1/healthz
-
-  ResumeBookLambdaApiGatewayStudentUploadURL:
-    Type: AWS::Lambda::Permission
-    DependsOn:
-      - ResumeBookApiGateway
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !GetAtt ResumeBookApiLambdaFunction.Arn
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/*/GET/api/v1/student/getUploadURL
-
-  ResumeBookLambdaApiGatewayRecruiterGetURL:
-    Type: AWS::Lambda::Permission
-    DependsOn:
-      - ResumeBookApiGateway
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !GetAtt ResumeBookApiLambdaFunction.Arn
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/*/GET/api/v1/recruiter/getResumeListings
-
-  ResumeBookApiGatewayDomainName:
-    Type: 'AWS::ApiGateway::DomainName'
-    Properties:
-      DomainName: resume-api.acm.illinois.edu
-      CertificateArn: >-
-        arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
-
-  ResumeBookApiMapping:
-    Type: 'AWS::ApiGateway::BasePathMapping'
-    Properties:
-      DomainName: resume-api.acm.illinois.edu
-      RestApiId: !Ref ResumeBookApiGateway
-      Stage: !Ref ResumeBookApiStage
     
   AADAuthorizer:
     Type: 'AWS::ApiGateway::Authorizer'
@@ -214,6 +160,5 @@ Resources:
 Outputs:
   ApiUrl:
     Value: !Sub
-      - https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/${StageName}
+      - https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/default
       - ApiId: !Ref ResumeBookApiGateway
-        StageName: !Ref ResumeBookApiStage

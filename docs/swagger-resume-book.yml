@@ -21,6 +21,11 @@ paths:
       summary: Ping the API
       operationId: ping
 
+      responses:
+        200:
+          description: OK
+
+
       x-amazon-apigateway-auth:
         type: NONE
 
@@ -38,10 +43,10 @@ paths:
     get:
       summary: Get URL for student to upload resume.
       operationId: studentGetUploadURL
+      responses:
+        200:
+          description: OK
 
-      - security:
-        AADAuthorizer: []
-        
       x-amazon-apigateway-integration:
         responses:
           default:
@@ -56,6 +61,10 @@ paths:
     get:
       summary: Get resume listings based on criteria
       operationId: recruiterGetResumeListings
+
+      responses:
+        200:
+          description: OK
 
       x-amazon-apigateway-auth:
         type: NONE
