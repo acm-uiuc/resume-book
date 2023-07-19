@@ -176,6 +176,12 @@ Resources:
           - ":"
           - !Ref ResumeBookApiGateway
           - "/*/*/*"
+  # S3 Bucket
+  ResumeStorageS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: infra-resume-book-pdfs
           
 Outputs:
   ApiUrl:
