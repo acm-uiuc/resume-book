@@ -185,12 +185,9 @@ Resources:
       RestApiId: !Ref ResumeBookApiGateway
       Stage: !Ref ResumeBookApiStage
     
-  AadAuthorizer:
+  AADAuthorizer:
     Type: 'AWS::ApiGateway::Authorizer'
     Properties:
-      AuthorizerCredentials: !GetAtt 
-        - ResumeBookAADLambdaIAMRole
-        - Arn
       AuthorizerResultTtlInSeconds: '300'
       AuthorizerUri: !Join 
         - ''
@@ -206,15 +203,13 @@ Resources:
       Name: AADAuthorizer
       RestApiId: !Ref ResumeBookApiGateway
 
-  AadAuthorizerPermissions:
-    Type: "AWS::Lambda::Permission"
-    DependsOn:
-    - ResumeBookApiGateway
-    - ResumeBookAADLambdaFunction
+  AadAuthorizerPermission:
+    Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref AADLambdaFunctionName
+      FunctionName: !GetAtt ResumeBookAADLambdaFunction.Arn
       Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/authorizers/${AADAuthorizer}"
 
 Outputs:
   ApiUrl:
