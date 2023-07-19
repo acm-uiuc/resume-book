@@ -39,9 +39,9 @@ paths:
       summary: Get URL for student to upload resume.
       operationId: studentGetUploadURL
 
-      x-amazon-apigateway-auth:
-        type: AADAuthorizer
-
+      - security:
+        AADAuthorizer: []
+        
       x-amazon-apigateway-integration:
         responses:
           default:
