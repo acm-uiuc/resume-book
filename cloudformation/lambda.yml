@@ -124,7 +124,11 @@ Resources:
       Name: infra-resume-book-api-gw
       Description: Resume Book API Gateway
       AlwaysDeploy: True
-      DefinitionUri: ../docs/swagger-resume-book.yml
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: ../docs/swagger-resume-book.yml
       Auth:
         Authorizers:
           AADAuthorizer:
@@ -143,7 +147,7 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt ResumeBookAADLambdaFunction.Arn
       Principal: apigateway.amazonaws.com
-      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/authorizers/${AADAuthorizer}"
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/authorizers/*"
 
   APILambdaPermission:
     Type: AWS::Lambda::Permission
