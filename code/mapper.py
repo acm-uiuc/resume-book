@@ -15,15 +15,21 @@ def serverError(message):
         "body": f"An error occurred - {message}"
     }
 def getUploadUrl(context):
+    rval = {}
     try:
-        return {
+        url: str = get_upload_url(f"resume_{context['authorizer']['uid']}.pdf")
+        rval = {
             "statusCode": 200,
             "body": {
-                "url": get_upload_url(f"resume_{context['authorizer']['uid']}.pdf")
+                "url": url
             }
         }
-    except:
-        return serverError("Could not create S3 upload URL.")
+    except Exception as e:
+        rval = serverError("Could not create S3 upload URL.")
+        print(e) 
+    return rval
+
+
 
 find_handler = {
     "GET": {
