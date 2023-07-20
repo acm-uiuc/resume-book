@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Resume Book API Stateful Resources
+
+Parameters:
+  UserAuthTableName:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+    Default: infra-resume-book-auth-data
+  HashKeyElementName:
+    Type: String
+    Default: username
+    Description: User Auth Primary Key Name
+  HashKeyElementType:
+    Type: String
+    Default: S
+    Description: User Auth Primary Key Type
+
+Resources:
+  UserAuthTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref UserAuthTableName
+      AttributeDefinitions:
+        - 
+          AttributeName: !Ref HashKeyElementName
+          AttributeType: !Ref HashKeyElementType
+      KeySchema:
+        - 
+          AttributeName: !Ref HashKeyElementName
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5 

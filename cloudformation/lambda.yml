@@ -13,6 +13,16 @@ Parameters:
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-aad-auth-lambda
 
+  UPAuthLambdaFunctionName:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+    Default: infra-resume-book-up-auth-lambda
+
+  UserAuthTableName:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+    Default: infra-resume-book-auth-data
+
   S3Bucket:
     Type: String
     Default: acm-uiuc-code
@@ -68,7 +78,27 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}
       RetentionInDays: 7
 
-# AAD Authorizer
+  # AAD Authorizer
+  # Dynamo Policy
+  DynamoReadWriteAuthTablePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: "infra-resume-book-dynamo-auth-rw"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+            - dynamodb:BatchGetItem
+            - dynamodb:GetItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:BatchWriteItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dybamodb:DeleteItem
+          Effect: allow
+          Resource:
+            - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UserAuthTableName}
 
   ResumeBookAADLambdaFunction:
     Type: AWS::Serverless::Function
@@ -85,6 +115,10 @@ Resources:
     
   ResumeBookAADLambdaIAMRole:
     Type: AWS::IAM::Role
+    DependsOn:
+      - DynamoReadWriteAuthTablePolicy
+    ManagedPolicyArns:
+       - !Ref DynamoReadWriteAuthTablePolicy
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -115,6 +149,56 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${AADLambdaFunctionName}
       RetentionInDays: 7
 
+  # Username/Password Authorizer
+  ResumeBookUPAuthLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../code/authorizers/
+      AutoPublishAlias: live
+      Runtime: python3.10
+      Description: Resume Book Username/Password Auth Lambda
+      FunctionName: !Ref UPAuthLambdaFunctionName
+      Handler: basic.lambda_handler
+      MemorySize: 2048
+      Role: !GetAtt  ResumeBookUPAuthLambdaIAMRole.Arn
+      Timeout: 60
+    
+   ResumeBookUPAuthLambdaIAMRole:
+    Type: AWS::IAM::Role
+    DependsOn:
+      - DynamoReadWriteAuthTablePolicy
+    ManagedPolicyArns:
+       - !Ref DynamoReadWriteAuthTablePolicy
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - apigateway.amazonaws.com
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Effect: Allow
+                Resource:
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${UPAuthLambdaFunctionName}:*
+          PolicyName: lambda
+
+  ResumeBookUPAuthLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${UPAuthLambdaFunctionName}
+      RetentionInDays: 7
+
 # API Gateway
   ResumeBookApiGateway:
     Type: AWS::Serverless::Api
@@ -138,8 +222,6 @@ Resources:
         CertificateArn: >-
           arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
       StageName: default
-    
-
 
   AadAuthorizerPermission:
     Type: AWS::Lambda::Permission
