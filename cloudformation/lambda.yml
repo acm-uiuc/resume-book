@@ -190,6 +190,8 @@ Resources:
         Authorizers:
           AADAuthorizer:
             FunctionArn: !GetAtt ResumeBookAADLambdaFunction.Arn
+          UPAuthorizer:
+            FunctionArn: !GetAtt ResumeBookUPAuthLambdaFunction.Arn
       Domain: 
         DomainName: resume-api.acm.illinois.edu
         CertificateArn: >-
