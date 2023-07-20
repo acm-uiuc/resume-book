@@ -20,14 +20,15 @@ def lambda_handler(event, context):
     print("Client token: ", token)
     print("Method ARN: " + event['methodArn'])
     errorFlag = False
+    username = token
+    password = ""
     try:
         username, password = base64.b64decode(token).split(':', 1)
-        print(username, password)
     except:
         print("[ERROR] Could not decode Basic authentication token. Denying all.")
         errorFlag = True
     principalId = username
-
+    print(username, password, "errorFlag:", errorFlag)
     tmp = event['methodArn'].split(':')
     apiGatewayArnTmp = tmp[5].split('/')
     awsAccountId = tmp[4]
