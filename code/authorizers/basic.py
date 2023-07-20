@@ -49,7 +49,8 @@ def lambda_handler(event, context):
  
     authResponse['context'] = {
         'authStrategy': 'basic',
-        'uid': username
+        'uid': username,
+        'roles': [role]
     }
     
     return authResponse
