@@ -9,8 +9,11 @@ or in the "license" file accompanying this file. This file is distributed on an 
 """
 from __future__ import print_function
 from shared import AuthPolicy, base64dec
+from crypto import check_password
 from roles import setRolePolicies
-
+import boto3, os, base64
+client = boto3.client('dynamodb', region_name=os.environ.get('AWS_REGION', 'us-east-1'))
+dynamo_table = 'infra-resume-book-auth-data'
 
 def lambda_handler(event, context):
     """Do not print the auth token unless absolutely necessary """
@@ -37,10 +40,28 @@ def lambda_handler(event, context):
     policy.region = tmp[3]
     policy.stage = apiGatewayArnTmp[1]
 
-    role = "admin" # get this from DB eventually
+    response = client.query(
+        TableName=dynamo_table,
+        KeyConditionExpression='username = :userStr',
+        ExpressionAttributeValues={
+            ':userStr': {
+                "S": username
+            }
+        }
+    )
+    role = ''
+    items = response['Items']
+    if not items or len(items) == 0:
+        errorFlag = True
+    else:
+        passwordHashed = items[0]['password']['S']
+        errorFlag |= not check_password(password, passwordHashed)
+        role = items[0]['role']['S']
     if errorFlag:
+        print(f"[ERROR] User {username} could not authenticate.")
         policy.denyAllMethods()
     else:
+        print(f"[INFO] User {username} with role {role} authenticated.")
         policy = setRolePolicies(role, policy)
 
     authResponse = policy.build()
@@ -52,11 +73,13 @@ def lambda_handler(event, context):
         'uid': username,
         'roles': [role]
     }
-    
     return authResponse
 
 if __name__ == "__main__":
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    templated = base64.b64encode(f'{username}:{password}'.encode("ascii")).decode("ascii")
     lambda_handler({
-        'authorizationToken': 'Bearer dGVzdDp1c2Vy',
+        'authorizationToken': f'Basic {templated}',
         'methodArn': 'arn:aws:execute-api:us-east-1:298118738376:87f11i5ebj/ESTestInvoke-stage/GET/'
     }, {})
