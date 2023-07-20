@@ -9,6 +9,8 @@ or in the "license" file accompanying this file. This file is distributed on an 
 """
 from __future__ import print_function
 from shared import AuthPolicy
+import base64
+from roles import setRolePolicies
 
 
 def lambda_handler(event, context):
@@ -17,7 +19,13 @@ def lambda_handler(event, context):
     print("Client method: ", method)
     print("Client token: ", token)
     print("Method ARN: " + event['methodArn'])
-    principalId = token
+    errorFlag = False
+    try:
+        username, password = base64.b64decode(token).split(':', 1)
+    except:
+        print("[ERROR] Could not decode Basic authentication token. Denying all.")
+        errorFlag = True
+    principalId = username
 
     tmp = event['methodArn'].split(':')
     apiGatewayArnTmp = tmp[5].split('/')
@@ -27,25 +35,21 @@ def lambda_handler(event, context):
     policy.restApiId = apiGatewayArnTmp[0]
     policy.region = tmp[3]
     policy.stage = apiGatewayArnTmp[1]
-    if method == "Basic" and token != "" and token:
-        policy.allowAllMethods()
-    else:
-        policy.denyAllMethods()
-    """policy.allowMethod(HttpVerb.GET, "/pets/*")"""
 
-    # Finally, build the policy
+    role = "admin" # get this from DB eventually
+    if errorFlag:
+        policy.denyAllMethods()
+    else:
+        policy = setRolePolicies(role, policy)
+
     authResponse = policy.build()
  
-    # new! -- add additional key-value pairs associated with the authenticated principal
-    # these are made available by APIGW like so: $context.authorizer.<key>
-    # additional context is cached
-    context = {
-        'authStrategy': 'basic'
-    }
-    # context['arr'] = ['foo'] <- this is invalid, APIGW will not accept it
-    # context['obj'] = {'foo':'bar'} <- also invalid
+    # context is made available by APIGW like so: $context.authorizer.<key>
  
-    authResponse['context'] = context
+    authResponse['context'] = {
+        'authStrategy': 'basic',
+        'uid': username
+    }
     
     return authResponse
 
