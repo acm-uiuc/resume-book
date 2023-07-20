@@ -43,7 +43,9 @@ def getResumeUrl(context, queryParams):
     if not 'uid' in queryParams:
         return badRequest("Query parameter 'uid' is missing.")
     try:
-        url: str = get_resume_url(queryParams['uid'])
+        url: str | None = get_resume_url(queryParams['uid'])
+        if not url:
+            return badRequest("This UID has no resume.")
         rval = {
             "statusCode": 200,
             "body": json.dumps({
