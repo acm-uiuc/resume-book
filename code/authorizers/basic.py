@@ -8,8 +8,7 @@ Licensed under the Apache License, Version 2.0 (the "License"). You may not use 
 or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 """
 from __future__ import print_function
-from shared import AuthPolicy
-import base64
+from shared import AuthPolicy, base64dec
 from roles import setRolePolicies
 
 
@@ -23,12 +22,12 @@ def lambda_handler(event, context):
     username = token
     password = ""
     try:
-        username, password = base64.b64decode(token).split(':', 1)
-    except:
+        username, password = base64dec(token).split(':', 1)
+    except Exception as e:
         print("[ERROR] Could not decode Basic authentication token. Denying all.")
         errorFlag = True
     principalId = username
-    print(username, password, "errorFlag:", errorFlag)
+    # print("Username:", username, "Password:", password, "errorFlag:", errorFlag)
     tmp = event['methodArn'].split(':')
     apiGatewayArnTmp = tmp[5].split('/')
     awsAccountId = tmp[4]
@@ -55,3 +54,8 @@ def lambda_handler(event, context):
     
     return authResponse
 
+if __name__ == "__main__":
+    lambda_handler({
+        'authorizationToken': 'Bearer dGVzdDp1c2Vy',
+        'methodArn': 'arn:aws:execute-api:us-east-1:298118738376:87f11i5ebj/ESTestInvoke-stage/GET/'
+    }, {})

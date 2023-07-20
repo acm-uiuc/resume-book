@@ -14,8 +14,8 @@ rolePolicies = {
 def setRolePolicies(role: str, policy: AuthPolicy) -> AuthPolicy:
     try:
         policies = rolePolicies[role]
-        for policy in policies:
-            policy.allowMethod(*policy)
+        for pol in policies:
+            policy.allowMethod(*pol)
     except KeyError:
         print(f"[ERROR] Role {role} not found in policies, denying all routes.")
         policy.denyAllMethods()

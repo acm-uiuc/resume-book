@@ -1,4 +1,4 @@
-import re
+import re, base64
 
 class HttpVerb:
     GET     = "GET"
@@ -165,3 +165,9 @@ class AuthPolicy(object):
         policy['policyDocument']['Statement'].extend(self._getStatementForEffect("Deny", self.denyMethods))
 
         return policy
+    
+def base64dec(base64_string: str) -> str:
+    base64_bytes = base64_string.encode("ascii")
+    sample_string_bytes = base64.b64decode(base64_bytes)
+    sample_string = sample_string_bytes.decode("ascii")
+    return sample_string
