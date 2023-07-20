@@ -60,6 +60,7 @@ find_handler = {
         "/api/v1/healthz": healthzHandler,
         "/api/v1/student/getUploadURL": getUploadUrl,
         "/api/v1/recruiter/getResumeUrl": getResumeUrl,
+        "/api/v1/recruiter/getResumeListings": notImplemented,
     }
 }
 
