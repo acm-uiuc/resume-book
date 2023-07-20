@@ -1,4 +1,5 @@
 from student.upload import get_upload_url
+import json
 def healthzHandler(context):
     return {
         "statusCode": 200,
@@ -20,13 +21,12 @@ def getUploadUrl(context):
         url: str = get_upload_url(f"resume_{context['uid']}.pdf")
         rval = {
             "statusCode": 200,
-            "body": {
+            "body": json.dumps({
                 "url": url
-            }
+            })
         }
     except Exception as e:
         rval = serverError("Could not create S3 upload URL.")
-        raise e
     return rval
 
 
@@ -45,7 +45,6 @@ def execute(method: str, path: str, context: dict) -> dict:
         return func(context)
     except KeyError as e:
         print(f"ERROR: No handler found for method {method} and path {path}.")
-        print(e)
         return {
             "statusCode": 404,
             "body": f"No handler found for method {method} path {path}."
