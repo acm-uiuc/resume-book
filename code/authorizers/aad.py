@@ -27,7 +27,7 @@ def lambda_handler(event, context):
     policy.restApiId = apiGatewayArnTmp[0]
     policy.region = tmp[3]
     policy.stage = apiGatewayArnTmp[1]
-    if method == "Basic" and token != "" and token:
+    if method == "Bearer" and token != "" and token:
         policy.allowAllMethods()
     else:
         policy.denyAllMethods()
