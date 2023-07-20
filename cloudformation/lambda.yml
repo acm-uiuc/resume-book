@@ -113,6 +113,16 @@ Resources:
                 Resource:
                   - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AuthLambdaFunctionName}:*
           PolicyName: lambda
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - dynamodb:Query*
+                  - dynamondb:Get*
+                Effect: Allow
+                Resource:
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/infra-resume-book-auth-data
+          PolicyName: lambda-dn
 
   ResumeBookAuthLambdaLogGroup:
     Type: AWS::Logs::LogGroup
