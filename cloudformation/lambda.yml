@@ -66,6 +66,15 @@ Resources:
                 Resource:
                   - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunctionName}:*
           PolicyName: lambda
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - s3:*
+                Effect: Allow
+                Resource:
+                  - !GetAtt ResumeStorageS3Bucket.Arn
+          PolicyName: lambda-s3
 
   ResumeBookApiLambdaLogGroup:
     Type: AWS::Logs::LogGroup

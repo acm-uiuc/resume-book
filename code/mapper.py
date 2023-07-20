@@ -1,25 +1,42 @@
-def healthzHandler():
+from student.upload import get_upload_url
+def healthzHandler(context):
     return {
         "statusCode": 200,
         "body": "UP"
     }
-def notImplemented():
+def notImplemented(context):
     return {
         "statusCode": 404,
         "body": "Method not implemented."
     }
+def serverError(message):
+    return {
+        "statusCode": 500,
+        "body": f"An error occurred - {message}"
+    }
+def getUploadUrl(context):
+    try:
+        return {
+            "statusCode": 200,
+            "body": {
+                "url": get_upload_url(f"resume_{context['authorizer']['uid']}.pdf")
+            }
+        }
+    except:
+        return serverError("Could not create S3 upload URL.")
+
 find_handler = {
     "GET": {
         "/api/v1/healthz": healthzHandler,
-        "/api/v1/student/getUploadURL": notImplemented,
+        "/api/v1/student/getUploadURL": getUploadUrl,
         "/api/v1/recruiter/getResumeListings": notImplemented,
     }
 }
 
-def execute(method: str, path: str) -> None:
+def execute(method: str, path: str, context: dict) -> dict:
     try:
         func: function = find_handler[method][path]
-        return func()
+        return func(context)
     except KeyError:
         print(f"ERROR: No handler found for method {method} and path {path}.")
         return {
