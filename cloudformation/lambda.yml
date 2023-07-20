@@ -79,26 +79,6 @@ Resources:
       RetentionInDays: 7
 
   # AAD Authorizer
-  # Dynamo Policy
-  DynamoReadWriteAuthTablePolicy:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      ManagedPolicyName: "infra-resume-book-dynamo-auth-rw"
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Action:
-            - dynamodb:BatchGetItem
-            - dynamodb:GetItem
-            - dynamodb:Query
-            - dynamodb:Scan
-            - dynamodb:BatchWriteItem
-            - dynamodb:PutItem
-            - dynamodb:UpdateItem
-            - dybamodb:DeleteItem
-          Effect: allow
-          Resource:
-            - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UserAuthTableName}
 
   ResumeBookAADLambdaFunction:
     Type: AWS::Serverless::Function
@@ -115,10 +95,6 @@ Resources:
     
   ResumeBookAADLambdaIAMRole:
     Type: AWS::IAM::Role
-    DependsOn:
-      - DynamoReadWriteAuthTablePolicy
-    ManagedPolicyArns:
-       - !Ref DynamoReadWriteAuthTablePolicy
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -156,6 +132,7 @@ Resources:
       CodeUri: ../code/authorizers/
       AutoPublishAlias: live
       Runtime: python3.10
+      Policies: AWSLambdaDynamoDBExecutionRole
       Description: Resume Book Username/Password Auth Lambda
       FunctionName: !Ref UPAuthLambdaFunctionName
       Handler: basic.lambda_handler
@@ -163,12 +140,8 @@ Resources:
       Role: !GetAtt  ResumeBookUPAuthLambdaIAMRole.Arn
       Timeout: 60
     
-   ResumeBookUPAuthLambdaIAMRole:
+  ResumeBookUPAuthLambdaIAMRole:
     Type: AWS::IAM::Role
-    DependsOn:
-      - DynamoReadWriteAuthTablePolicy
-    ManagedPolicyArns:
-       - !Ref DynamoReadWriteAuthTablePolicy
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
