@@ -3,6 +3,8 @@ def lambda_handler(event, context):
     method = event['httpMethod']
     path = event['path']
     queryParams = event["queryStringParameters"]
+    if not queryParams:
+        queryParams = {}
     print(f"INFO: Processing request: method {method}, path {path}.")
     try:
         return mapper.execute(method, path, queryParams, event['requestContext']['authorizer'])
