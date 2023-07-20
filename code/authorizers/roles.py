@@ -5,5 +5,8 @@ from shared import HttpVerb
     ],
     "recruiter": [
         (HttpVerb.ALL, "/api/v1/recruiter/*"),
+    ],
+    "admin": [
+        (HttpVerb.ALL, "*")
     ]
 }

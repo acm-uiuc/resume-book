@@ -8,15 +8,10 @@ Parameters:
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-api-lambda
 
-  AADLambdaFunctionName:
+  AuthLambdaFunctionName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
-    Default: infra-resume-book-aad-auth-lambda
-
-  UPAuthLambdaFunctionName:
-    Type: String
-    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
-    Default: infra-resume-book-up-auth-lambda
+    Default: infra-resume-book-auth-lambda
 
   UserAuthTableName:
     Type: String
@@ -78,22 +73,22 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}
       RetentionInDays: 7
 
-  # AAD Authorizer
+  # Combined Authorizer (AAD + Username/Password)
 
-  ResumeBookAADLambdaFunction:
+  ResumeBookAuthLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ../code/authorizers/
       AutoPublishAlias: live
       Runtime: python3.10
-      Description: Resume Book AAD Auth Lambda
-      FunctionName: !Ref AADLambdaFunctionName
-      Handler: aad.lambda_handler
+      Description: Resume Book Auth Lambda
+      FunctionName: !Ref AuthLambdaFunctionName
+      Handler: combined.lambda_handler
       MemorySize: 2048
-      Role: !GetAtt ResumeBookAADLambdaIAMRole.Arn
+      Role: !GetAtt ResumeBookAuthLambdaIAMRole.Arn
       Timeout: 60
     
-  ResumeBookAADLambdaIAMRole:
+  ResumeBookAuthLambdaIAMRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -116,62 +111,15 @@ Resources:
                   - logs:PutLogEvents
                 Effect: Allow
                 Resource:
-                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AADLambdaFunctionName}:*
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AuthLambdaFunctionName}:*
           PolicyName: lambda
 
-  ResumeBookAADLambdaLogGroup:
+  ResumeBookAuthLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${AADLambdaFunctionName}
+      LogGroupName: !Sub /aws/lambda/${AuthLambdaFunctionName}
       RetentionInDays: 7
-
-  # Username/Password Authorizer
-  ResumeBookUPAuthLambdaFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ../code/authorizers/
-      AutoPublishAlias: live
-      Runtime: python3.10
-      Policies: AWSLambdaDynamoDBExecutionRole
-      Description: Resume Book Username/Password Auth Lambda
-      FunctionName: !Ref UPAuthLambdaFunctionName
-      Handler: basic.lambda_handler
-      MemorySize: 2048
-      Role: !GetAtt  ResumeBookUPAuthLambdaIAMRole.Arn
-      Timeout: 60
-    
-  ResumeBookUPAuthLambdaIAMRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Action:
-              - sts:AssumeRole
-            Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-                - apigateway.amazonaws.com
-      Policies:
-        - PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Effect: Allow
-                Resource:
-                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${UPAuthLambdaFunctionName}:*
-          PolicyName: lambda
-
-  ResumeBookUPAuthLambdaLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${UPAuthLambdaFunctionName}
-      RetentionInDays: 7
-
+ 
 # API Gateway
   ResumeBookApiGateway:
     Type: AWS::Serverless::Api
@@ -188,10 +136,8 @@ Resources:
             Location: ../docs/swagger-resume-book.yml
       Auth:
         Authorizers:
-          AADAuthorizer:
-            FunctionArn: !GetAtt ResumeBookAADLambdaFunction.Arn
-          UPAuthorizer:
-            FunctionArn: !GetAtt ResumeBookUPAuthLambdaFunction.Arn
+          CombinedAuthorizer:
+            FunctionArn: !GetAtt ResumeBookAuthLambdaFunction.Arn
       Domain: 
         DomainName: resume-api.acm.illinois.edu
         CertificateArn: >-
@@ -202,7 +148,7 @@ Resources:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !GetAtt ResumeBookAADLambdaFunction.Arn
+      FunctionName: !GetAtt ResumeBookAuthLambdaFunction.Arn
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResumeBookApiGateway}/authorizers/*"
 
