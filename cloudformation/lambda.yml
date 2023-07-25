@@ -27,14 +27,6 @@ Parameters:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-auth-data
-
-  S3Bucket:
-    Type: String
-    Default: acm-uiuc-code
-
-  ApiSpecS3Key:
-    Type: String
-    Default: swagger-resume-book.yml
   
 
 Resources:

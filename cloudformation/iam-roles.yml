@@ -34,15 +34,13 @@ Resources:
                       Effect: "Allow"
                       Action:
                           - "cloudformation:GetTemplateSummary"
+                          - "logs:*"
                       Resource: "*"
 
                   -
                       Effect: "Allow"
                       Action:
-                          - "iam:Get*"
-                          - "iam:Pass*"
-                          - "iam:Create*"
-                          - "iam:Update*"
+                          - "iam:*"
                       Resource:
                           - !Sub "arn:aws:iam::*"
 
