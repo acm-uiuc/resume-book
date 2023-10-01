@@ -2,7 +2,7 @@ import boto3, os
 s3 = boto3.client('s3', region_name=os.environ.get("AWS_REGION", "us-east-1"))
 def check_key_exists(bucket, key):
     try:
-        s3.head_object(Bucket='bucket_name', Key='file_path')
+        s3.head_object(Bucket=bucket, Key=key)
         return True
     except:
         return False
