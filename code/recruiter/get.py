@@ -10,6 +10,7 @@ def check_key_exists(bucket, key):
 def get_resume_url(uid: str) -> str | None:
     bucket = 'infra-resume-book-pdfs'
     filename = f'resume_{uid}.pdf'
+    print("get resume", bucket, filename)
     if not check_key_exists(bucket, filename):
         return None
     return s3.generate_presigned_url(
