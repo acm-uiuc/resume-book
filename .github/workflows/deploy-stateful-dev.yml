@@ -2,9 +2,8 @@ name: Deploy Stateful Resources to DEV
 run-name: Deploy stateful resources to AWS DEV by @${{ github.actor }}
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
