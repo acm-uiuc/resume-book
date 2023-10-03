@@ -7,8 +7,7 @@ info:
     email: infra@acm.illinois.edu
 
 servers:
-  - url: 
-    Fn::Sub: ${ApiDomainName}
+  - url: resume-api.acm.illinois.edu
 
 tags:
   - name: Student
