@@ -1,6 +1,6 @@
 # Feature #6 - Upload files
 
-> **Priority** High | Medium | Low
+**Priority** High | Medium | Low
 
 ## Objective
 

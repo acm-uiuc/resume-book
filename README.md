@@ -15,20 +15,20 @@ kebab case please!
 - id: relevant id on github issues
 - description: 2-5 word description (shortened title)
 
-> {team}/{type}-{id}-{description}
+`{team}/{type}-{id}-{description}`
 
-> fe/feature-001-upload-file-endpoint
+eg: `fe/feature-001-upload-file-endpoint`
 
 ### Branch PR Approval Requirements
 
-> `dev`
->
-> - approval from one CODEOWNERS
-> - approval from additional team member
+`dev`
 
-> `prod`
->
-> - approval from two CODEOWNERS
+- approval from one CODEOWNERS
+- approval from additional team member
+
+`prod`
+
+- approval from two CODEOWNERS
 
 ### Merging
 
