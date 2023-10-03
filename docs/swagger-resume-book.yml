@@ -8,7 +8,7 @@ info:
 
 servers:
   - url:
-      Fn::Ref: ApiDomainName
+      Ref: ApiDomainName
 
 tags:
   - name: Student
