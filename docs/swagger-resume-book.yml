@@ -38,7 +38,7 @@ paths:
         contentHandling: CONVERT_TO_TEXT
         type: aws_proxy
         uri: 
-          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:infra-resume-book-api-lambda/invocations"
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
 
   /api/v1/student/getUploadURL:
     get:
@@ -60,7 +60,7 @@ paths:
         contentHandling: CONVERT_TO_TEXT
         type: aws_proxy
         uri: 
-          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:infra-resume-book-api-lambda/invocations"
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
 
   /api/v1/recruiter/getResumeListings:
     get:
@@ -86,7 +86,7 @@ paths:
         contentHandling: CONVERT_TO_TEXT
         type: aws_proxy
         uri: 
-          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:infra-resume-book-api-lambda/invocations"
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
 
   /api/v1/recruiter/getResumeUrl:
     get:
@@ -111,4 +111,4 @@ paths:
         httpMethod: POST
         contentHandling: CONVERT_TO_TEXT
         type: aws_proxy
-        uri: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:infra-resume-book-api-lambda/invocations
+        uri: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations
