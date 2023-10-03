@@ -27,7 +27,12 @@ Parameters:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-auth-data
-  
+  ApiDomainName:
+    Type: String
+    Default: resume-api.acm.illinois.edu
+  ApiCertificateArn:
+    Type: String
+    Default: !Sub arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
 
 Resources:
   # API Lambda
@@ -162,9 +167,8 @@ Resources:
           CombinedAuthorizer:
             FunctionArn: !GetAtt ResumeBookAuthLambdaFunction.Arn
       Domain: 
-        DomainName: resume-api.acm.illinois.edu
-        CertificateArn: >-
-          arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
+        DomainName: !Sub ApiDomainName
+        CertificateArn: !Sub ApiCertificateArn
       StageName: default
 
   AadAuthorizerPermission:
