@@ -167,8 +167,8 @@ Resources:
           CombinedAuthorizer:
             FunctionArn: !GetAtt ResumeBookAuthLambdaFunction.Arn
       Domain: 
-        DomainName: !Sub ApiDomainName
-        CertificateArn: !Sub ApiCertificateArn
+        DomainName: !Ref ApiDomainName
+        CertificateArn: !Ref ApiCertificateArn
       StageName: default
 
   AadAuthorizerPermission:
