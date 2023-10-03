@@ -2,6 +2,7 @@ name: Deploy Resources to AWS DEV
 run-name: Deploy resources to AWS DEV by @${{ github.actor }}
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
