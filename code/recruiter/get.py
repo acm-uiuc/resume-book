@@ -8,7 +8,7 @@ def check_key_exists(bucket, key):
         return False
     
 def get_resume_url(uid: str) -> str | None:
-    bucket = 'infra-resume-book-pdfs'
+    bucket = f'infra-resume-book-pdfs-{os.environ.get("RunEnvironment", "prod")}'
     filename = f'resume_{uid}.pdf'
     print("get resume", bucket, filename)
     if not check_key_exists(bucket, filename):

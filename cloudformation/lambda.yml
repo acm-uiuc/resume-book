@@ -3,6 +3,10 @@ Description: Resume Book API Lambda
 Transform: AWS::Serverless-2016-10-31
 
 Parameters:
+  RunEnvironment:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+    Default: prod
   LambdaFunctionName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
@@ -48,6 +52,9 @@ Resources:
       MemorySize: 2048
       Role: !GetAtt ResumeBookApiLambdaIAMRole.Arn
       Timeout: 60
+      Environment:
+        Variables:
+          RunEnvironment: !Ref RunEnvironment
 
   ResumeBookApiLambdaIAMRole:
     Type: AWS::IAM::Role
@@ -81,8 +88,8 @@ Resources:
                   - "s3-object-lambda:*"
                 Effect: Allow
                 Resource:
-                  - !Sub arn:aws:s3:::${ResumeS3BucketName}
-                  - !Sub arn:aws:s3:::${ResumeS3BucketName}/*
+                  - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}
+                  - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}/*
           PolicyName: lambda-s3
 
   ResumeBookApiLambdaLogGroup:
@@ -204,7 +211,7 @@ Resources:
     Type: 'AWS::S3::Bucket'
     DeletionPolicy: Retain
     Properties:
-      BucketName: !Ref ResumeS3BucketName
+      BucketName: !Sub "${ResumeS3BucketName}-${RunEnvironment}"
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:

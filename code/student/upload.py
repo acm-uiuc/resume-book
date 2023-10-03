@@ -5,7 +5,7 @@ def get_upload_url(filename):
     return s3.generate_presigned_url(
         ClientMethod="put_object",
         Params={
-            "Bucket": 'infra-resume-book-pdfs',
+            "Bucket": f'infra-resume-book-pdfs-{os.environ.get("RunEnvironment", "prod")}',
             "Key": filename
         },
         ExpiresIn=3600
