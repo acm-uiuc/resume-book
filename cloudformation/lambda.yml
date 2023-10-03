@@ -32,7 +32,7 @@ Parameters:
     Default: resume-api.acm.illinois.edu
   ApiCertificateArn:
     Type: String
-    Default: !Sub arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
+    Default: arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
 
 Resources:
   # API Lambda
