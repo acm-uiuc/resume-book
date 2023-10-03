@@ -1,5 +1,5 @@
-name: Deploy Resources to AWS
-run-name: Deploy resources to AWS by @${{ github.actor }}
+name: Deploy Resources to AWS PROD
+run-name: Deploy resources to AWS PROD by @${{ github.actor }}
 
 on:
   push:
