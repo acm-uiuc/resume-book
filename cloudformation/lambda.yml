@@ -222,9 +222,7 @@ Resources:
               - PUT
             Id: CORSAllowAll
             MaxAge: 3600
-Tags:
-  - Key: "Project"
-    Value: "infra-resume-book"
+
 Outputs:
   ApiUrl:
     Value: !Sub
