@@ -31,3 +31,6 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5 
+Tags:
+  - Key: "Project"
+    Value: "infra-resume-book"
