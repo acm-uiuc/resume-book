@@ -222,7 +222,7 @@ Resources:
               - PUT
             Id: CORSAllowAll
             MaxAge: 3600
-          
+
 Outputs:
   ApiUrl:
     Value: !Sub
