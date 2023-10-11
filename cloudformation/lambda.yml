@@ -221,6 +221,44 @@ Resources:
         CertificateArn: !Ref ApiCertificateArn
       StageName: default
 
+  ResumeBookApiGatewayLatencyAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Condition: IsProd
+    Properties:
+      AlarmName: !Sub '${ResumeBookApiGWName}-latency-alarm'
+      AlarmDescription: !Sub 'Alarm if ${ResumeBookApiGWName} API gateway latency is > 2s.'
+      Namespace: 'AWS/ApiGateway'
+      MetricName: 'Latency'
+      Statistic: 'Average'
+      Period: '60'
+      EvaluationPeriods: '1'
+      ComparisonOperator: 'GreaterThanThreshold'
+      Threshold: '3000'
+      AlarmActions:
+        - !Ref AlertSNSArn
+      Dimensions:
+        - Name: 'ApiName'
+          Value: !Ref ResumeBookApiGWName
+
+  ResumeBookApiGateway5XXErrorAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Condition: IsProd
+    Properties:
+      AlarmName: !Sub '${ResumeBookApiGWName}-5XX-alarm'
+      AlarmDescription: !Sub 'Alarm if ${ResumeBookApiGWName} API gateway 5XX errors are detected.'
+      Namespace: 'AWS/ApiGateway'
+      MetricName: '5XXError'
+      Statistic: 'Average'
+      Period: '60'
+      EvaluationPeriods: '1'
+      ComparisonOperator: 'GreaterThanThreshold'
+      Threshold: '2'
+      AlarmActions:
+        - !Ref AlertSNSArn
+      Dimensions:
+        - Name: 'ApiName'
+          Value: !Ref ResumeBookApiGWName
+
   AadAuthorizerPermission:
     Type: AWS::Lambda::Permission
     Properties:
