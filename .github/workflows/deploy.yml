@@ -1,13 +1,31 @@
-name: Deploy Resources to AWS PROD
-run-name: Deploy resources to AWS PROD by @${{ github.actor }}
+name: Deploy Resources to AWS PROD/DEV
+run-name: Deploy resources to AWS PROD/DEV by @${{ github.actor }}
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
 jobs:
-  deploy:
+  deploy-dev:
     runs-on: ubuntu-latest
+    environment: "AWS DEV"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - run: ./deploy-dev.sh
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-dev
+    environment: "AWS PROD"
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/setup-sam@v2

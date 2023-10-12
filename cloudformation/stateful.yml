@@ -30,4 +30,9 @@ Resources:
           KeyType: HASH
       ProvisionedThroughput:
         ReadCapacityUnits: 5
-        WriteCapacityUnits: 5 
+        WriteCapacityUnits: 5
+      Tags:
+        - Key: "project"
+          Value: "infra-resume-book"
+        - Key: "techlead"
+          Value: "jgoon2@illinois.edu"

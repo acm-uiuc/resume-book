@@ -7,3 +7,4 @@ region = "us-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM CAPABILITY_NAMED_IAM"
 image_repositories = []
+tags = "project=\"infra-resume-book\" techlead=\"jgoon2@illinois.edu\""
