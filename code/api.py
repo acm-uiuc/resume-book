@@ -7,6 +7,6 @@ def lambda_handler(event, context):
         queryParams = {}
     print(f"INFO: Processing request: method {method}, path {path}.")
     try:
-        return mapper.execute(method, path, queryParams, event['requestContext']['authorizer'])
+        return mapper.execute(method, path, queryParams, event['requestContext']['authorizer'], event['body'])
     except KeyError:
-        return mapper.execute(method, path, queryParams, {})
+        return mapper.execute(method, path, queryParams, {}, "")
