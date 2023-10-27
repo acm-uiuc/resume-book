@@ -1,5 +1,6 @@
 from student.upload import get_upload_url
 from recruiter.get import get_resume_url
+from code.student.user import get_user, update_user, register_user
 import json
 import traceback
 
@@ -57,12 +58,58 @@ def getResumeUrl(context, queryParams):
         traceback.print_exc()
     return rval
 
+def getUser(context, queryParams):
+    rval = {}
+    if not 'uid' in queryParams:
+        return badRequest("Query parameter 'uid' is missing.")
+    try:
+        user: str = get_user(queryParams['uid'])
+        rval = {
+            "statusCode": 200,
+            "body": json.dumps({
+                "user": user
+            })
+        }
+    except:
+        rval = serverError("Could not get user.")
+        traceback.print_exc()
+    return rval
+
+def updateUser(context, queryParams):
+    rval = {}
+    if not 'uid' in queryParams:
+        return badRequest("Query parameter 'uid' is missing.")
+    try:
+        update_user(queryParams['uid'])
+    except:
+        rval = serverError("Could not get user.")
+        traceback.print_exc()
+    return rval
+
+def registerUser(context, queryParams):
+    rval = {}
+    if not 'uid' in queryParams:
+        return badRequest("Query parameter 'uid' is missing.")
+    try:
+        register_user(queryParams['uid'])
+    except:
+        rval = serverError("Could not get user.")
+        traceback.print_exc()
+    return rval
+
 find_handler = {
     "GET": {
         "/api/v1/healthz": healthzHandler,
         "/api/v1/student/getUploadURL": getUploadUrl,
         "/api/v1/recruiter/getResumeUrl": getResumeUrl,
         "/api/v1/recruiter/getResumeListings": notImplemented,
+        "/api/v1/student": getUser
+    },
+    "PUT": {
+        "/api/v1/student": updateUser
+    },
+    "POST": {
+        "/api/v1/student": registerUser
     }
 }
 
