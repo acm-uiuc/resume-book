@@ -4,12 +4,12 @@ from code.student.user import get_user, update_user, register_user
 import json
 import traceback
 
-def healthzHandler(context, queryParams):
+def healthzHandler(context, queryParams, body):
     return {
         "statusCode": 200,
         "body": "UP"
     }
-def notImplemented(context, queryParams):
+def notImplemented(context, queryParams, body):
     return {
         "statusCode": 404,
         "body": "Method not implemented."
@@ -24,7 +24,7 @@ def badRequest(message):
         "statusCode": 400,
         "body": f"Bad request - {message}"
     }
-def getUploadUrl(context, queryParams):
+def getUploadUrl(context, queryParams, body):
     rval = {}
     try:
         url: str = get_upload_url(f"resume_{context['uid']}.pdf")
@@ -39,7 +39,7 @@ def getUploadUrl(context, queryParams):
         traceback.print_exc()
     return rval
 
-def getResumeUrl(context, queryParams):
+def getResumeUrl(context, queryParams, body):
     rval = {}
     if not 'uid' in queryParams:
         return badRequest("Query parameter 'uid' is missing.")
@@ -58,10 +58,8 @@ def getResumeUrl(context, queryParams):
         traceback.print_exc()
     return rval
 
-def getUser(context, queryParams):
+def getUser(context, queryParams, body):
     rval = {}
-    if not 'uid' in queryParams:
-        return badRequest("Query parameter 'uid' is missing.")
     try:
         user: str = get_user(queryParams['uid'])
         rval = {
@@ -75,23 +73,12 @@ def getUser(context, queryParams):
         traceback.print_exc()
     return rval
 
-def updateUser(context, queryParams):
+def updateUser(context, queryParams, body):
     rval = {}
-    if not 'uid' in queryParams:
-        return badRequest("Query parameter 'uid' is missing.")
+    if body == "": 
+        return
     try:
         update_user(queryParams['uid'])
-    except:
-        rval = serverError("Could not get user.")
-        traceback.print_exc()
-    return rval
-
-def registerUser(context, queryParams):
-    rval = {}
-    if not 'uid' in queryParams:
-        return badRequest("Query parameter 'uid' is missing.")
-    try:
-        register_user(queryParams['uid'])
     except:
         rval = serverError("Could not get user.")
         traceback.print_exc()
@@ -108,12 +95,9 @@ find_handler = {
     "PUT": {
         "/api/v1/student": updateUser
     },
-    "POST": {
-        "/api/v1/student": registerUser
-    }
 }
 
-def execute(method: str, path: str, queryParams: dict, context: dict) -> dict:
+def execute(method: str, path: str, queryParams: dict, context: dict, body: str) -> dict:
     try:
         func: function = find_handler[method][path]
         return func(context, queryParams)
