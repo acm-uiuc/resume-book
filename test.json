@@ -1,7 +1,7 @@
 {
     "resource": "/myresource",
-    "path": "/api/v1/healthz",
-    "httpMethod": "GET",
+    "path": "/api/v1/student",
+    "httpMethod": "PUT",
     "headers": {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
         "Accept-Encoding": "gzip, deflate, sdch",
@@ -9,10 +9,25 @@
     },
     "queryStringParameters": {
         "param1": "value1",
-        "param2": "value2"
+        "param2": "value2", 
+        "uid": {"N": "671901702"}
     },
     "pathParameters": null,
     "stageVariables": null,
     "requestContext": {},
-    "body": "request body goes here"
+    "body": {
+        "name": {"S": "Bipity Bopity"},
+        "email": {"S": "clairechenisawesome@gmail.com"},
+        "linkedin": {"S": "linkein.com/in/bipitybopity" },
+        "degree": {"S": "Bachelors"},
+        "majors": {"SS": ["Crop Sciences"]},
+        "minors": {"SS": ["Geology"]},
+        "gpa": {"N": "4"},
+        "year": {"S": "05/2029"},
+        "bio": {"S": "slay every day"},
+        "skills": {"SS": ["live", "laugh", "love"]},
+        "position": {"S": "CEO"},
+        "work_auth": {"BOOL": true}, 
+        "sponsor": {"BOOL": false}
+    }
 }

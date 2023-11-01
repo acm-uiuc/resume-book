@@ -78,7 +78,7 @@ def updateUser(context, queryParams, body):
     if body == "": 
         return
     try:
-        update_user(queryParams['uid'], body)
+        update_user(queryParams["uid"], body)
     except:
         rval = serverError("Could not get user.")
         traceback.print_exc()
