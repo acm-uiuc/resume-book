@@ -1,7 +1,7 @@
 import boto3, os
 
 class Student:
-    uid: int
+    object_id: str
     name: str
     email: str
     linkedin: str
@@ -16,7 +16,7 @@ class Student:
     work_auth: bool
     sponsor: bool
 
-    def __init__(self, uid, name, email, linkedin, degree, majors, minors, gpa, year, bio, skills, position, work_auth, sponsor):
+    def __init__(self, object_id, name, email, linkedin, degree, majors, minors, gpa, year, bio, skills, position, work_auth, sponsor):
         self.uid: uid
         self.name: name
         self.email: email
@@ -32,20 +32,21 @@ class Student:
         self.work_auth: work_auth
         self.sponsor: sponsor
 
-client = boto3.client('dynamodb', region_name='us-east-2')
+client = boto3.client('dynamodb', region_name=os.environ.get('AWS_REGION', 'us-east-2'))
+
 dynamo_table = "infra-resume-book-users"
 
 def get_user(id: int) -> str | None:
     response = client.get_item(
         TableName=dynamo_table,
         Key={
-            "uin": id
+            "object_id": id
         }
     )
     print(response["Item"])
 
 
-def update_user(id: int, body: str) -> str | None:
+def update_user(id: str, body: str) -> str | None:
     temp = {}
     attributes = {"name", "email", "linkedin", "degree", "majors", "minors", "gpa", "year", "bio", "skills", "position", "work_auth", "sponsor"}
     for key, value in body.items():
@@ -60,7 +61,7 @@ def update_user(id: int, body: str) -> str | None:
     response = client.update_item(
         TableName=dynamo_table,
         Key={
-            'uin': id
+            'object_id': id
         },
         UpdateExpression=update_expression,
         ExpressionAttributeValues=expression_attribute_values,
@@ -99,11 +100,11 @@ def update_user(id: int, body: str) -> str | None:
     #     ':ma': {'BOOL': sponsor},
     # }
 
-def register_user(uid, name, email, linkedin, degree, majors, minors, gpa, year, bio, skills, position, work_auth, sponsor):
+def register_user(id, name, email, linkedin, degree, majors, minors, gpa, year, bio, skills, position, work_auth, sponsor):
     client.put_item(
         TableName=dynamo_table,
         Item={
-            "uid": {'N': uid},
+            "object_id": {'N': id},
             "name": {'S': name},
             "email": {'S': email},
             "linkedin": {'S': linkedin},
