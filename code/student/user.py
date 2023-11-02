@@ -104,7 +104,7 @@ def register_user(id, name, email, linkedin, degree, majors, minors, gpa, year, 
     client.put_item(
         TableName=dynamo_table,
         Item={
-            "object_id": {'N': id},
+            "object_id": {'S': id},
             "name": {'S': name},
             "email": {'S': email},
             "linkedin": {'S': linkedin},
