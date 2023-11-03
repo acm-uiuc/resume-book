@@ -112,3 +112,19 @@ def register_user(uid, name, email, linkedin, degree, majors, minors, gpa, year,
             "sponsor": {'BOOL': sponsor}
         }
     )
+
+def check_user (id):
+    uid_to_check =id
+    response = client.scan(TableName=dynamo_table)
+    items = response.get('Items', [])
+    response = client.get_item(
+        TableName=dynamo_table,
+        Key={
+            'id': uid_to_check
+        }
+    )
+    
+    if response == None:
+        return False
+    return True
+
