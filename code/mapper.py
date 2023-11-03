@@ -3,6 +3,7 @@ from recruiter.get import get_resume_url
 from code.student.user import get_user, update_user, register_user
 import json
 import traceback
+from student.pdf_to_image import resume_pdf_to_image
 
 def healthzHandler(context, queryParams, body):
     return {
@@ -84,6 +85,25 @@ def updateUser(context, queryParams, body):
         traceback.print_exc()
     return rval
 
+def convertResumeToJPG(context, queryParams, body):
+    rval = {}
+    if not 'uid' in queryParams:
+        return badRequest("Query parameter 'uid' is missing.")
+    try:
+        url: str | None = resume_pdf_to_image(queryParams['uid'])
+        if not url:
+            return badRequest("This UID has no resume.")
+        rval = {
+            "statusCode": 200,
+            "body": json.dumps({
+                "url": url
+            })
+        }
+    except:
+        rval = serverError("Could not create S3 download URL.")
+        traceback.print_exc()
+    return rval
+
 find_handler = {
     "GET": {
         "/api/v1/healthz": healthzHandler,
@@ -104,3 +124,6 @@ def execute(method: str, path: str, queryParams: dict, context: dict, body: str)
     except KeyError as e:
         print(f"ERROR: No handler found for method {method} and path {path}.")
         return notImplemented(context, queryParams)
+    
+
+    
