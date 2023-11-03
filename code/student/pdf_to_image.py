@@ -36,6 +36,10 @@ def resume_pdf_to_image(student_id: str):
         Body=jpg_bytes
     )
     
+    # Delete the pdf and the jpg locally
+    os.remove(os.path.join(path, f"{student_id}.jpg"))
+    os.remove(os.path.join(path, filename))
+    
     # Return the url of the jpg
     return s3.generate_presigned_url(
         ClientMethod="get_object",
