@@ -3,12 +3,12 @@ import Image from "next/image";
 const Card: FC = () => {
   return (
     <>
-      <div className="w-[300px] h-[300px] bg-slate-400">
+     <div className="w-[300px] h-[300px] bg-slate-400">
         <div className="relative overflow-hidden">
           <img  className="w-[300px] h-[300px]"
 						src="https://cultivatedculture.com/wp-content/themes/x5-child/assets/images/templates/template6.jpg"
 						alt="Resume"/>
-          <section className="mb-2 border bg-neutral-100 p-4 rounded-lg max-w-full bg-neutral-100">
+          <section className="absolute bottom-0 right-0 left-0 border bg-neutral-100 p-4 rounded-lg  bg-neutral-100">
           <div className="-ml-2 -mt-3">
             <div className="card md:flex max-w-lg">
               <div className="w-12 h-12 mx-auto mt-1 md:mr-6 flex-shrink-10">
@@ -34,7 +34,15 @@ const Card: FC = () => {
           </section>
         </div>
       </div>
+      
+      
     </>
+
+     
+
+
+
+
   );
 };
 
