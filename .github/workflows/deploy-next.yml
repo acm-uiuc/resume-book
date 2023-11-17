@@ -1,7 +1,7 @@
 name: Github pages overwrite
 run-name: Deploy client build to GH Pages
 
-on:  
+on:
   paths:
     - client/**
   push:
@@ -9,7 +9,6 @@ on:
       - prod
       # NOTE: You may want to limit the trigger branch to be "main" or "master" etc.
   workflow_dispatch:
-
 
 jobs:
   publish:
@@ -47,13 +46,13 @@ jobs:
           # Each build will OVERWRITE this branch.
           # target-branch: prod
 
- deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+deploy:
+  environment:
+    name: github-pages
+    url: ${{ steps.deployment.outputs.page_url }}
+  runs-on: ubuntu-latest
+  needs: build
+  steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2
