@@ -54,9 +54,7 @@ jobs:
           target-branch: gh-pages-test
 
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    environment: github-pages
     runs-on: ubuntu-latest
     needs: build
     steps:
