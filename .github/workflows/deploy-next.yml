@@ -1,11 +1,15 @@
 name: Github pages overwrite
 run-name: Deploy client build to GH Pages
 
-on:
+on:  
+  paths:
+    - client/**
   push:
     branches:
       - prod
       # NOTE: You may want to limit the trigger branch to be "main" or "master" etc.
+  workflow_dispatch:
+
 
 jobs:
   publish:
@@ -42,3 +46,14 @@ jobs:
           # It specifies the temporary branch which hosts the static website.
           # Each build will OVERWRITE this branch.
           # target-branch: prod
+
+ deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
