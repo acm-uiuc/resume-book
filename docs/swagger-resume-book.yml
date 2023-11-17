@@ -26,7 +26,6 @@ paths:
         200:
           description: OK
 
-
       x-amazon-apigateway-auth:
         type: NONE
 
@@ -38,7 +37,7 @@ paths:
         httpMethod: POST
         contentHandling: CONVERT_TO_TEXT
         type: aws_proxy
-        uri: 
+        uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
 
   /api/v1/student/getUploadURL:
@@ -60,7 +59,29 @@ paths:
         httpMethod: POST
         contentHandling: CONVERT_TO_TEXT
         type: aws_proxy
-        uri: 
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
+
+  /api/v1/student/id:
+    get:
+      summary: Get id of student.
+      operationId: studentGetId
+      responses:
+        200:
+          description: OK
+
+      security:
+        - CombinedAuthorizer: []
+
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+        uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
 
   /api/v1/recruiter/getResumeListings:
@@ -86,7 +107,7 @@ paths:
         httpMethod: POST
         contentHandling: CONVERT_TO_TEXT
         type: aws_proxy
-        uri: 
+        uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
 
   /api/v1/recruiter/getResumeUrl:
@@ -112,5 +133,5 @@ paths:
         httpMethod: POST
         contentHandling: CONVERT_TO_TEXT
         type: aws_proxy
-        uri: 
+        uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations
