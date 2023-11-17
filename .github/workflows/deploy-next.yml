@@ -1,5 +1,5 @@
 name: Github pages overwrite
-run-name: Deploy client build to GH Pages by @${{ github. actor }
+run-name: Deploy client build to GH Pages
 
 on:
   push:
