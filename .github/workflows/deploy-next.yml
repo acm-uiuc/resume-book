@@ -3,11 +3,12 @@ run-name: Deploy client build to GH Pages by @${{ github.actor }}
 
 on:
   push:
-    paths:
-      - client/**
     branches:
       - prod
-      # NOTE: You may want to limit the trigger branch to be "main" or "master" etc.
+
+    # paths:
+    #   - client/**
+    # NOTE: You may want to limit the trigger branch to be "main" or "master" etc.
 
 jobs:
   publish:
