@@ -7,7 +7,7 @@ import traceback
 def healthzHandler(context, queryParams, body):
     return {
         "statusCode": 200,
-        "body": "UP"
+        "body": "UP!"
     }
 def notImplemented(context, queryParams, body):
     return {
@@ -39,6 +39,14 @@ def getUploadUrl(context, queryParams, body):
         traceback.print_exc()
     return rval
 
+def getUserId(context, queryParams, body):
+    return {
+        "statusCode": 200,
+        "body": json.dumps({
+            "id": context['object_id']
+        })
+    }
+
 def getResumeUrl(context, queryParams, body):
     rval = {}
     if not 'uid' in queryParams:
@@ -50,14 +58,14 @@ def getResumeUrl(context, queryParams, body):
         rval = {
             "statusCode": 200,
             "body": json.dumps({
-                "url": url
+                "url": url,
             })
         }
     except:
         rval = serverError("Could not create S3 download URL.")
         traceback.print_exc()
     return rval
-
+    
 def getUser(context, queryParams, body):
     rval = {}
     try:
@@ -90,7 +98,8 @@ find_handler = {
         "/api/v1/student/getUploadURL": getUploadUrl,
         "/api/v1/recruiter/getResumeUrl": getResumeUrl,
         "/api/v1/recruiter/getResumeListings": notImplemented,
-        "/api/v1/student": getUser
+        "/api/v1/student": getUser,
+        "/api/v1/student/id": getUserId
     },
     "PUT": {
         "/api/v1/student": updateUser
