@@ -41,6 +41,7 @@ const Autocomplete: FC<AutocompleteProps> = ({ src }) => {
             if (index == results.length - 1)
               return (
                 <div
+                  key={index}
                   onMouseDown={() => {
                     setSearch(item[0].toUpperCase() + item.slice(1));
                   }}
@@ -51,6 +52,7 @@ const Autocomplete: FC<AutocompleteProps> = ({ src }) => {
               );
             return (
               <div
+                key={index}
                 className="text-sm border-b-2 border-slate-300 py-2 px-4 hover:bg-slate-400 hover:text-white capitalize"
                 onMouseDown={() => {
                   setSearch(item[0].toUpperCase() + item.slice(1));
