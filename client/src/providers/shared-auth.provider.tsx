@@ -25,11 +25,7 @@ export function SharedAuthProvider({ children }: { children: ReactNode }) {
   console.log("reset!");
   const [status, setStatus] = useState<Status>("none");
 
-  if (
-    typeof window !== "undefined" &&
-    (!router.pathname.startsWith("/login") ||
-      !router.pathname.startsWith("/resume-book/login"))
-  ) {
+  if (typeof window !== "undefined" && !router.pathname.startsWith("/login")) {
     if (status === "none") router.push("/login");
   }
 
