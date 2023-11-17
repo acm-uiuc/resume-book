@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: cd client && npm install
 
-      - name: Deploy to Production
+      - name: Build static website
         run: cd client && npm run build
 
       - name: Publish current workdir (which contains generated content) to GitHub Pages
@@ -49,7 +49,7 @@ jobs:
           # Optional. Default value "gh-pages".
           # It specifies the temporary branch which hosts the static website.
           # Each build will OVERWRITE this branch.
-          # target-branch: prod
+          target-branch: gh-pages-test
 
   deploy:
     environment:
