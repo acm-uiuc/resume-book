@@ -1,29 +1,28 @@
-import React from "react";
-import Logo from "./Logo";
+import Logo from "@/components/logo";
+import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import React from "react";
 
-interface NavbarProps {
-  setLightMode: React.Dispatch<React.SetStateAction<boolean>>;
-  lightMode: boolean;
-}
+interface NavbarProps {}
 
-export function Navbar({ setLightMode, lightMode }: NavbarProps) {
+export function Navbar({}: NavbarProps) {
+  const { handleLogout } = useAuth();
+
   return (
-    <div className="h-fit w-full z-10 bg-acm p-4 flex items-center">
+    <div className="h-[120px] w-full z-10 bg-acm p-4 flex items-center">
       <Link href="/">
-        <Logo width={130} height={130} />
+        <Logo width={130} className="text-white" />
       </Link>
       <h1 className="text-3xl font-bold text-white pl-5">Resume Book</h1>
 
-      {/* SPACER */}
-      <div className="flex-1 "></div>
+      <div className="flex-1" />
 
       <div className="flex">
-        <button className="mr-5 select-none	p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
-          Recruiter Login
-        </button>
-        <button className="mr-5 select-none	p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
-          Student Login
+        <button
+          onClick={handleLogout}
+          className="mr-5 select-none	p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400"
+        >
+          Logout
         </button>
         <Link href="/profile">
           <button className="flex gap-2 mr-5 select-none leading-7 p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
@@ -41,7 +40,7 @@ export function Navbar({ setLightMode, lightMode }: NavbarProps) {
           </button>
         </Link>
 
-        {/* LIGHT / DARK MODE */}
+        {/* LIGHT / DARK MODE 
         <div
           className="mr-4 ml-2"
           onClick={() => {
@@ -79,7 +78,7 @@ export function Navbar({ setLightMode, lightMode }: NavbarProps) {
               />
             </svg>
           )}
-        </div>
+        </div>*/}
       </div>
     </div>
   );
