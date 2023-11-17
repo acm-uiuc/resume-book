@@ -42,7 +42,8 @@ def lambda_handler(event, context):
     # additional context is cached
     graph_api_endpoint = f"https://graph.microsoft.com/v1.0/me"
     headers = {
-        'Authorization': f'Bearer {token}'
+        'Authorization': f'Bearer {token}',
+        "Content-type": "application/json"
     }
 
     response = requests.get(graph_api_endpoint, headers=headers)
