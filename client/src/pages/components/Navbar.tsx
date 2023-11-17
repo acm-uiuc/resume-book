@@ -19,12 +19,14 @@ export function Navbar({ setLightMode, lightMode }: NavbarProps) {
       <div className="flex-1 "></div>
 
       <div className="flex">
-        <button className="mr-5 select-none	p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
-          Recruiter Login
-        </button>
-        <button className="mr-5 select-none	p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
-          Student Login
-        </button>
+          <button className="flex gap-2 mr-5 select-none leading-7 p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
+            Recruiter Login
+          </button>
+        <Link href="/student-login">
+          <button className="flex gap-2 mr-5 select-none leading-7 p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
+            Student Login
+          </button>
+        </Link>
         <Link href="/profile">
           <button className="flex gap-2 mr-5 select-none leading-7 p-2 px-4 bg-slate-500 rounded-md text-slate-300 border-solid border-2 border-slate-400">
             <svg
