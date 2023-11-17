@@ -3,6 +3,7 @@ import { Autocomplete } from "@/components/profile/autocomplete";
 import SocialButton from "@/components/profile/social-button";
 import TagsContainer from "@/components/profile/tags-container";
 import { example_skills } from "@/contants";
+import Image from "next/image";
 import { FC, useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 
@@ -56,11 +57,10 @@ const Profile: FC = () => {
             <div className="flex flex-row gap-8">
               {/* PFP CONTAINER */}
               <div>
-                <img
-                  width="96"
-                  height="96"
-                  style={{}}
-                  className=" rounded-full"
+                <Image
+                  width={96}
+                  height={96}
+                  className="rounded-full"
                   alt="profile picture"
                   // src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTyKN-iSchpbCqguP_UfZXbrQrb3Zu7LcPfQqhq9gF3hDhGyWB_"
                   src="https://www.corporatephotographerslondon.com/wp-content/uploads/2021/07/LinkedIn_profile_photo_sample_1-300x300.jpg"
