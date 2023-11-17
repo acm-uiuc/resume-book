@@ -23,7 +23,7 @@ export default function ResumeViewer() {
   return (
     <div className="bg-slate-400 h-screen w-full flex flex-col ">
       {/* NAVBAR */}
-      <Navbar setLightMode={setLightMode} lightMode={lightMode} />
+      <Navbar />
 
       {/* MAIN CONTENT CONTAINER */}
       <div className="w-full flex-1 justify-self-stretch self-stretch flex flex-row items-center">
