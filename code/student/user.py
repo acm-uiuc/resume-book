@@ -36,14 +36,15 @@ client = boto3.client('dynamodb', region_name=os.environ.get('AWS_REGION', 'us-e
 
 dynamo_table = "infra-resume-book-users"
 
-def get_user(id: int) -> str | None:
+def get_user(id: str) -> str | None:
     response = client.get_item(
         TableName=dynamo_table,
         Key={
             "object_id": id
         }
     )
-    print(response["Item"])
+    print("response",response)
+    return response
 
 
 def update_user(id: str, body: str) -> str | None:
@@ -100,6 +101,8 @@ def update_user(id: str, body: str) -> str | None:
     #     ':ma': {'BOOL': sponsor},
     # }
 
+
+# USE UPDATE USER INSTEAD
 def register_user(id, name, email, linkedin, degree, majors, minors, gpa, year, bio, skills, position, work_auth, sponsor):
     client.put_item(
         TableName=dynamo_table,

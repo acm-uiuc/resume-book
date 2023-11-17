@@ -4,6 +4,7 @@ from student.user import get_user, update_user, register_user
 import json
 import traceback
 
+
 def healthzHandler(context, queryParams, body):
     return {
         "statusCode": 200,
@@ -61,7 +62,7 @@ def getResumeUrl(context, queryParams, body):
 def getUser(context, queryParams, body):
     rval = {}
     try:
-        user: str = get_user(queryParams['uid'])
+        user: str = get_user(queryParams['id'])
         rval = {
             "statusCode": 200,
             "body": json.dumps({
@@ -92,8 +93,8 @@ find_handler = {
         "/api/v1/recruiter/getResumeListings": notImplemented,
         "/api/v1/student": getUser
     },
-    "PUT": {
-        "/api/v1/student": updateUser
+    "POST": {
+        "/api/v1/student": updateUser,
     },
 }
 
