@@ -19,6 +19,9 @@ module.exports = {
         },
       },
     },
+    fontFamily: {
+      inherit: ["inherit"],
+    },
   },
   plugins: [],
 };

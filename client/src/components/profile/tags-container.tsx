@@ -1,4 +1,4 @@
-import { useState, FC } from "react";
+import { FC, useState } from "react";
 
 interface TagsContainerProps {
   src: string[];
@@ -21,7 +21,7 @@ const TagsContainer: FC<TagsContainerProps> = ({ src, editMode }) => {
     setSkills((prev) =>
       prev.filter((skill) => {
         return skill !== remove_skill;
-      })
+      }),
     );
 
     // TODO: remove from database
@@ -54,7 +54,7 @@ const TagsContainer: FC<TagsContainerProps> = ({ src, editMode }) => {
                 height="16"
                 fill="currentColor"
                 stroke="white"
-                stroke-width="1"
+                strokeWidth="1"
                 viewBox="0 0 16 16"
                 className=" translate-x-2 cursor-pointer"
               >

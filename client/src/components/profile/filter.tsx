@@ -1,5 +1,4 @@
-import { useState, FC, ReactElement } from "react";
-
+import { FC, ReactElement, useState } from "react";
 import Select from "react-select";
 
 interface FilterProps {}
@@ -145,7 +144,7 @@ const Filter: FC<FilterProps> = (props) => {
 							height="16"
 							fill="currentColor"
 							stroke="white"
-							stroke-width="1"
+							strokeWidth="1"
 							viewBox="0 0 16 16"
 							className=" translate-x-2 cursor-pointer"
 						>
