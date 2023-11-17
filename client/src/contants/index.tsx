@@ -1,0 +1,16 @@
+export const example_skills = [
+  "Javascript",
+  "C++",
+  "Conda",
+  "Python",
+  "BitBucket",
+  "Azure",
+  "GraphQL",
+  "Golang",
+  "Fortran",
+  "chahgeebeedee",
+  "Word",
+  "Communication",
+  "Excellence",
+  "Scratch",
+];

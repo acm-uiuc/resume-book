@@ -1,7 +1,7 @@
 import boto3, os
 
 class Student:
-    uid: int
+    object_id: str
     name: str
     email: str
     linkedin: str
@@ -16,7 +16,7 @@ class Student:
     work_auth: bool
     sponsor: bool
 
-    def __init__(self, uid, name, email, linkedin, degree, majors, minors, gpa, year, bio, skills, position, work_auth, sponsor):
+    def __init__(self, object_id, name, email, linkedin, degree, majors, minors, gpa, year, bio, skills, position, work_auth, sponsor):
         self.uid: uid
         self.name: name
         self.email: email
@@ -33,34 +33,44 @@ class Student:
         self.sponsor: sponsor
 
 client = boto3.client('dynamodb', region_name=os.environ.get('AWS_REGION', 'us-east-2'))
-dynamo_table = 'infra-resume-book-users'
 
-def get_user(id: int) -> str | None:
+dynamo_table = "infra-resume-book-users"
+
+def get_user(id: str) -> str | None:
     response = client.get_item(
         TableName=dynamo_table,
         Key={
-            'id': id
+            "object_id": id
         }
     )
+    print("response",response)
+    return response
 
 
-def update_user(id, body):
+def update_user(id: str, body: str) -> str | None:
     temp = {}
-    attributes = {"name", "email", "linkedin", "degree", "majors", "minors", "gpa", "year", "bio", "skills", "position", "sponsor"}
+    attributes = {"name", "email", "linkedin", "degree", "majors", "minors", "gpa", "year", "bio", "skills", "position", "work_auth", "sponsor"}
     for key, value in body.items():
         if key in attributes:
             temp[key] = value
+    # print(temp)
+
+    update_expression = 'SET {}'.format(','.join(f'#{k}=:{k}' for k in temp))
+    expression_attribute_values = {f':{k}': v for k, v in temp.items()}
+    expression_attribute_names = {f'#{k}': k for k in temp}
 
     response = client.update_item(
         TableName=dynamo_table,
         Key={
-            'id': id
+            'object_id': id
         },
-        AttributeUpdates = {
-            'id': {
-                'Value' : temp,
-            },
-        },
+        UpdateExpression=update_expression,
+        ExpressionAttributeValues=expression_attribute_values,
+        ExpressionAttributeNames=expression_attribute_names,
+        ReturnValues='UPDATED_NEW',
+    )
+    # print(response("Item"))
+
     #     ExpressionAttributeNames={
     #     '#n': "name",
     #     '#e': "email",
@@ -90,13 +100,14 @@ def update_user(id, body):
     #     ':w': {'BOOL': work_auth},
     #     ':ma': {'BOOL': sponsor},
     # }
-)
 
-def register_user(uid, name, email, linkedin, degree, majors, minors, gpa, year, bio, skills, position, work_auth, sponsor):
+
+# USE UPDATE USER INSTEAD
+def register_user(id, name, email, linkedin, degree, majors, minors, gpa, year, bio, skills, position, work_auth, sponsor):
     client.put_item(
         TableName=dynamo_table,
         Item={
-            "uid": {'N': uid},
+            "object_id": {'S': id},
             "name": {'S': name},
             "email": {'S': email},
             "linkedin": {'S': linkedin},
@@ -112,3 +123,19 @@ def register_user(uid, name, email, linkedin, degree, majors, minors, gpa, year,
             "sponsor": {'BOOL': sponsor}
         }
     )
+
+def check_user (id):
+    uid_to_check =id
+    response = client.scan(TableName=dynamo_table)
+    items = response.get('Items', [])
+    response = client.get_item(
+        TableName=dynamo_table,
+        Key={
+            'id': uid_to_check
+        }
+    )
+    
+    if response == None:
+        return False
+    return True
+

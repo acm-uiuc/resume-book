@@ -1,13 +1,14 @@
 from student.upload import get_upload_url
 from recruiter.get import get_resume_url
-from code.student.user import get_user, update_user, register_user
+from student.user import get_user, update_user, register_user
 import json
 import traceback
+
 
 def healthzHandler(context, queryParams, body):
     return {
         "statusCode": 200,
-        "body": "UP"
+        "body": "UP!"
     }
 def notImplemented(context, queryParams, body):
     return {
@@ -27,7 +28,7 @@ def badRequest(message):
 def getUploadUrl(context, queryParams, body):
     rval = {}
     try:
-        url: str = get_upload_url(f"resume_{context['uid']}.pdf")
+        url: str = get_upload_url(f"resume_{queryParams['uid']}.pdf")
         rval = {
             "statusCode": 200,
             "body": json.dumps({
@@ -38,6 +39,14 @@ def getUploadUrl(context, queryParams, body):
         rval = serverError("Could not create S3 upload URL.")
         traceback.print_exc()
     return rval
+
+def getUserId(context, queryParams, body):
+    return {
+        "statusCode": 200,
+        "body": json.dumps({
+            "id": context['object_id']
+        })
+    }
 
 def getResumeUrl(context, queryParams, body):
     rval = {}
@@ -50,18 +59,18 @@ def getResumeUrl(context, queryParams, body):
         rval = {
             "statusCode": 200,
             "body": json.dumps({
-                "url": url
+                "url": url,
             })
         }
     except:
         rval = serverError("Could not create S3 download URL.")
         traceback.print_exc()
     return rval
-
+    
 def getUser(context, queryParams, body):
     rval = {}
     try:
-        user: str = get_user(queryParams['uid'])
+        user: str = get_user(queryParams['id'])
         rval = {
             "statusCode": 200,
             "body": json.dumps({
@@ -78,7 +87,7 @@ def updateUser(context, queryParams, body):
     if body == "": 
         return
     try:
-        update_user(queryParams['uid'])
+        update_user(queryParams["uid"], body)
     except:
         rval = serverError("Could not get user.")
         traceback.print_exc()
@@ -90,17 +99,18 @@ find_handler = {
         "/api/v1/student/getUploadURL": getUploadUrl,
         "/api/v1/recruiter/getResumeUrl": getResumeUrl,
         "/api/v1/recruiter/getResumeListings": notImplemented,
-        "/api/v1/student": getUser
+        "/api/v1/student": getUser,
+        "/api/v1/student/id": getUserId
     },
-    "PUT": {
-        "/api/v1/student": updateUser
+    "POST": {
+        "/api/v1/student": updateUser,
     },
 }
 
 def execute(method: str, path: str, queryParams: dict, context: dict, body: str) -> dict:
     try:
         func: function = find_handler[method][path]
-        return func(context, queryParams)
+        return func(context, queryParams, body)
     except KeyError as e:
         print(f"ERROR: No handler found for method {method} and path {path}.")
         return notImplemented(context, queryParams)
