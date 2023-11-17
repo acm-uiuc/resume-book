@@ -1,59 +1,60 @@
-import { InteractionType, SilentRequest } from "@azure/msal-browser";
+import { useAuth } from "@/hooks/useAuth";
+import { useAuthStatus } from "@/providers/shared-auth.provider";
 import {
-	AuthenticatedTemplate,
-	MsalProvider,
-	UnauthenticatedTemplate,
-	useIsAuthenticated,
-	useMsal,
-	useMsalAuthentication,
+  AuthenticatedTemplate,
+  UnauthenticatedTemplate,
+  useIsAuthenticated,
 } from "@azure/msal-react";
 
 // Docs:
 // https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-common/docs
 
 export default function App() {
-	const isAuthenticated = useIsAuthenticated();
+  const { handleStudentLogin, handleRecruiterLogin, handleLogout, getToken } =
+    useAuth();
 
-	// const { login, result, error } = useMsalAuthentication(InteractionType.Redirect);
-	const { instance, accounts, inProgress } = useMsal();
+  const { status } = useAuthStatus();
 
-	const getTokenSilent = async () => {
-		// https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/hooks.md#usemsal-hook
-
-		const tokenRequest: SilentRequest = {
-			account: accounts[0], // This is an example - Select account based on your app's requirements
-			scopes: ["User.Read"],
-		};
-
-		// const data = await instance.acquireTokenSilent(tokenRequest);
-
-		const response = await instance.acquireTokenPopup(tokenRequest);
-	};
-
-	return (
-		<div className="flex items-center justify-center min-h-screen flex-col px-4 flex-wrap">
-			<p>{"is Authenticated: " + JSON.stringify(isAuthenticated)}</p>
-			{/* 
-			<AuthenticatedTemplate>
-				<p>At least one account is signed in!</p>
-			</AuthenticatedTemplate>
-			<UnauthenticatedTemplate>
-				<p>No users are signed in!</p>
-			</UnauthenticatedTemplate>
-    <div>error: {JSON.stringify(error)}</div> */}
-			{/* <div>instance: {JSON.stringify(instance)}</div> */}
-			{isAuthenticated ? (
-				<>
-					{!!accounts[0].idToken ? (
-						<p>{"token " + JSON.stringify(accounts[0].idToken)}</p>
-					) : (
-						<button onClick={() => getTokenSilent()}>silent token</button>
-					)}
-					<button onClick={() => instance.logoutRedirect()}>logout</button>
-				</>
-			) : (
-				<button onClick={() => instance.loginPopup()}>login</button>
-			)}
-		</div>
-	);
+  return (
+    <div className="flex justify-center min-h-screen flex-col items-center px-4 flex-wrap gap-4">
+      {/* <p>{"is Authenticated: " + JSON.stringify(isAuthenticated)}</p> */}
+      {/* 
+        <AuthenticatedTemplate>
+          <p>At least one account is signed in!</p>
+        </AuthenticatedTemplate>
+        <UnauthenticatedTemplate>
+          <p>No users are signed in!</p>
+        </UnauthenticatedTemplate>
+        <div>error: {JSON.stringify(error)}</div> */}
+      {/* <div>instance: {JSON.stringify(instance)}</div> */}
+      {/* <><pre>{JSON.stringify(instance, null, 2)}</pre></> */}
+      status: {status}
+      <button
+        className="bg-slate-300 w-52 h-12 rounded-md border-2 border-slate-400"
+        onClick={() => handleStudentLogin()}
+      >
+        handleStudentLogin
+      </button>
+      <button
+        className="bg-slate-300 w-52 h-12 rounded-md border-2 border-slate-400"
+        onClick={() => handleRecruiterLogin("", "")}
+      >
+        handleRecruiterLogin
+      </button>
+      <button
+        className="bg-slate-300 w-52 h-12 rounded-md border-2 border-slate-400"
+        onClick={() => handleLogout()}
+      >
+        handleLogout
+      </button>
+      <button
+        className="bg-slate-300 w-52 h-12 rounded-md border-2 border-slate-400"
+        onClick={() => {
+          getToken().then((res) => console.log(res));
+        }}
+      >
+        getToken
+      </button>
+    </div>
+  );
 }
