@@ -21,3 +21,19 @@ def get_resume_url(uid: str) -> str | None:
         },
         ExpiresIn=3600
     )
+    
+# write new endpoint (get_all_resumes)
+def get_all_resume_urls():
+    #use boto3 to download all of the resumes
+    bucket = f'infra-resume-book-pdfs-{os.environ.get("RunEnvironment", "prod")}'
+    response = s3.list_objects_v2(bucket)
+    mylist = response['Contents']
+    resume_list = []
+    resume_url_list = []
+    for item in mylist:
+        if item['Key'].endswith('@illinois.edu.pdf'):
+            resume_list.append(item['Key'])
+    #then return them zipped
+    for resume in resume_list:
+        resume_url_list.append(get_resume_url(resume))
+    return resume_url_list
