@@ -1,5 +1,5 @@
 from student.upload import get_upload_url
-from recruiter.get import get_resume_url
+from recruiter.get import get_resume_url, get_all_resume_urls
 from student.user import get_user, update_user, register_user
 import json
 import traceback
@@ -67,6 +67,21 @@ def getResumeUrl(context, queryParams, body):
         traceback.print_exc()
     return rval
     
+def getAllResumeUrls(context, queryParams, body):
+    try:
+        url: str | None = get_resume_url(queryParams['uid'])
+        rval = {
+            'statusCode': 200,
+            'body': json.dumps({
+                'url':url
+            })
+        }
+    except:
+        rval = serverError("Could not create S3 download URL.")
+        traceback.print_exc()
+    return rval
+    
+    
 def getUser(context, queryParams, body):
     rval = {}
     try:
@@ -98,6 +113,7 @@ find_handler = {
         "/api/v1/healthz": healthzHandler,
         "/api/v1/student/getUploadURL": getUploadUrl,
         "/api/v1/recruiter/getResumeUrl": getResumeUrl,
+        "/api/v1/recruiter/getAllResumeUrls": getAllResumeUrls,
         "/api/v1/recruiter/getResumeListings": notImplemented,
         "/api/v1/student": getUser,
         "/api/v1/student/id": getUserId
