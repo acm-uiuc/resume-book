@@ -70,6 +70,23 @@ def student_post_profile():
         return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error storing profile data", "details": str(e)})
     return Response(status_code=201, content_type=content_types.APPLICATION_JSON, body={"message": "Profile saved"})
 
-@app.get("/api/v1/recruiter/ping")
-def recruiter_ping():
-    return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body={"message": "Recruiter route accessible"})
+@app.get("/api/v1/recruiter/view_profile/<username>")
+def recruiter_get_profile(username):
+    try:
+        resp = dynamodb.get_item(
+            TableName=PROFILE_TABLE_NAME,
+            Key={
+                'username': {'S': username}
+            }
+        )
+        if 'Item' in resp:
+            profile_data = resp['Item']
+        else:
+            return Response(status_code=404, content_type=content_types.APPLICATION_JSON, body={"message": f"No profile found for {username}"})
+    except Exception as e:
+        print(traceback.format_exc(), flush=True)
+        return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error getting profile data", "details": str(e)})
+    # generate presigned url for resume pdf 
+    profile_data = convert_from_dynamodb_json(profile_data)
+    profile_data['resumePdfUrl'] = create_presigned_url_from_s3_url(profile_data['resumePdfUrl'])
+    return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=profile_data)
