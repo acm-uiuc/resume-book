@@ -4,11 +4,13 @@ import { useApi } from '@/util/api';
 import { useEffect, useState } from 'react';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileViewer';
+import { Button, Container, Grid } from '@mantine/core';
 
 export function StudentHomePage() {
   const { userData } = useAuth();
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
+  const [editToggle, setEditToggle] = useState(false);
   let [studentData, setStudentData] = useState<StudentProfileDetails>();
   const api = useApi();
   useEffect(() => {
@@ -42,11 +44,24 @@ export function StudentHomePage() {
     studentData.name = userData!.name!;
     setStudentData(studentData);
   }
+  const toggleEdit = () => {
+    if (editToggle) {
+      setEditToggle(false);
+    } else {
+      console.log("Saving with req here...")
+      setEditToggle(true);
+    }
+  }
   return (
     <>
       <HeaderNavbar userData={userData} />
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-      {enrolled && studentData ?  <StudentProfilePage editable={true} studentProfile={studentData} setStudentProfile={setStudentData}/> : "User does not have a profile. Need to enroll."}
+      <Container>
+      </Container>
+      <div style={{ display: 'flex', flexDirection: "column" }}>
+        <Container>
+          <Button onClick={toggleEdit} style={{marginTop: '1em'}}>{editToggle ? "Save" : "Edit"}</Button>
+        </Container>
+        {enrolled && studentData ?  <StudentProfilePage editable={editToggle} studentProfile={studentData} setStudentProfile={setStudentData}/> : "User does not have a profile. Need to enroll."}
       </div>
     </>
   );

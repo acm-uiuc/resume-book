@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, memo } from 'react';
-import { Container, Text, Title, Group, Stack, Badge, Anchor, List, ThemeIcon, Grid, Box, Button, TextInput, Textarea, Switch, Checkbox } from '@mantine/core';
+import { Container, Text, Title, Group, Stack, Badge, Anchor, List, ThemeIcon, Grid, Box, Button, TextInput, Textarea, Select, Checkbox, NumberInput } from '@mantine/core';
 import { IconBrandLinkedin, IconMail, IconSchool, IconBriefcase, IconUser, IconCertificate, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -7,8 +7,10 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
+
+const degreeOptions = ["BS", "BSLAS", "Master's (Thesis)" , "Master's (Non-Thesis)"]
 export interface DegreeListing {
-  level: "BS" | "Masters (Thesis)" | "Masters (Non-Thesis)";
+  level: "BS" | "BSLAS" | "Masters (Thesis)" | "Masters (Non-Thesis)";
   yearStarted: number;
   yearEnded?: number;
   institution: string;
@@ -98,8 +100,9 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
   const addDegree = () => {
     const newDegree: DegreeListing = {
       level: "BS",
-      yearStarted: new Date().getFullYear(),
-      institution: '',
+      yearStarted: new Date().getFullYear() - 4,
+      yearEnded: new Date().getFullYear(),
+      institution: 'University of Illinois Urbana-Champaign',
       major: [],
       minor: [],
       gpa: 0,
@@ -178,10 +181,11 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                     <Box key={index} size="sm">
                       {editable ? (
                         <>
-                          <TextInput
+                          <Select
                             label="Degree Level"
                             value={degree.level}
-                            onChange={(e) => handleDegreeChange(index, 'level', e.target.value)}
+                            onChange={(value) => handleDegreeChange(index, 'level', value)}
+                            data={degreeOptions.map(option => ({ value: option, label: option }))}
                           />
                           <TextInput
                             label="Major"
@@ -199,16 +203,22 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                             onChange={(e) => handleDegreeChange(index, 'yearStarted', parseInt(e.target.value))}
                           />
                           <TextInput
-                            label="Year Ended"
+                            label="Year Ended (or prospective)"
                             value={degree.yearEnded?.toString() || ''}
                             onChange={(e) => handleDegreeChange(index, 'yearEnded', e.target.value ? parseInt(e.target.value) : undefined)}
                           />
-                          <TextInput
+                          <NumberInput
                             label="GPA"
-                            value={degree.gpa.toString()}
+                            min={0.0}
+                            max={4.0}
+                            clampBehavior="strict"
+                            allowNegative={false}
+                            decimalScale={2}
+                            value={degree.gpa}
+                            hideControls
                             onChange={(e) => handleDegreeChange(index, 'gpa', parseFloat(e.target.value))}
                           />
-                          <Button onClick={() => removeDegree(index)} color="red">
+                          <Button onClick={() => removeDegree(index)} style={{marginTop: "0.5em"}} color="red" fullWidth>
                             Remove
                           </Button>
                         </>
@@ -269,12 +279,12 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                 {editable ? (
                   <>
                     <Checkbox
-                      label="Work Authorization Required"
+                      label="Work Authorization Required?"
                       checked={studentProfile.work_auth_required}
                       onChange={(e) => handleInputChange('work_auth_required', e.currentTarget.checked)}
                     />
                     <Checkbox
-                      label="Sponsorship Required"
+                      label="Sponsorship Required?"
                       checked={studentProfile.sponsorship_required}
                       onChange={(e) => handleInputChange('sponsorship_required', e.currentTarget.checked)}
                     />
@@ -282,10 +292,10 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                 ) : (
                   <List spacing="xs" size="sm">
                     <List.Item>
-                      Work Authorization Required: {studentProfile.work_auth_required ? 'Yes' : 'No'}
+                      Work Authorization Required? <b>{studentProfile.work_auth_required ? 'Yes' : 'No'}</b>
                     </List.Item>
                     <List.Item>
-                      Sponsorship Required: {studentProfile.sponsorship_required ? 'Yes' : 'No'}
+                      Sponsorship Required? <b>{studentProfile.sponsorship_required ? 'Yes' : 'No'}</b>
                     </List.Item>
                   </List>
                 )}
