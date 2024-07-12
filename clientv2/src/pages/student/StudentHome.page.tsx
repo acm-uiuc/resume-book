@@ -1,4 +1,4 @@
-import { Badge, Title } from '@mantine/core';
+import { Title } from '@mantine/core';
 import { useAuth } from '@/components/AuthContext';
 import { HeaderNavbar } from '@/components/Navbar';
 
@@ -12,9 +12,6 @@ export function StudentHomePage() {
         <Title>
           Hello {firstName} {lastName}!
         </Title>
-        <Badge color="#FF5F05" style={{ marginLeft: 10 }}>
-          Student
-        </Badge>
       </div>
     </>
   );
