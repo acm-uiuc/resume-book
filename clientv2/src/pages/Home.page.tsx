@@ -5,7 +5,7 @@ export function HomePage() {
   return (
     <>
       <HeaderNavbar />
-      <Title>Home</Title>
+      <Title>Hello!</Title>
     </>
   );
 }

@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import { HomePage } from "./pages/Home.page";
 import { AuthRoleEnum, useAuth } from "./components/AuthContext";
 import { LoginPage } from "./pages/Login.page";
+import { StudentHomePage } from "./pages/student/StudentHome.page";
 
 const unauthenticatedRouter = createBrowserRouter([
   {
@@ -19,13 +20,21 @@ const recruiterRouter = createBrowserRouter([
     path: "/",
     element: <HomePage />,
   },
+  {
+    path: "/login",
+    element: <Navigate to="/" replace />,
+  }
 ]);
 
 const studentRouter = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <StudentHomePage />,
   },
+  {
+    path: "/login",
+    element: <Navigate to="/" replace />,
+  }
 ]);
 
 export function Router() {

@@ -24,12 +24,16 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import classes from "./index.module.css";
 import LogoBadge from "./Logo";
-import { useAuth } from "../AuthContext";
+import { AuthContextData, useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
+import { AuthenticatedProfileDropdown } from "../ProfileDropdown";
 
-const HeaderNavbar: React.FC = () => {
-  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
-    useDisclosure(false);
+interface HeaderNavbarProps {
+  userData?: AuthContextData | null
+}
+
+const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
+  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const theme = useMantineTheme();
   const navigate = useNavigate();
   const { isLoggedIn, logout } = useAuth();
@@ -44,13 +48,10 @@ const HeaderNavbar: React.FC = () => {
               Home
             </a>
           </Group>
-          <Group h="100%" justify="end" gap={0} visibleFrom="sm">
-            {isLoggedIn ? (
-              <Button variant="outline" fullWidth onClick={() => {logout();}}>
-                Log Out
-              </Button>
-            ) : (
-              <Button variant="filled" fullWidth onClick={() => {navigate("/login")} }>
+          <Group h="100%" justify="end" gap={10} visibleFrom="sm">
+            {userData ? <AuthenticatedProfileDropdown userData={userData} /> : null}
+            {isLoggedIn ? null : (
+              <Button variant="filled" fullWidth onClick={() => { navigate("/login") }}>
                 Sign In
               </Button>
             )}
@@ -74,16 +75,12 @@ const HeaderNavbar: React.FC = () => {
       >
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
-
           <a href="#" className={classes.link}>
             Home
           </a>
-          {isLoggedIn ? (
-            <Button variant="outline" style={{ marginTop: "1em" }} fullWidth>
-              Log Out
-            </Button>
-          ) : (
-            <Button variant="filled" style={{ marginTop: "1em" }} fullWidth>
+          {userData ? <AuthenticatedProfileDropdown userData={userData} /> : null}
+          {isLoggedIn ? null : (
+            <Button variant="filled" style={{ marginTop: "1em" }} fullWidth onClick={() => { navigate("/login") }}>
               Sign In
             </Button>
           )}

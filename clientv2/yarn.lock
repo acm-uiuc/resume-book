@@ -22,6 +22,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@azure/msal-browser@npm:^3.18.0":
+  version: 3.18.0
+  resolution: "@azure/msal-browser@npm:3.18.0"
+  dependencies:
+    "@azure/msal-common": "npm:14.13.0"
+  checksum: 10c0/4e2d5ae55f2c5f00c52132c9a288ac38aae08ededb6663d8d819a66f458f700faface07cf75a03adb38015ea4987ec6a1c8adf762323f647a82ba213eb607359
+  languageName: node
+  linkType: hard
+
+"@azure/msal-common@npm:14.13.0":
+  version: 14.13.0
+  resolution: "@azure/msal-common@npm:14.13.0"
+  checksum: 10c0/7af1eb35aea5c5544007c8380c1bccd420336cff2268de31adc14d3cbb5657500a14c84bb223641e419c588449567eee651af81e2821d3fd46e39f2431c496d1
+  languageName: node
+  linkType: hard
+
+"@azure/msal-react@npm:^2.0.20":
+  version: 2.0.20
+  resolution: "@azure/msal-react@npm:2.0.20"
+  peerDependencies:
+    "@azure/msal-browser": ^3.18.0
+    react: ^16.8.0 || ^17 || ^18
+  checksum: 10c0/88be9f03a0d69750006b68a6f2c63e0802cd265645b1b8317ab2a0a63bfd969cc388da45716b19e75fb510085ed8e7a7ccfbb888621a0426186a11d2ec0c6a3c
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.10.4, @babel/code-frame@npm:^7.24.7":
   version: 7.24.7
   resolution: "@babel/code-frame@npm:7.24.7"
@@ -6975,6 +7001,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "mantine-vite-template@workspace:."
   dependencies:
+    "@azure/msal-browser": "npm:^3.18.0"
+    "@azure/msal-react": "npm:^2.0.20"
     "@mantine/core": "npm:7.11.1"
     "@mantine/form": "npm:^7.11.1"
     "@mantine/hooks": "npm:7.11.1"
