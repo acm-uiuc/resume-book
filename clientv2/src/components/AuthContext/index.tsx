@@ -145,7 +145,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               scopes: [".default"], // Adjust scopes as needed
               redirectUri: "/login", // Redirect URI after login
             };
-            const tokenResponse = await instance.acquireTokenRedirect(interactiveRequest);
+            const tokenResponse: any = await instance.acquireTokenRedirect(interactiveRequest);
             return tokenResponse.accessToken;
           } catch (interactiveError) {
             console.error('Interactive token acquisition failed.', interactiveError);

@@ -47,17 +47,17 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({studentProfile: 
       <Grid gutter="sm">
         <Grid.Col span={4}>
           <Container>
-            <Stack spacing="md">
-              <Group position="apart" align="flex-start">
-                <Stack spacing="xs">
+            <Stack>
+              <Group>
+                <Stack>
                   <Title order={3}>{mockStudentProfile.name}</Title>
-                  <Group spacing="xs">
+                  <Group>
                     <ThemeIcon color="blue" size={20} radius="xl">
                       <IconMail size={12} />
                     </ThemeIcon>
                     <Text size="sm">{mockStudentProfile.email}</Text>
                   </Group>
-                  <Group spacing="xs">
+                  <Group>
                     <ThemeIcon color="blue" size={20} radius="xl">
                       <IconBrandLinkedin size={12} />
                     </ThemeIcon>
@@ -68,7 +68,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({studentProfile: 
 
               <Box>
                 <Title order={5} mb="xs">
-                  <Group spacing="xs">
+                  <Group>
                     <IconUser size={18} />
                     <Text>Bio</Text>
                   </Group>
@@ -78,17 +78,17 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({studentProfile: 
 
               <Box>
                 <Title order={5} mb="xs">
-                  <Group spacing="xs">
+                  <Group>
                     <IconSchool size={18} />
                     <Text>Education</Text>
                   </Group>
                 </Title>
-                <Stack spacing="sm">
+                <Stack>
                   {mockStudentProfile.degrees.map((degree, index) => (
                     <Box key={index} size="sm">
-                      <Text weight={500}>{degree.level} in {degree.major.join(", ")}</Text>
+                      <Text>{degree.level} in {degree.major.join(", ")}</Text>
                       <Text size="xs">{degree.institution}</Text>
-                      <Group position="apart">
+                      <Group>
                         <Text size="xs" color="dimmed">
                           {degree.yearStarted} - {degree.yearEnded || "Present"}
                         </Text>
@@ -101,12 +101,12 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({studentProfile: 
 
               <Box>
                 <Title order={5} mb="xs">
-                  <Group spacing="xs">
+                  <Group>
                     <IconBriefcase size={18} />
                     <Text>Skills</Text>
                   </Group>
                 </Title>
-                <Group spacing="xs">
+                <Group>
                   {mockStudentProfile.skills.map((skill, index) => (
                     <Badge key={index} size="sm">{skill}</Badge>
                   ))}
@@ -115,7 +115,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({studentProfile: 
 
               <Box>
                 <Title order={5} mb="xs">
-                  <Group spacing="xs">
+                  <Group>
                     <IconCertificate size={18} />
                     <Text>Work Authorization</Text>
                   </Group>
@@ -158,11 +158,10 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({studentProfile: 
                 />
               </Box>
             </Document>
-            <Group position="apart" mt="md">
+            <Group mt="md">
               <Button 
                 onClick={() => setPageNumber(page => Math.max(page - 1, 1))}
                 disabled={pageNumber <= 1}
-                leftIcon={<IconChevronLeft size={14} />}
               >
                 Previous
               </Button>
@@ -172,7 +171,6 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({studentProfile: 
               <Button 
                 onClick={() => setPageNumber(page => Math.min(page + 1, numPages))}
                 disabled={pageNumber >= numPages}
-                rightIcon={<IconChevronRight size={14} />}
               >
                 Next
               </Button>
