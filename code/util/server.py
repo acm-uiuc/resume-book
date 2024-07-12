@@ -11,14 +11,19 @@ from util.s3 import create_presigned_url_from_s3_url
 import json
 from decimal import Decimal
 
-cors_config = CORSConfig(allow_origin="https://resumes.acm.illinois.edu", extra_origins=["http://localhost:5173"], max_age=300, allow_credentials=True, allow_headers=["authorization"])
+RUN_ENV = get_run_environment()
+
+extra_origins = []
+if RUN_ENV != "prod":
+    extra_origins = ["http://localhost:5173"]
+
+cors_config = CORSConfig(allow_origin="https://resumes.acm.illinois.edu", extra_origins=extra_origins, max_age=300, allow_credentials=True, allow_headers=["authorization"])
 app = APIGatewayRestResolver(cors=cors_config)
 
 session = boto3.Session(region_name=os.environ.get('AWS_REGION', 'us-east-1'))
 dynamodb = session.client('dynamodb')
 
 PROFILE_TABLE_NAME = "infra-resume-book-profile-data"
-RUN_ENV = get_run_environment()
 S3_BUCKET = f"infra-resume-book-pdfs-{RUN_ENV}"
 
 @app.get("/api/v1/healthz")
