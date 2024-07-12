@@ -9,7 +9,7 @@ export function StudentHomePage() {
   const { userData } = useAuth();
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
-  const [studentData, setStudentData] = useState<StudentProfileDetails>();
+  let [studentData, setStudentData] = useState<StudentProfileDetails>();
   const api = useApi();
   useEffect(() => {
     async function fetch() {
@@ -38,11 +38,15 @@ export function StudentHomePage() {
   if (loading) {
     return <FullScreenLoader />
   }
+  if (studentData && !studentData?.name || studentData?.name === "" && userData && userData.name) {
+    studentData.name = userData!.name!;
+    setStudentData(studentData);
+  }
   return (
     <>
       <HeaderNavbar userData={userData} />
       <div style={{ display: 'flex', alignItems: 'center' }}>
-      {enrolled && studentData ?  <StudentProfilePage studentProfile={studentData}/> : "User does not have a profile. Need to enroll."}
+      {enrolled && studentData ?  <StudentProfilePage editable={true} studentProfile={studentData} setStudentProfile={setStudentData}/> : "User does not have a profile. Need to enroll."}
       </div>
     </>
   );
