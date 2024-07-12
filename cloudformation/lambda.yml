@@ -10,7 +10,6 @@ Parameters:
   RunEnvironment:
     Type: String
     AllowedValues: [ 'dev', 'prod' ]
-
   LambdaFunctionName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
@@ -41,6 +40,10 @@ Parameters:
   ApiCertificateArn:
     Type: String
     Default: arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
+  ProfileDataTableName:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+    Default: infra-resume-book-profile-data
 Conditions:
   IsProd: !Equals [!Ref RunEnvironment, 'prod']
 Resources:
@@ -53,13 +56,20 @@ Resources:
       Runtime: python3.10
       Description: Resume Book API Lambda
       FunctionName: !Ref LambdaFunctionName
-      Handler: api.lambda_handler
-      MemorySize: 2048
+      Handler: app.lambda_handler
+      MemorySize: 512
       Role: !GetAtt ResumeBookApiLambdaIAMRole.Arn
       Timeout: 60
       Environment:
         Variables:
           RunEnvironment: !Ref RunEnvironment
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ResumeBookApiGateway
+            Path: /{proxy+}
+            Method: ANY
 
   ResumeBookApiLambdaFunctionErrorAlarm:
     Type: 'AWS::CloudWatch::Alarm'
@@ -115,6 +125,15 @@ Resources:
                   - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}
                   - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}/*
           PolicyName: lambda-s3
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - dynamodb:*
+                Effect: Allow
+                Resource:
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ProfileDataTableName}
+          PolicyName: lambda-dynamo
 
   ResumeBookApiLambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -181,16 +200,6 @@ Resources:
                 Resource:
                   - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AuthLambdaFunctionName}:*
           PolicyName: lambda
-        - PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Action:
-                  - dynamodb:Query*
-                  - dynamondb:Get*
-                Effect: Allow
-                Resource:
-                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UserAuthTableName}
-          PolicyName: lambda-dn
 
   ResumeBookAuthLambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -220,6 +229,10 @@ Resources:
         DomainName: !Ref ApiDomainName
         CertificateArn: !Ref ApiCertificateArn
       StageName: default
+      Cors:
+        AllowHeaders: "'Content-Type,Authorization,X-Amz-Date'"
+        AllowOrigin: "'*'"
+        MaxAge: "'300'"
 
   ResumeBookApiGatewayLatencyAlarm:
     Type: 'AWS::CloudWatch::Alarm'

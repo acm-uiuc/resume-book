@@ -1,7 +1,7 @@
 import React, { createContext, ReactNode, useContext, useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useKindeAuth } from '@kinde-oss/kinde-auth-react';
-import { AuthenticationResult, InteractionStatus } from '@azure/msal-browser';
+import { AuthenticationResult, InteractionRequiredAuthError, InteractionStatus } from '@azure/msal-browser';
 import { MantineProvider } from '@mantine/core';
 import FullScreenLoader from './LoadingScreen';
 
@@ -57,6 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     logout: kindeLogout,
     getToken: getKindeToken,
+    getPermission: getKindePermission
   } = useKindeAuth();
 
   const [userData, setUserData] = useState<AuthContextData | null>(null);
@@ -64,13 +65,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     (isAuthenticated || accounts.length > 0) && !isLoading
   );
   if (isAuthenticated && !isLoading && !userData) {
-    setUserData({
-      email: user?.email!,
-      name: `${user?.given_name} ${user?.family_name}`,
-      authenticationMethod: AuthSourceEnum.LOCAL,
-      role: AuthRoleEnum.RECRUITER,
-    });
-    setIsLoggedIn(true);
+    const isRecruiter = getKindePermission("recruiter:resume-book").isGranted;
+    if (!isRecruiter) {
+      setUserData(null);
+      setIsLoggedIn(false);
+      window.location.href = "/";
+    } else {
+      setUserData({
+        email: user?.email!,
+        name: `${user?.given_name} ${user?.family_name}`,
+        authenticationMethod: AuthSourceEnum.LOCAL,
+        role: AuthRoleEnum.RECRUITER,
+      });
+      setIsLoggedIn(true);
+    }
+
   }
 
   useEffect(() => {
@@ -115,13 +124,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return null;
     }
     if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
-      return null;
+      try {
+        const accounts = instance.getAllAccounts();
+        if (accounts.length > 0) {
+          const silentRequest = {
+            account: accounts[0],
+            scopes: [".default"], // Adjust scopes as needed
+          };
+          const tokenResponse = await instance.acquireTokenSilent(silentRequest);
+          return tokenResponse.accessToken;
+        } else {
+          throw new Error('No accounts found.');
+        }
+      } catch (error) {
+        console.error('Silent token acquisition failed.', error);
+        if (error instanceof InteractionRequiredAuthError) {
+          // Fallback to interaction when silent token acquisition fails
+          try {
+            const interactiveRequest = {
+              scopes: [".default"], // Adjust scopes as needed
+              redirectUri: "/login", // Redirect URI after login
+            };
+            const tokenResponse: any = await instance.acquireTokenRedirect(interactiveRequest);
+            return tokenResponse.accessToken;
+          } catch (interactiveError) {
+            console.error('Interactive token acquisition failed.', interactiveError);
+            throw interactiveError;
+          }
+        } else {
+          throw error;
+        }
+      }
     }
     if (userData?.authenticationMethod === AuthSourceEnum.LOCAL) {
       return getKindeToken();
     }
     throw new Error('Unknown authentication method.');
   };
+  
   const loginMsal = () => {
     instance.loginRedirect();
   };

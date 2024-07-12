@@ -40,10 +40,10 @@ paths:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
 
-  /api/v1/student/getUploadURL:
+  /api/v1/student/profile:
     get:
-      summary: Get URL for student to upload resume.
-      operationId: studentGetUploadURL
+      summary: Get student profile.
+      operationId: getStudentProfile
       responses:
         200:
           description: OK
@@ -62,42 +62,15 @@ paths:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
 
-  /api/v1/student/id:
-    get:
-      summary: Get id of student.
-      operationId: studentGetId
+    post:
+      summary: Post student profile.
+      operationId: postStudentProfile
       responses:
         200:
           description: OK
 
       security:
         - CombinedAuthorizer: []
-
-      x-amazon-apigateway-integration:
-        responses:
-          default:
-            statusCode: 200
-        passthroughBehavior: when_no_match
-        httpMethod: GET
-        contentHandling: CONVERT_TO_TEXT
-        type: aws_proxy
-        uri:
-          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
-
-  /api/v1/recruiter/getResumeListings:
-    get:
-      summary: Get resume listings based on criteria
-      operationId: recruiterGetResumeListings
-
-      responses:
-        200:
-          description: OK
-
-      security:
-        - CombinedAuthorizer: []
-
-      x-amazon-apigateway-auth:
-        type: NONE
 
       x-amazon-apigateway-integration:
         responses:
@@ -109,29 +82,3 @@ paths:
         type: aws_proxy
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
-
-  /api/v1/recruiter/getResumeUrl:
-    get:
-      summary: Get resume URL for a specific uid
-      operationId: recruiterGetResumeUrl
-
-      responses:
-        200:
-          description: OK
-
-      security:
-        - CombinedAuthorizer: []
-
-      x-amazon-apigateway-auth:
-        type: NONE
-
-      x-amazon-apigateway-integration:
-        responses:
-          default:
-            statusCode: 200
-        passthroughBehavior: when_no_match
-        httpMethod: POST
-        contentHandling: CONVERT_TO_TEXT
-        type: aws_proxy
-        uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations
