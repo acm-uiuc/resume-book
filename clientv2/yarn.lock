@@ -1915,6 +1915,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kinde-oss/kinde-auth-pkce-js@npm:^4.0.0-0":
+  version: 4.1.0
+  resolution: "@kinde-oss/kinde-auth-pkce-js@npm:4.1.0"
+  dependencies:
+    jwt-decode: "npm:^4.0.0"
+  checksum: 10c0/3d07395d3ecd2709f06d066903d1888ebd768564d2f99f33fe314ff6c70ce6a37d7c762d09344b6497674e0dbfbd02ef0d575aa824c3857690dcffb5aa5b56fe
+  languageName: node
+  linkType: hard
+
+"@kinde-oss/kinde-auth-react@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@kinde-oss/kinde-auth-react@npm:4.0.1"
+  dependencies:
+    "@kinde-oss/kinde-auth-pkce-js": "npm:^4.0.0-0"
+  peerDependencies:
+    react: ^17.0.2 || ^18
+    react-dom: ^17.0.2 || ^18
+  checksum: 10c0/c4a132c727270dc81fa7c9cfe23a9201687c3c389b544fbe14c281758aab485e37ab1c187a9bf86292e8368a5aa3867a0911cf67cb20f4da60edc3c001b91cb4
+  languageName: node
+  linkType: hard
+
 "@mantine/core@npm:7.11.1":
   version: 7.11.1
   resolution: "@mantine/core@npm:7.11.1"
@@ -3324,6 +3345,7 @@ __metadata:
     "@azure/msal-browser": "npm:^3.18.0"
     "@azure/msal-react": "npm:^2.0.20"
     "@eslint/compat": "npm:^1.1.1"
+    "@kinde-oss/kinde-auth-react": "npm:^4.0.1"
     "@mantine/core": "npm:7.11.1"
     "@mantine/form": "npm:^7.11.1"
     "@mantine/hooks": "npm:7.11.1"
@@ -6804,6 +6826,13 @@ __metadata:
     object.assign: "npm:^4.1.4"
     object.values: "npm:^1.1.6"
   checksum: 10c0/a32679e9cb55469cb6d8bbc863f7d631b2c98b7fc7bf172629261751a6e7bc8da6ae374ddb74d5fbd8b06cf0eb4572287b259813d92b36e384024ed35e4c13e1
+  languageName: node
+  linkType: hard
+
+"jwt-decode@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "jwt-decode@npm:4.0.0"
+  checksum: 10c0/de75bbf89220746c388cf6a7b71e56080437b77d2edb29bae1c2155048b02c6b8c59a3e5e8d6ccdfd54f0b8bda25226e491a4f1b55ac5f8da04cfbadec4e546c
   languageName: node
   linkType: hard
 

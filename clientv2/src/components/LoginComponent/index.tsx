@@ -12,6 +12,7 @@ import {
   Center,
 } from '@mantine/core';
 import { AcmLoginButton } from './AcmLoginButton';
+import { PartnerLoginButton } from './PartnerLoginButton';
 
 export function LoginComponent(props: PaperProps) {
   const form = useForm({
@@ -54,7 +55,7 @@ export function LoginComponent(props: PaperProps) {
 
       <Group grow mb="md" mt="md">
         <AcmLoginButton radius="xl">
-          ACM Login (Paid Members Only)
+          Sign in with Illinois NetID
         </AcmLoginButton>
       </Group>
 
@@ -64,43 +65,11 @@ export function LoginComponent(props: PaperProps) {
         my="md"
         size="lg"
       />
-
-      <form onSubmit={form.onSubmit(() => {})}>
-        <Stack>
-          <TextInput
-            required
-            label="Email"
-            placeholder="user@example.com"
-            value={form.values.email}
-            onChange={(event) =>
-              form.setFieldValue('email', event.currentTarget.value)
-            }
-            error={form.errors.email && 'Invalid email'}
-            radius="md"
-          />
-
-          <PasswordInput
-            required
-            label="Password"
-            placeholder="Your password"
-            value={form.values.password}
-            onChange={(event) =>
-              form.setFieldValue('password', event.currentTarget.value)
-            }
-            error={
-              form.errors.password &&
-              'Password should include at least 6 characters'
-            }
-            radius="md"
-          />
-        </Stack>
-
-        <Group justify="space-between" mt="xl">
-          <Button type="submit" radius="xl" style={{ width: '100%' }}>
-            Log In
-          </Button>
-        </Group>
-      </form>
+      <Group grow mb="md" mt="md">
+        <PartnerLoginButton radius="xl">
+          ACM@UIUC Partner Login
+        </PartnerLoginButton>
+      </Group>
     </Paper>
   );
 }

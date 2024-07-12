@@ -3,8 +3,9 @@ import { MsalProvider } from '@azure/msal-react';
 import { Configuration, PublicClientApplication } from '@azure/msal-browser';
 import App from './App';
 import { AuthProvider } from './components/AuthContext';
+import {KindeProvider} from "@kinde-oss/kinde-auth-react";
 
-const configuration: Configuration = {
+const msalConfiguration: Configuration = {
   auth: {
     clientId: '5178a6b1-f46d-40a2-b550-1389b9316446',
     authority:
@@ -16,12 +17,19 @@ const configuration: Configuration = {
   },
 };
 
-const pca = new PublicClientApplication(configuration);
+const pca = new PublicClientApplication(msalConfiguration);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <MsalProvider instance={pca}>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </MsalProvider>,
+  <KindeProvider
+    clientId="fdacad7aea554755844105f5606da0f6"
+    domain="https://auth.acm.illinois.edu"
+    redirectUri={`${window.location.origin}/login`}
+    logoutUri={window.location.origin}
+  >
+    <MsalProvider instance={pca}>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </MsalProvider>
+  </KindeProvider>
 );

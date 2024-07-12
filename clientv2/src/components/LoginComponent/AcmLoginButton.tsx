@@ -12,7 +12,8 @@ export function AcmLoginButton(
     <Button
       disabled={inProgress === InteractionStatus.Login}
       leftSection={null}
-      variant="default"
+      color='#FF5F05'
+      variant="filled"
       {...props}
       onClick={() => {
         loginMsal();
