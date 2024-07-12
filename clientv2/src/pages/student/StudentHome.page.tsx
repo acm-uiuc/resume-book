@@ -46,9 +46,10 @@ export function StudentHomePage() {
   }
   const toggleEdit = () => {
     if (editToggle) {
-      setEditToggle(false);
+      console.log(userData);
+      setLoading(true);
+      setTimeout(() => {window.location.reload();}, 1000);
     } else {
-      console.log("Saving with req here...")
       setEditToggle(true);
     }
   }
