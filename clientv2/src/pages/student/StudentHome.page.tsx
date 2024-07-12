@@ -5,44 +5,11 @@ import { useEffect, useState } from 'react';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileViewer';
 
-
-
-const mockStudentProfile: StudentProfileDetails = {
-  username: "jsmith@illinois.edu",
-  name: "Jane Smith",
-  email: "jsmith@university.edu",
-  linkedin: "https://www.linkedin.com/in/janesmith",
-  degrees: [
-    {
-      level: "BS",
-      yearStarted: 2016,
-      yearEnded: 2020,
-      institution: "University of Technology",
-      major: ["Computer Science"],
-      minor: ["Mathematics"],
-      gpa: 3.8
-    },
-    {
-      level: "Masters (Thesis)",
-      yearStarted: 2021,
-      institution: "Tech Institute",
-      major: ["Artificial Intelligence"],
-      minor: [],
-      gpa: 3.9
-    }
-  ],
-  bio: "Passionate computer science graduate with a focus on AI and machine learning. Currently pursuing a Master's degree while working on cutting-edge research projects.",
-  skills: ["Python", "TensorFlow", "Machine Learning", "Data Analysis", "Java", "C++"],
-  work_auth_required: false,
-  sponsorship_required: true,
-  resumePdfUrl: "https://files.devksingh.com/Dev_Singh_resume.pdf"
-};
-
 export function StudentHomePage() {
-  const { userData, getToken } = useAuth();
+  const { userData } = useAuth();
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
-  const [lastName, firstName] = userData?.name?.split(',') as string[];
+  const [studentData, setStudentData] = useState<StudentProfileDetails>();
   const api = useApi();
   useEffect(() => {
     async function fetch() {
@@ -51,6 +18,10 @@ export function StudentHomePage() {
         const response = await api.get("/student/profile");
         setEnrolled(response.status === 200);
         setLoading(false);
+        for (let i = 0; i < response.data['degrees'].length; i++) {
+          response.data['degrees'][i].gpa = parseFloat(response.data['degrees'][i].gpa);
+        }
+        setStudentData(response.data as StudentProfileDetails);
       } catch (err: any) {
         if (err.response.status === 404) {
           setEnrolled(false);
@@ -71,7 +42,7 @@ export function StudentHomePage() {
     <>
       <HeaderNavbar userData={userData} />
       <div style={{ display: 'flex', alignItems: 'center' }}>
-      {!enrolled ?  <StudentProfilePage studentProfile={mockStudentProfile}/> : <StudentProfilePage />}
+      {enrolled && studentData ?  <StudentProfilePage studentProfile={studentData}/> : "User does not have a profile. Need to enroll."}
       </div>
     </>
   );
