@@ -11,7 +11,7 @@ export function PartnerLoginButton(
       disabled={false}
       leftSection={null}
       variant="filled"
-      color='blue'
+      color='#0053B3'
       {...props}
       onClick={() => {
         login();
