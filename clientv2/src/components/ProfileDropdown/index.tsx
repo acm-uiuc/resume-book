@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import {
   Popover,
   Box,
@@ -10,22 +10,26 @@ import {
   UnstyledButton,
   Divider,
   Button,
-  Tooltip,
   rem,
   useMantineTheme,
-  Skeleton,
 } from '@mantine/core';
 
-import { IconChevronDown, IconUser, IconMail, IconBuilding } from '@tabler/icons-react';
+import {
+  IconChevronDown,
+  IconUser,
+  IconMail,
+  IconBuilding,
+} from '@tabler/icons-react';
 import classes from '../Navbar/index.module.css';
 import { AuthContextData, useAuth, roleToString } from '../AuthContext';
 
-
 interface ProfileDropdownProps {
-    userData: AuthContextData
+  userData: AuthContextData;
 }
 
-const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({userData}) => {
+const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({
+  userData,
+}) => {
   const [opened, setOpened] = useState(false);
   const theme = useMantineTheme();
   const { logout } = useAuth();
@@ -60,7 +64,10 @@ const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({userData}
         </a>
       </Popover.Target>
 
-      <Popover.Dropdown style={{ overflow: 'hidden' }} aria-label="Authenticated Profile Dropdown">
+      <Popover.Dropdown
+        style={{ overflow: 'hidden' }}
+        aria-label="Authenticated Profile Dropdown"
+      >
         <SimpleGrid cols={1} spacing={0}>
           <UnstyledButton className={classes.subLink} key="name">
             <Group wrap="nowrap" align="flex-start">
@@ -98,26 +105,32 @@ const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({userData}
               </div>
             </Group>
           </UnstyledButton>
-            <UnstyledButton className={classes.subLink} key="tenant_id">
-              <Group wrap="nowrap" align="flex-start">
-                <ThemeIcon size={40} variant="default" radius="md">
-                  <IconBuilding
-                    style={{ width: rem(22), height: rem(22) }}
-                    color={theme.colors.blue[6]}
-                  />
-                </ThemeIcon>
-                <div>
-                  <Text size="xs" c="dimmed">
-                    Role
-                  </Text>
-                  <Text size="sm" fw={500}>
-                    {roleToString(userData?.role)}
-                  </Text>
-                </div>
-              </Group>
-            </UnstyledButton>
+          <UnstyledButton className={classes.subLink} key="tenant_id">
+            <Group wrap="nowrap" align="flex-start">
+              <ThemeIcon size={40} variant="default" radius="md">
+                <IconBuilding
+                  style={{ width: rem(22), height: rem(22) }}
+                  color={theme.colors.blue[6]}
+                />
+              </ThemeIcon>
+              <div>
+                <Text size="xs" c="dimmed">
+                  Role
+                </Text>
+                <Text size="sm" fw={500}>
+                  {roleToString(userData?.role)}
+                </Text>
+              </div>
+            </Group>
+          </UnstyledButton>
           <Divider my="sm" />
-          <Button variant="outline" fullWidth onClick={() => { logout(); }}>
+          <Button
+            variant="outline"
+            fullWidth
+            onClick={() => {
+              logout();
+            }}
+          >
             Log Out
           </Button>
         </SimpleGrid>

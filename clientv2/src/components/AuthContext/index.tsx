@@ -1,6 +1,12 @@
-import React, { createContext, ReactNode, useContext, useState, useEffect } from "react";
-import { MsalProvider, useMsal } from "@azure/msal-react";
-import { AuthenticationResult, InteractionStatus } from "@azure/msal-browser";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useState,
+  useEffect,
+} from 'react';
+import { useMsal } from '@azure/msal-react';
+import { AuthenticationResult, InteractionStatus } from '@azure/msal-browser';
 
 export enum AuthSourceEnum {
   MSAL,
@@ -15,11 +21,11 @@ export enum AuthRoleEnum {
 export function roleToString(e?: AuthRoleEnum) {
   switch (e) {
     case AuthRoleEnum.RECRUITER:
-      return "Recruiter"
+      return 'Recruiter';
     case AuthRoleEnum.STUDENT:
-      return "Student"
+      return 'Student';
     default:
-      return "Unknown"
+      return 'Unknown';
   }
 }
 
@@ -55,22 +61,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const handleRedirect = async () => {
-      try {
-        const response = await instance.handleRedirectPromise();
-        if (response) {
-          handleMsalResponse(response);
-        } else if (accounts.length > 0) {
-          // User is already logged in, set the state
-          setUserData({
-            email: accounts[0].username,
-            name: accounts[0].name,
-            authenticationMethod: AuthSourceEnum.MSAL,
-            role: AuthRoleEnum.STUDENT,
-          });
-          setIsLoggedIn(true);
-        }
-      } catch (error) {
-        console.error(error);
+      const response = await instance.handleRedirectPromise();
+      if (response) {
+        handleMsalResponse(response);
+      } else if (accounts.length > 0) {
+        // User is already logged in, set the state
+        setUserData({
+          email: accounts[0].username,
+          name: accounts[0].name,
+          authenticationMethod: AuthSourceEnum.MSAL,
+          role: AuthRoleEnum.STUDENT,
+        });
+        setIsLoggedIn(true);
       }
     };
 
@@ -81,7 +83,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const handleMsalResponse = (response: AuthenticationResult) => {
     if (response) {
-      const account = response.account;
+      const { account } = response;
       if (account) {
         setUserData({
           email: account.username,

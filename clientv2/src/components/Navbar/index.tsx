@@ -1,42 +1,31 @@
-"use client";
+'use client';
 
-import { ReactNode } from "react";
 import {
   Group,
   Button,
-  UnstyledButton,
-  Text,
-  ThemeIcon,
   Divider,
-  Center,
   Box,
   Burger,
   Drawer,
-  Collapse,
   ScrollArea,
   rem,
-  useMantineTheme,
-  Skeleton,
-  HoverCard,
-  SimpleGrid,
-  Anchor,
-} from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import classes from "./index.module.css";
-import LogoBadge from "./Logo";
-import { AuthContextData, useAuth } from "../AuthContext";
-import { useNavigate } from "react-router-dom";
-import { AuthenticatedProfileDropdown } from "../ProfileDropdown";
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { useNavigate } from 'react-router-dom';
+import classes from './index.module.css';
+import LogoBadge from './Logo';
+import { AuthContextData, useAuth } from '../AuthContext';
+import { AuthenticatedProfileDropdown } from '../ProfileDropdown';
 
 interface HeaderNavbarProps {
-  userData?: AuthContextData | null
+  userData?: AuthContextData | null;
 }
 
 const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
-  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
-  const theme = useMantineTheme();
+  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
+    useDisclosure(false);
   const navigate = useNavigate();
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn } = useAuth();
   return (
     <Box>
       <header className={classes.header}>
@@ -49,9 +38,17 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
             </a>
           </Group>
           <Group h="100%" justify="end" gap={10} visibleFrom="sm">
-            {userData ? <AuthenticatedProfileDropdown userData={userData} /> : null}
+            {userData ? (
+              <AuthenticatedProfileDropdown userData={userData} />
+            ) : null}
             {isLoggedIn ? null : (
-              <Button variant="filled" fullWidth onClick={() => { navigate("/login") }}>
+              <Button
+                variant="filled"
+                fullWidth
+                onClick={() => {
+                  navigate('/login');
+                }}
+              >
                 Sign In
               </Button>
             )}
@@ -78,9 +75,18 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
           <a href="#" className={classes.link}>
             Home
           </a>
-          {userData ? <AuthenticatedProfileDropdown userData={userData} /> : null}
+          {userData ? (
+            <AuthenticatedProfileDropdown userData={userData} />
+          ) : null}
           {isLoggedIn ? null : (
-            <Button variant="filled" style={{ marginTop: "1em" }} fullWidth onClick={() => { navigate("/login") }}>
+            <Button
+              variant="filled"
+              style={{ marginTop: '1em' }}
+              fullWidth
+              onClick={() => {
+                navigate('/login');
+              }}
+            >
               Sign In
             </Button>
           )}

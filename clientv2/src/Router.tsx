@@ -1,52 +1,53 @@
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
-import { HomePage } from "./pages/Home.page";
-import { AuthRoleEnum, useAuth } from "./components/AuthContext";
-import { LoginPage } from "./pages/Login.page";
-import { StudentHomePage } from "./pages/student/StudentHome.page";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from 'react-router-dom';
+import { HomePage } from './pages/Home.page';
+import { AuthRoleEnum, useAuth } from './components/AuthContext';
+import { LoginPage } from './pages/Login.page';
+import { StudentHomePage } from './pages/student/StudentHome.page';
 
 const unauthenticatedRouter = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <Navigate to="/login" replace />,
   },
   {
-    path: "/login",
+    path: '/login',
     element: <LoginPage />,
-  }
+  },
 ]);
 
 const recruiterRouter = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <HomePage />,
   },
   {
-    path: "/login",
+    path: '/login',
     element: <Navigate to="/" replace />,
-  }
+  },
 ]);
 
 const studentRouter = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <StudentHomePage />,
   },
   {
-    path: "/login",
+    path: '/login',
     element: <Navigate to="/" replace />,
-  }
+  },
 ]);
 
 export function Router() {
   const { isLoggedIn, userData } = useAuth();
   if (!isLoggedIn || !userData) {
-    console.log("Returning unauthenticated router");
     return <RouterProvider router={unauthenticatedRouter} />;
-  } else if (isLoggedIn && userData.role === AuthRoleEnum.RECRUITER) {
-    console.log("Returning recruiter router");
+  } if (isLoggedIn && userData.role === AuthRoleEnum.RECRUITER) {
     return <RouterProvider router={recruiterRouter} />;
-  } else if (isLoggedIn && userData.role === AuthRoleEnum.STUDENT) {
-    console.log("Returning student router");
+  } if (isLoggedIn && userData.role === AuthRoleEnum.STUDENT) {
     return <RouterProvider router={studentRouter} />;
   }
 }

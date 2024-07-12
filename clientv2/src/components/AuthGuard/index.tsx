@@ -1,8 +1,8 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
-import { useAuth } from "../AuthContext";
+import React, { ReactNode } from 'react';
+import { AuthRoleEnum, useAuth } from '../AuthContext';
 
 interface AuthGuardProps {
-  role?: string;
+  role?: AuthRoleEnum;
   children: ReactNode;
 }
 
@@ -12,10 +12,9 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ role, children }) => {
     return null;
   }
   if (isLoggedIn && userData) {
-    if (role && userData.role === role) {
+    if ((role && userData.role === role) || !role) {
       return children;
-    } else {
-      return null;
     }
   }
+  return null;
 };

@@ -1,6 +1,6 @@
-import { LoginComponent } from "@/components/LoginComponent";
-import { HeaderNavbar } from "@/components/Navbar";
-import { Center, Container, Title } from "@mantine/core";
+import { Center } from '@mantine/core';
+import { LoginComponent } from '@/components/LoginComponent';
+import { HeaderNavbar } from '@/components/Navbar';
 
 export function LoginPage() {
   return (
@@ -9,7 +9,6 @@ export function LoginPage() {
       <Center style={{ height: '100vh' }}>
         <LoginComponent />
       </Center>
-
     </>
   );
 }

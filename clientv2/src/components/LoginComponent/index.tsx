@@ -1,4 +1,3 @@
-import { useToggle, upperFirst } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import {
   TextInput,
@@ -9,13 +8,10 @@ import {
   PaperProps,
   Button,
   Divider,
-  Checkbox,
-  Anchor,
   Stack,
   Center,
 } from '@mantine/core';
 import { AcmLoginButton } from './AcmLoginButton';
-import LogoBadge from '../Navbar/Logo';
 
 export function LoginComponent(props: PaperProps) {
   const form = useForm({
@@ -28,31 +24,46 @@ export function LoginComponent(props: PaperProps) {
 
     validate: {
       email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
-      password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
+      password: (val) =>
+        val.length <= 6
+          ? 'Password should include at least 6 characters'
+          : null,
     },
   });
 
   return (
     <Paper radius="md" p="xl" withBorder {...props}>
-        <Center>
-            <img
-            src="https://acm-brand-images.s3.amazonaws.com/banner-blue.png"
-            alt="ACM Logo"
-            style={{ height: "5em", marginBottom: "1em" }}
-            />
-        </Center>
-        
+      <Center>
+        <img
+          src="https://acm-brand-images.s3.amazonaws.com/banner-blue.png"
+          alt="ACM Logo"
+          style={{ height: '5em', marginBottom: '1em' }}
+        />
+      </Center>
+
       <Text size="lg" fw={500}>
         Welcome to ACM@UIUC Resume Book
       </Text>
 
-      <Divider label="Student Login" labelPosition="center" my="md" size={"lg"} />
+      <Divider
+        label="Student Login"
+        labelPosition="center"
+        my="md"
+        size="lg"
+      />
 
       <Group grow mb="md" mt="md">
-        <AcmLoginButton radius="xl">ACM Login {"(Paid Members Only)"}</AcmLoginButton>
+        <AcmLoginButton radius="xl">
+          ACM Login (Paid Members Only)
+        </AcmLoginButton>
       </Group>
 
-      <Divider label="Recruiter Login" labelPosition="center" my="md" size={"lg"} />
+      <Divider
+        label="Recruiter Login"
+        labelPosition="center"
+        my="md"
+        size="lg"
+      />
 
       <form onSubmit={form.onSubmit(() => {})}>
         <Stack>
@@ -61,7 +72,9 @@ export function LoginComponent(props: PaperProps) {
             label="Email"
             placeholder="user@example.com"
             value={form.values.email}
-            onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
+            onChange={(event) =>
+              form.setFieldValue('email', event.currentTarget.value)
+            }
             error={form.errors.email && 'Invalid email'}
             radius="md"
           />
@@ -71,14 +84,19 @@ export function LoginComponent(props: PaperProps) {
             label="Password"
             placeholder="Your password"
             value={form.values.password}
-            onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
-            error={form.errors.password && 'Password should include at least 6 characters'}
+            onChange={(event) =>
+              form.setFieldValue('password', event.currentTarget.value)
+            }
+            error={
+              form.errors.password &&
+              'Password should include at least 6 characters'
+            }
             radius="md"
           />
         </Stack>
 
         <Group justify="space-between" mt="xl">
-          <Button type="submit" radius="xl" style={{width: "100%"}}>
+          <Button type="submit" radius="xl" style={{ width: '100%' }}>
             Log In
           </Button>
         </Group>

@@ -1,10 +1,10 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface LogoBadgeProps {
   size?: string;
   linkTo?: string;
-  showText?: boolean
+  showText?: boolean;
 }
 
 const LogoBadge: React.FC<LogoBadgeProps> = ({ size, linkTo, showText }) => {
@@ -12,26 +12,26 @@ const LogoBadge: React.FC<LogoBadgeProps> = ({ size, linkTo, showText }) => {
     showText = true;
   }
   if (!size) {
-    size = "1em";
+    size = '1em';
   }
   return (
     <b>
       <Link
-        to={linkTo || "/"}
+        to={linkTo || '/'}
         style={{
           fontSize: size,
-          textDecoration: "none",
-          color: "#0053B3",
-          display: "flex",
-          alignItems: "center",
+          textDecoration: 'none',
+          color: '#0053B3',
+          display: 'flex',
+          alignItems: 'center',
         }}
       >
         <img
           src="https://acm-brand-images.s3.amazonaws.com/banner-blue.png"
           alt="ACM Logo"
-          style={{ height: "2em", marginRight: "0.5em" }}
+          style={{ height: '2em', marginRight: '0.5em' }}
         />
-        {showText ? "Resume Book" : null}
+        {showText ? 'Resume Book' : null}
       </Link>
     </b>
   );

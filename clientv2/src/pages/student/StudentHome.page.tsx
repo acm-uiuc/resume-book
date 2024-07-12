@@ -1,17 +1,20 @@
-import { useAuth } from "@/components/AuthContext";
-import { HeaderNavbar } from "@/components/Navbar";
-import { Badge, Title, Flex } from "@mantine/core";
+import { Badge, Title } from '@mantine/core';
+import { useAuth } from '@/components/AuthContext';
+import { HeaderNavbar } from '@/components/Navbar';
 
 export function StudentHomePage() {
   const { userData } = useAuth();
-  let lastName, firstName;
-  [lastName, firstName] = userData?.name?.split(",") as string[];
+  const [lastName, firstName] = userData?.name?.split(',') as string[];
   return (
     <>
-      <HeaderNavbar userData={userData}/>
+      <HeaderNavbar userData={userData} />
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Title>Hello {firstName} {lastName}!</Title>
-        <Badge color="blue" style={{ marginLeft: 10 }}>Student</Badge>
+        <Title>
+          Hello {firstName} {lastName}!
+        </Title>
+        <Badge color="blue" style={{ marginLeft: 10 }}>
+          Student
+        </Badge>
       </div>
     </>
   );
