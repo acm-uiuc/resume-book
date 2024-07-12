@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, EmailStr, HttpUrl
+from pydantic import BaseModel, EmailStr, AnyUrl, HttpUrl
 
 class DegreeListing(BaseModel):
     level: str
@@ -20,7 +20,7 @@ class StudentProfileDetails(BaseModel):
     skills: List[str]
     work_auth_required: bool
     sponsorship_required: bool
-    resumePdfUrl: HttpUrl
+    resumePdfUrl: AnyUrl
 
 if __name__ == "__main__":
     degree = DegreeListing(

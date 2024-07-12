@@ -6,6 +6,8 @@ import boto3
 import os
 from util.dynamo import convert_to_dynamodb_json, convert_from_dynamodb_json
 from util.structs import StudentProfileDetails
+from util.environ import get_run_environment
+from util.s3 import create_presigned_url_from_s3_url
 import json
 from decimal import Decimal
 
@@ -16,6 +18,8 @@ session = boto3.Session(region_name=os.environ.get('AWS_REGION', 'us-east-1'))
 dynamodb = session.client('dynamodb')
 
 PROFILE_TABLE_NAME = "infra-resume-book-profile-data"
+RUN_ENV = get_run_environment()
+S3_BUCKET = f"infra-resume-book-pdfs-{RUN_ENV}"
 
 @app.get("/api/v1/healthz")
 def healthz():
@@ -38,7 +42,10 @@ def student_get_profile():
     except Exception as e:
         print(traceback.format_exc(), flush=True)
         return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error getting profile data", "details": str(e)})
-    return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=convert_from_dynamodb_json(profile_data))
+    # generate presigned url for resume pdf 
+    profile_data = convert_from_dynamodb_json(profile_data)
+    profile_data['resumePdfUrl'] = create_presigned_url_from_s3_url(profile_data['resumePdfUrl'])
+    return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=profile_data)
 
 @app.post("/api/v1/student/profile")
 def student_post_profile():
@@ -46,6 +53,7 @@ def student_post_profile():
     json_body: dict = app.current_event.json_body
     json_body['email'] = email
     json_body['username'] = email
+    json_body['resumePdfUrl'] = f"s3://{RUN_ENV}/resume_{email}.pdf"
     try:
         data = json.loads(StudentProfileDetails(**json_body).model_dump_json(), parse_float=Decimal)
         dynamo_data = convert_to_dynamodb_json(data)

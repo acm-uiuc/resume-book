@@ -1,7 +1,7 @@
-import React from 'react';
-import { Container, Text, Title, Group, Stack, Badge, Avatar, Anchor, List, ThemeIcon, Grid, Box } from '@mantine/core';
-import { IconBrandLinkedin, IconMail, IconSchool, IconBriefcase, IconUser, IconCertificate } from '@tabler/icons-react';
-import { Document, pdfjs } from "react-pdf";
+import React, { useState } from 'react';
+import { Container, Text, Title, Group, Stack, Badge, Anchor, List, ThemeIcon, Grid, Box, Button } from '@mantine/core';
+import { IconBrandLinkedin, IconMail, IconSchool, IconBriefcase, IconUser, IconCertificate, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import { Document, Page, pdfjs } from 'react-pdf';
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url,
@@ -36,9 +36,15 @@ interface StudentProfilePageProps {
 }
 
 const StudentProfilePage: React.FC<StudentProfilePageProps> = ({studentProfile: mockStudentProfile}) => {
+  const [numPages, setNumPages] = useState<number>(0);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+    setNumPages(numPages);
+  }
   return (
-    <Container fluid style={{marginTop: '2vh'}}>
-      <Grid gutter="xl">
+    <Container fluid style={{marginTop: "2vh"}}>
+      <Grid gutter="sm">
         <Grid.Col span={4}>
           <Container>
             <Stack spacing="md">
@@ -128,12 +134,53 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({studentProfile: 
         </Grid.Col>
 
         <Grid.Col span={8}>
-          <Container>
-            <Document file={mockStudentProfile.resumePdfUrl} onLoadError={console.error}/>
-          </Container>
+          <Box style={{ height: '100vh', minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
+            <Document
+              file={mockStudentProfile.resumePdfUrl}
+              onLoadSuccess={onDocumentLoadSuccess}
+              options={{
+                cMapUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/cmaps/',
+                cMapPacked: true,
+              }}
+            >
+              <Box 
+                style={{ 
+                  border: '2px solid #FF5F05', 
+                  borderRadius: '4px',
+                  padding: '8px',
+                  display: 'inline-block'
+                }}
+              >
+                <Page 
+                  pageNumber={pageNumber} 
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                />
+              </Box>
+            </Document>
+            <Group position="apart" mt="md">
+              <Button 
+                onClick={() => setPageNumber(page => Math.max(page - 1, 1))}
+                disabled={pageNumber <= 1}
+                leftIcon={<IconChevronLeft size={14} />}
+              >
+                Previous
+              </Button>
+              <Text>
+                Page {pageNumber} of {numPages}
+              </Text>
+              <Button 
+                onClick={() => setPageNumber(page => Math.min(page + 1, numPages))}
+                disabled={pageNumber >= numPages}
+                rightIcon={<IconChevronRight size={14} />}
+              >
+                Next
+              </Button>
+            </Group>
+          </Box>
         </Grid.Col>
       </Grid>
-    </Container>
+      </Container>
   );
 };
 
