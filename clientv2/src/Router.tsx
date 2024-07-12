@@ -1,9 +1,4 @@
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from 'react-router-dom';
-import { HomePage } from './pages/Home.page';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import { AuthRoleEnum, useAuth } from './components/AuthContext';
 import { LoginPage } from './pages/Login.page';
 import { StudentHomePage } from './pages/student/StudentHome.page';
@@ -46,9 +41,11 @@ export function Router() {
   const { isLoggedIn, userData } = useAuth();
   if (!isLoggedIn || !userData) {
     return <RouterProvider router={unauthenticatedRouter} />;
-  } if (isLoggedIn && userData.role === AuthRoleEnum.RECRUITER) {
+  }
+  if (isLoggedIn && userData.role === AuthRoleEnum.RECRUITER) {
     return <RouterProvider router={recruiterRouter} />;
-  } if (isLoggedIn && userData.role === AuthRoleEnum.STUDENT) {
+  }
+  if (isLoggedIn && userData.role === AuthRoleEnum.STUDENT) {
     return <RouterProvider router={studentRouter} />;
   }
 }

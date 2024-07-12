@@ -1,13 +1,9 @@
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useState,
-  useEffect,
-} from 'react';
+import React, { createContext, ReactNode, useContext, useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useKindeAuth } from '@kinde-oss/kinde-auth-react';
 import { AuthenticationResult, InteractionStatus } from '@azure/msal-browser';
+import { MantineProvider } from '@mantine/core';
+import FullScreenLoader from './LoadingScreen';
 
 export enum AuthSourceEnum {
   MSAL,
@@ -55,17 +51,25 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { instance, inProgress, accounts } = useMsal();
-  const {isLoading, isAuthenticated, user, logout: kindeLogout, getToken: getKindeToken} = useKindeAuth();
-  
+  const {
+    isLoading,
+    isAuthenticated,
+    user,
+    logout: kindeLogout,
+    getToken: getKindeToken,
+  } = useKindeAuth();
+
   const [userData, setUserData] = useState<AuthContextData | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>((isAuthenticated || accounts.length > 0) && !isLoading);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
+    (isAuthenticated || accounts.length > 0) && !isLoading
+  );
   if (isAuthenticated && !isLoading && !userData) {
     setUserData({
       email: user?.email!,
       name: `${user?.given_name} ${user?.family_name}`,
       authenticationMethod: AuthSourceEnum.LOCAL,
-      role: AuthRoleEnum.RECRUITER
-    })
+      role: AuthRoleEnum.RECRUITER,
+    });
     setIsLoggedIn(true);
   }
 
@@ -80,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           email: accounts[0].username,
           name: accounts[0].name,
           authenticationMethod: AuthSourceEnum.MSAL,
-          role: AuthRoleEnum.STUDENT
+          role: AuthRoleEnum.STUDENT,
         });
         setIsLoggedIn(true);
       }
@@ -112,12 +116,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
       return null;
-    } else if (userData?.authenticationMethod === AuthSourceEnum.LOCAL) {
-      return await getKindeToken();
-    } else {
-      throw new Error("Unknown authentication method.")
     }
-  }
+    if (userData?.authenticationMethod === AuthSourceEnum.LOCAL) {
+      return getKindeToken();
+    }
+    throw new Error('Unknown authentication method.');
+  };
   const loginMsal = () => {
     instance.loginRedirect();
   };
@@ -138,10 +142,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider
-      value={{ isLoggedIn, userData, loginMsal, logout, getToken }}
-    >
-      {children}
+    <AuthContext.Provider value={{ isLoggedIn, userData, loginMsal, logout, getToken }}>
+      {isLoading || inProgress !== InteractionStatus.None ? (
+        <MantineProvider>
+          <FullScreenLoader />
+        </MantineProvider>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

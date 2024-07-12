@@ -14,12 +14,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 
-import {
-  IconChevronDown,
-  IconUser,
-  IconMail,
-  IconBuilding,
-} from '@tabler/icons-react';
+import { IconChevronDown, IconUser, IconMail, IconBuilding } from '@tabler/icons-react';
 import classes from '../Navbar/index.module.css';
 import { AuthContextData, useAuth, roleToString } from '../AuthContext';
 
@@ -27,9 +22,7 @@ interface ProfileDropdownProps {
   userData: AuthContextData;
 }
 
-const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({
-  userData,
-}) => {
+const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({ userData }) => {
   const [opened, setOpened] = useState(false);
   const theme = useMantineTheme();
   const { logout } = useAuth();
@@ -64,10 +57,7 @@ const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({
         </a>
       </Popover.Target>
 
-      <Popover.Dropdown
-        style={{ overflow: 'hidden' }}
-        aria-label="Authenticated Profile Dropdown"
-      >
+      <Popover.Dropdown style={{ overflow: 'hidden' }} aria-label="Authenticated Profile Dropdown">
         <SimpleGrid cols={1} spacing={0}>
           <UnstyledButton className={classes.subLink} key="name">
             <Group wrap="nowrap" align="flex-start">

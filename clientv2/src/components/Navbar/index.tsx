@@ -1,20 +1,10 @@
 'use client';
 
-import {
-  Group,
-  Button,
-  Divider,
-  Box,
-  Burger,
-  Drawer,
-  ScrollArea,
-  rem,
-} from '@mantine/core';
+import { Group, Divider, Box, Burger, Drawer, ScrollArea, rem } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { useNavigate } from 'react-router-dom';
 import classes from './index.module.css';
 import LogoBadge from './Logo';
-import { AuthContextData, useAuth } from '../AuthContext';
+import { AuthContextData } from '../AuthContext';
 import { AuthenticatedProfileDropdown } from '../ProfileDropdown';
 
 interface HeaderNavbarProps {
@@ -22,10 +12,7 @@ interface HeaderNavbarProps {
 }
 
 const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
-  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
-    useDisclosure(false);
-  const navigate = useNavigate();
-  const { isLoggedIn } = useAuth();
+  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   return (
     <Box>
       <header className={classes.header}>
@@ -38,26 +25,9 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
             </a>
           </Group>
           <Group h="100%" justify="end" gap={10} visibleFrom="sm">
-            {userData ? (
-              <AuthenticatedProfileDropdown userData={userData} />
-            ) : null}
-            {isLoggedIn ? null : (
-              <Button
-                variant="filled"
-                fullWidth
-                onClick={() => {
-                  navigate('/login');
-                }}
-              >
-                Sign In
-              </Button>
-            )}
+            {userData ? <AuthenticatedProfileDropdown userData={userData} /> : null}
           </Group>
-          <Burger
-            opened={drawerOpened}
-            onClick={toggleDrawer}
-            hiddenFrom="sm"
-          />
+          <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
         </Group>
       </header>
 
@@ -75,21 +45,7 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
           <a href="#" className={classes.link}>
             Home
           </a>
-          {userData ? (
-            <AuthenticatedProfileDropdown userData={userData} />
-          ) : null}
-          {isLoggedIn ? null : (
-            <Button
-              variant="filled"
-              style={{ marginTop: '1em' }}
-              fullWidth
-              onClick={() => {
-                navigate('/login');
-              }}
-            >
-              Sign In
-            </Button>
-          )}
+          {userData ? <AuthenticatedProfileDropdown userData={userData} /> : null}
         </ScrollArea>
       </Drawer>
     </Box>
