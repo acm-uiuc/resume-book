@@ -3,7 +3,6 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from util.server import app
 from util.logging import configure_request_id
 import traceback
-from .routes import * # NOQA
 
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     request_id = event["requestContext"]["requestId"]
