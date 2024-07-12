@@ -1,2 +1,2 @@
 aws-lambda-powertools
-pydantic
+pydantic[email]

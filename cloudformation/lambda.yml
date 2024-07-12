@@ -10,7 +10,6 @@ Parameters:
   RunEnvironment:
     Type: String
     AllowedValues: [ 'dev', 'prod' ]
-
   LambdaFunctionName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
@@ -41,6 +40,10 @@ Parameters:
   ApiCertificateArn:
     Type: String
     Default: arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
+  ProfileDataTableName:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+    Default: infra-resume-book-profile-data
 Conditions:
   IsProd: !Equals [!Ref RunEnvironment, 'prod']
 Resources:
@@ -122,6 +125,15 @@ Resources:
                   - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}
                   - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}/*
           PolicyName: lambda-s3
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - dynamodb:*
+                Effect: Allow
+                Resource:
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ProfileDataTableName}
+          PolicyName: lambda-dynamo
 
   ResumeBookApiLambdaLogGroup:
     Type: AWS::Logs::LogGroup
