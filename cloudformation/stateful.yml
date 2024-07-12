@@ -2,10 +2,10 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: Resume Book API Stateful Resources
 
 Parameters:
-  UserAuthTableName:
+  ProfileDataTableName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
-    Default: infra-resume-book-auth-data
+    Default: infra-resume-book-profile-data
   HashKeyElementName:
     Type: String
     Default: username
@@ -16,10 +16,10 @@ Parameters:
     Description: User Auth Primary Key Type
 
 Resources:
-  UserAuthTable:
+  ProfileDataTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Ref UserAuthTableName
+      TableName: !Ref ProfileDataTableName
       AttributeDefinitions:
         - 
           AttributeName: !Ref HashKeyElementName

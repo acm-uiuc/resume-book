@@ -53,13 +53,20 @@ Resources:
       Runtime: python3.10
       Description: Resume Book API Lambda
       FunctionName: !Ref LambdaFunctionName
-      Handler: api.lambda_handler
-      MemorySize: 2048
+      Handler: app.lambda_handler
+      MemorySize: 512
       Role: !GetAtt ResumeBookApiLambdaIAMRole.Arn
       Timeout: 60
       Environment:
         Variables:
           RunEnvironment: !Ref RunEnvironment
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ResumeBookApiGateway
+            Path: /{proxy+}
+            Method: ANY
 
   ResumeBookApiLambdaFunctionErrorAlarm:
     Type: 'AWS::CloudWatch::Alarm'
@@ -181,16 +188,6 @@ Resources:
                 Resource:
                   - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AuthLambdaFunctionName}:*
           PolicyName: lambda
-        - PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Action:
-                  - dynamodb:Query*
-                  - dynamondb:Get*
-                Effect: Allow
-                Resource:
-                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UserAuthTableName}
-          PolicyName: lambda-dn
 
   ResumeBookAuthLambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -220,6 +217,10 @@ Resources:
         DomainName: !Ref ApiDomainName
         CertificateArn: !Ref ApiCertificateArn
       StageName: default
+      Cors:
+        AllowHeaders: "'Content-Type,Authorization,X-Amz-Date'"
+        AllowOrigin: "'*'"
+        MaxAge: "'300'"
 
   ResumeBookApiGatewayLatencyAlarm:
     Type: 'AWS::CloudWatch::Alarm'

@@ -1,1 +1,1 @@
-py-bcrypt
+pyjwt[crypto]
