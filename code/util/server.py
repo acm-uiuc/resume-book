@@ -58,7 +58,7 @@ def student_post_profile():
     json_body: dict = app.current_event.json_body
     json_body['email'] = email
     json_body['username'] = email
-    json_body['resumePdfUrl'] = f"s3://{RUN_ENV}/resume_{email}.pdf"
+    json_body['resumePdfUrl'] = f"s3://{S3_BUCKET}/resume_{email}.pdf"
     try:
         data = json.loads(StudentProfileDetails(**json_body).model_dump_json(), parse_float=Decimal)
         dynamo_data = convert_to_dynamodb_json(data)
