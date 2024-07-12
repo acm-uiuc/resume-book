@@ -234,6 +234,38 @@ Resources:
         AllowOrigin: "'*'"
         MaxAge: "'300'"
 
+  APIDefault4XXResponse:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      RestApiId: !Ref ResumeBookApiGateway
+      ResponseType: DEFAULT_4XX
+      StatusCode: "404"
+      ResponseParameters:
+        gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+      ResponseTemplates:
+        application/json: "{\"error\": true, \"message\": \"Resource not found. Check your URL or contact support.\"}"
+  APIAccessDeniedResponse:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      RestApiId: !Ref ResumeBookApiGateway
+      ResponseType: ACCESS_DENIED
+      StatusCode: "403"
+      ResponseParameters:
+        gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+      ResponseTemplates:
+        application/json: "{\"error\": true, \"message\": \"Access denied. Perhaps reauthenticate and try again?\"}"
+
+  APIUnauthorizedResponse:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      RestApiId: !Ref ResumeBookApiGateway
+      ResponseType: UNAUTHORIZED
+      StatusCode: "401"
+      ResponseParameters:
+        gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+      ResponseTemplates:
+        application/json: "{\"error\": true, \"message\": \"Request could not be authenticated. Perhaps reauthenticate and try again?\"}"
+
   ResumeBookApiGatewayLatencyAlarm:
     Type: 'AWS::CloudWatch::Alarm'
     Condition: IsProd
