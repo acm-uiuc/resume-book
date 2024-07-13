@@ -1,5 +1,4 @@
 from typing import List, Optional
-from numpy import number
 from pydantic import BaseModel, EmailStr, AnyUrl, HttpUrl
 
 class DegreeListing(BaseModel):
@@ -24,7 +23,7 @@ class StudentProfileDetails(BaseModel):
     resumePdfUrl: AnyUrl
 
 class ResumeUploadPresignedRequest(BaseModel):
-    file_size: number
+    file_size: int
 
 if __name__ == "__main__":
     degree = DegreeListing(
