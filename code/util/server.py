@@ -57,7 +57,7 @@ def student_get_profile():
 
 @app.post("/api/v1/student/profile")
 def student_post_profile():
-    if 'json_body' not in app.current_event or not app.current_event.json_body:
+    if 'json_body' not in app.current_event:
         return Response(status_code=403, content_type=content_types.APPLICATION_JSON, body={"message": "Error validating payload", "details": "No request body provided."})
     email = app.current_event.request_context.authorizer['username']
     json_body: dict = app.current_event.json_body
