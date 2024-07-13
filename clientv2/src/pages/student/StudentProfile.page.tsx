@@ -111,8 +111,11 @@ export function StudentHomePage() {
           setLoading(false);
           return showErrorSaveNotification("Could not upload resume.");
         } else {
-          const presignedUrl = response.data.presigned_url;
           try {
+            const presignedUrl = response.data.url;
+            if (!presignedUrl) {
+              throw new Error("No presigned URL!")
+            }
             await uploadFileToS3(presignedUrl);
           } catch {
             setLoading(false);
