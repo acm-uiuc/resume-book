@@ -22,6 +22,7 @@
     "@kinde-oss/kinde-auth-react": "^4.0.1",
     "@mantine/core": "7.11.1",
     "@mantine/hooks": "7.11.1",
+    "@mantine/notifications": "^7.11.1",
     "@tabler/icons-react": "^3.10.0",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",

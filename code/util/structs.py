@@ -22,6 +22,9 @@ class StudentProfileDetails(BaseModel):
     sponsorship_required: bool
     resumePdfUrl: AnyUrl
 
+class ResumeUploadPresignedRequest(BaseModel):
+    file_size: int
+
 if __name__ == "__main__":
     degree = DegreeListing(
         level="BS",

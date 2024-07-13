@@ -1,7 +1,11 @@
 import React, { createContext, ReactNode, useContext, useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useKindeAuth } from '@kinde-oss/kinde-auth-react';
-import { AuthenticationResult, InteractionRequiredAuthError, InteractionStatus } from '@azure/msal-browser';
+import {
+  AuthenticationResult,
+  InteractionRequiredAuthError,
+  InteractionStatus,
+} from '@azure/msal-browser';
 import { MantineProvider } from '@mantine/core';
 import FullScreenLoader from './LoadingScreen';
 
@@ -57,7 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     logout: kindeLogout,
     getToken: getKindeToken,
-    getPermission: getKindePermission
+    getPermission: getKindePermission,
   } = useKindeAuth();
 
   const [userData, setUserData] = useState<AuthContextData | null>(null);
@@ -65,11 +69,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     (isAuthenticated || accounts.length > 0) && !isLoading
   );
   if (isAuthenticated && !isLoading && !userData) {
-    const isRecruiter = getKindePermission("recruiter:resume-book").isGranted;
+    const isRecruiter = getKindePermission('recruiter:resume-book').isGranted;
     if (!isRecruiter) {
       setUserData(null);
       setIsLoggedIn(false);
-      window.location.href = "/";
+      window.location.href = '/';
     } else {
       setUserData({
         email: user?.email!,
@@ -79,7 +83,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
       setIsLoggedIn(true);
     }
-
   }
 
   useEffect(() => {
@@ -89,9 +92,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         handleMsalResponse(response);
       } else if (accounts.length > 0) {
         // User is already logged in, set the state
+        const [lastName, firstName] = accounts[0].name?.split(",")!
         setUserData({
           email: accounts[0].username,
-          name: accounts[0].name,
+          name: `${firstName} ${lastName}`,
           authenticationMethod: AuthSourceEnum.MSAL,
           role: AuthRoleEnum.STUDENT,
         });
@@ -125,16 +129,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
       try {
-        const accounts = instance.getAllAccounts();
-        if (accounts.length > 0) {
+        const msalAccounts = instance.getAllAccounts();
+        if (msalAccounts.length > 0) {
           const silentRequest = {
-            account: accounts[0],
-            scopes: [".default"], // Adjust scopes as needed
+            account: msalAccounts[0],
+            scopes: ['.default'], // Adjust scopes as needed
           };
           const tokenResponse = await instance.acquireTokenSilent(silentRequest);
           return tokenResponse.accessToken;
         } else {
-          throw new Error('No accounts found.');
+          throw new Error("More than one account found, cannot proceed.")
         }
       } catch (error) {
         console.error('Silent token acquisition failed.', error);
@@ -142,8 +146,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Fallback to interaction when silent token acquisition fails
           try {
             const interactiveRequest = {
-              scopes: [".default"], // Adjust scopes as needed
-              redirectUri: "/login", // Redirect URI after login
+              scopes: ['.default'], // Adjust scopes as needed
+              redirectUri: '/login', // Redirect URI after login
             };
             const tokenResponse: any = await instance.acquireTokenRedirect(interactiveRequest);
             return tokenResponse.accessToken;
@@ -161,7 +165,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     throw new Error('Unknown authentication method.');
   };
-  
+
   const loginMsal = () => {
     instance.loginRedirect();
   };
