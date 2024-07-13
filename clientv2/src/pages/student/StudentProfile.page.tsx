@@ -16,6 +16,7 @@ export function StudentHomePage() {
   const [unrecoverableError, setUnrecoverableError] = useState(false);
   const [studentData, setStudentData] = useState<StudentProfileDetails>();
   const [file, setFile] = useState<File | null>(null);
+  const [newUser, setNewUser] = useState<boolean>(false);
   const api = useApi();
   useEffect(() => {
     async function fetch() {
@@ -26,6 +27,10 @@ export function StudentHomePage() {
         setLoading(false);
         for (let i = 0; i < response.data.degrees.length; i++) {
           response.data.degrees[i].gpa = parseFloat(response.data.degrees[i].gpa);
+        }
+        if (response.data['defaultResponse']) {
+          response.data['name'] = userData?.name;
+          setNewUser(true);
         }
         setStudentData(response.data as StudentProfileDetails);
       } catch (err: any) {
@@ -128,6 +133,10 @@ export function StudentHomePage() {
           }
         }
       }
+      if ('defaultResponse' in studentData) {
+        delete studentData['defaultResponse'];
+        setStudentData(studentData);
+      }
       setLoading(true);
       const response = await api.post('/student/profile', studentData);
       if (response.status && response.status == 201) {
@@ -167,6 +176,7 @@ export function StudentHomePage() {
             {editToggle ? 'Save' : 'Edit'}
           </Button>
         </Container>
+        {newUser ? "Enrolling a new user" : null}
         {enrolled && studentData ? (
           <StudentProfilePage
             editable={editToggle}
@@ -177,7 +187,7 @@ export function StudentHomePage() {
             showFilePicker={editToggle}
           />
         ) : (
-          'User does not have a profile. Need to enroll.'
+          'We encountered an error. Please try again later.'
         )}
       </div>
     </>

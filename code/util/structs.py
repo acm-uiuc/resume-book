@@ -32,7 +32,7 @@ DEFAULT_USER_PROFILE = {
     "email": "someone@illinois.edu",
     "linkedin": "",
     "degrees": [],
-    "bio": "Student at the University of Illinois Urbana-Champaign Seeking Roles.",
+    "bio": "Student at the University of Illinois Urbana-Champaign seeking software engineering roles.",
     "skills": ["Python", "Java", "C++"],
     "work_auth_required": False,
     "sponsorship_required": False,
