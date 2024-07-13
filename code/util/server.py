@@ -46,6 +46,8 @@ def student_get_profile():
         if 'Item' in resp:
             profile_data = resp['Item']
         else:
+            DEFAULT_USER_PROFILE['username'] = username
+            DEFAULT_USER_PROFILE['email'] = username
             return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=DEFAULT_USER_PROFILE)
     except Exception as e:
         print(traceback.format_exc(), flush=True)

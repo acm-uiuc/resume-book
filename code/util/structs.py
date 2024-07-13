@@ -26,12 +26,13 @@ class ResumeUploadPresignedRequest(BaseModel):
     file_size: int
 
 DEFAULT_USER_PROFILE = {
+    "defaultResponse": True,
     "username": "someone@illinois.edu",
     "name": "John Doe",
     "email": "someone@illinois.edu",
     "linkedin": "",
     "degrees": [],
-    "bio": "Write a compelling bio about your skills and experience.",
+    "bio": "Student at the University of Illinois Urbana-Champaign Seeking Roles.",
     "skills": ["Python", "Java", "C++"],
     "work_auth_required": False,
     "sponsorship_required": False,
