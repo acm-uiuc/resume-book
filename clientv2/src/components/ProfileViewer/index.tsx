@@ -132,12 +132,15 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
       ...newDegrees[index],
       [field]: value,
     };
+    if (field === 'level') {
+      newDegrees[index].major = [];
+    }
     handleInputChange('degrees', newDegrees);
   };
 
   const addDegree = () => {
     const newDegree: DegreeListing = {
-      level: 'BS',
+      level: 'Bachelor\'s',
       yearStarted: new Date().getFullYear() - 4,
       yearEnded: new Date().getFullYear(),
       institution: 'University of Illinois Urbana-Champaign',
@@ -232,13 +235,17 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                               handleDegreeChange(index, 'level', value);
                             }}
                             data={degreeOptions.map((option) => ({ value: option, label: option }))}
+                            withAsterisk
+                            allowDeselect={false}
                           />
-                          <Autocomplete
+                          <Select
                             label="Major"
-                            value={degree.major.join(', ')}
-                            onChange={(e) => handleDegreeChange(index, 'major', e.split(', '))}
+                            value={degree.major[0]}
+                            onChange={(e) => handleDegreeChange(index, 'major', e?.split(', '))}
                             data={majorOptions[degree.level] || []}
                             withAsterisk
+                            required
+                            allowDeselect={false}
                           />
                           <Autocomplete
                             label="Institution"
@@ -247,24 +254,33 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                             data={institutionOptions}
                             withAsterisk
                           />
-                          <TextInput
+                          <NumberInput
                             label="Year Started"
-                            value={degree.yearStarted.toString()}
+                            value={degree.yearStarted}
+                            min={0}
+                            max={new Date().getFullYear() + 10}
                             onChange={(e) =>
-                              handleDegreeChange(index, 'yearStarted', parseInt(e.target.value))
+                              handleDegreeChange(index, 'yearStarted', e)
                             }
                             withAsterisk
+                            required
+                            clampBehavior="strict"
+                            allowNegative={false}
+                            hideControls
                           />
-                          <TextInput
+                          <NumberInput
                             label="Year Ended (or prospective)"
-                            value={degree.yearEnded?.toString() || ''}
+                            value={degree.yearEnded}
+                            min={0}
+                            max={new Date().getFullYear() + 10}
                             onChange={(e) =>
-                              handleDegreeChange(
-                                index,
-                                'yearEnded',
-                                e.target.value ? parseInt(e.target.value) : undefined
-                              )
+                              handleDegreeChange(index, 'yearEnded', e)
                             }
+                            withAsterisk
+                            required
+                            clampBehavior="strict"
+                            allowNegative={false}
+                            hideControls
                           />
                           <NumberInput
                             label="GPA"
@@ -290,7 +306,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                       ) : (
                         <>
                           <Text>
-                            {degree.level} in {degree.major.join(', ')}
+                            {degree.level} in {degree.major}
                           </Text>
                           <Text size="xs">{degree.institution}</Text>
                           <Group>

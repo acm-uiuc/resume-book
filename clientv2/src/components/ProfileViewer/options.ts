@@ -1,5 +1,4 @@
-export const institutionOptions = [
-  'University of Illinois Urbana-Champaign',
+const otherInstitutionOptions = [
   'Massachusetts Institute of Technology (MIT)',
   'Stanford University',
   'Carnegie Mellon University',
@@ -14,6 +13,8 @@ export const institutionOptions = [
   'University of Michigan, Ann Arbor',
   'University of California, San Diego',
   'University of Wisconsin-Madison',
+  'University of Illinois Springfield',
+  'University of Illinois Chicago',
   'Georgia Institute of Technology',
   'University of California, Irvine',
   'University of Southern California',
@@ -51,6 +52,8 @@ export const institutionOptions = [
   'Indiana University Bloomington',
 ];
 
+export const institutionOptions = ['University of Illinois Urbana-Champaign', ...otherInstitutionOptions.sort()]
+
 const csPlusXMajors = [
   'Computer Science + Animal Sciences',
   'Computer Science + Crop Sciences',
@@ -70,24 +73,9 @@ const csPlusXMajors = [
   'Statistics & Computer Science',
 ];
 
-export const degreeOptions = [
-  'BS',
-  'BSLAS',
-  'BS/MS',
-  'BS/MCS',
-  "Master's (Thesis)",
-  "Master's (Non-Thesis)",
-  'PhD',
-];
-export type DegreeLevel = (typeof degreeOptions)[number];
-const commonMajorsBS = ['Computer Science', 'Computer Engineering', 'Electrical Engineering'];
+const commonMajors = ['Computer Science', 'Computer Engineering', 'Electrical Engineering', 'Mathematics'];
 
-const commonMajorsBSLAS = ['Mathematics'];
-
-const commonMajorsMasters = ['Computer Science', 'Mathematics'];
-
-const allMajorsBS = [
-  ...commonMajorsBS,
+const otherMajors = [
   'Accountancy',
   'Advertising',
   'Aerospace Engineering',
@@ -176,136 +164,19 @@ const allMajorsBS = [
   'Writing Studies',
 ];
 
-const allMajorsBSLAS = [
-  ...csPlusXMajors,
-  ...commonMajorsBSLAS,
-  'Actuarial Science',
-  'African American Studies',
-  'Anthropology',
-  'Astronomy',
-  'Atmospheric Sciences',
-  'Biochemistry',
-  'Biology',
-  'Chemistry',
-  'Classics',
-  'Comparative and World Literature',
-  'Earth, Society, and Environmental Sustainability',
-  'Economics',
-  'English',
-  'French',
-  "Gender and Women's Studies",
-  'Geography and Geographic Information Science',
-  'Geology',
-  'Germanic Languages and Literatures',
-  'History',
-  'Integrative Biology',
-  'Italian',
-  'Latin American Studies',
-  'Latina/Latino Studies',
-  'Linguistics',
-  'Mathematics and Computer Science',
-  'Molecular and Cellular Biology',
-  'Philosophy',
-  'Physics',
-  'Political Science',
-  'Portuguese',
-  'Psychology',
-  'Religion',
-  'Russian, East European, and Eurasian Studies',
-  'Sociology',
-  'Spanish',
-  'Statistics',
+export const degreeOptions = [
+  'Associate\'s',
+  `Bachelor's`,
+  "Master's (Thesis)",
+  "Master's (Non-Thesis)",
+  'PhD'
 ];
+export type DegreeLevel = (typeof degreeOptions)[number];
 
-const allMajorsMastersThesis = [
-  ...commonMajorsMasters,
-  'Aerospace Engineering',
-  'Agricultural and Biological Engineering',
-  'Animal Sciences',
-  'Bioengineering',
-  'Business Administration',
-  'Chemical and Biomolecular Engineering',
-  'Civil and Environmental Engineering',
-  'Crop Sciences',
-  'Electrical and Computer Engineering',
-  'Entomology',
-  'Food Science and Human Nutrition',
-  'Geology',
-  'Human Development and Family Studies',
-  'Industrial and Enterprise Systems Engineering',
-  'Materials Science and Engineering',
-  'Mechanical Engineering',
-  'Microbiology',
-  'Natural Resources and Environmental Sciences',
-  'Neuroscience',
-  'Nuclear, Plasma, and Radiological Engineering',
-  'Physics',
-  'Plant Biology',
-  'Psychology',
-  'Statistics',
-];
-
-const allMajorsMastersNonThesis = [
-  ...commonMajorsMasters,
-  'Aerospace Engineering',
-  'Agricultural and Biological Engineering',
-  'Animal Sciences',
-  'Bioengineering',
-  'Business Administration',
-  'Chemical and Biomolecular Engineering',
-  'Civil and Environmental Engineering',
-  'Crop Sciences',
-  'Electrical and Computer Engineering',
-  'Entomology',
-  'Food Science and Human Nutrition',
-  'Geology',
-  'Human Development and Family Studies',
-  'Industrial and Enterprise Systems Engineering',
-  'Materials Science and Engineering',
-  'Mechanical Engineering',
-  'Microbiology',
-  'Natural Resources and Environmental Sciences',
-  'Neuroscience',
-  'Nuclear, Plasma, and Radiological Engineering',
-  'Physics',
-  'Plant Biology',
-  'Psychology',
-  'Statistics',
-];
-
-const allMajorsPhD = [
-  ...commonMajorsMasters,
-  'Aerospace Engineering',
-  'Agricultural and Biological Engineering',
-  'Animal Sciences',
-  'Bioengineering',
-  'Chemical and Biomolecular Engineering',
-  'Civil and Environmental Engineering',
-  'Crop Sciences',
-  'Electrical and Computer Engineering',
-  'Entomology',
-  'Food Science and Human Nutrition',
-  'Geology',
-  'Human Development and Family Studies',
-  'Industrial and Enterprise Systems Engineering',
-  'Materials Science and Engineering',
-  'Mechanical Engineering',
-  'Microbiology',
-  'Natural Resources and Environmental Sciences',
-  'Neuroscience',
-  'Nuclear, Plasma, and Radiological Engineering',
-  'Physics',
-  'Plant Biology',
-  'Psychology',
-  'Statistics',
-];
-
-export const majorOptions: Record<DegreeLevel, string[]> = {
-  BS: allMajorsBS,
-  BSLAS: allMajorsBSLAS,
-  'BS/MS': ['Computer Science'],
-  'BS/MCS': ['Computer Science'],
-  'Masters (Thesis)': allMajorsMastersThesis,
-  'Masters (Non-Thesis)': allMajorsMastersNonThesis,
-  PhD: allMajorsPhD,
+export const majorOptions: Record<DegreeLevel, any> = {
+  'Associate\'s': [{"group": "Common Majors", items: commonMajors}, {"group": "Other Majors", items: otherMajors}],
+  'Bachelor\'s': [{"group": "Common Majors", items: [...commonMajors, ...csPlusXMajors]}, {"group": "Other Majors", items: otherMajors}],
+  'Master\'s (Thesis)': [{"group": "Common Majors", items: commonMajors}, {"group": "Other Majors", items: otherMajors}],
+  'Master\'s (Non-Thesis)': [{"group": "Common Majors", items: commonMajors}, {"group": "Other Majors", items: otherMajors}],
+  'PhD': [{"group": "Common Majors", items: commonMajors}, {"group": "Other Majors", items: otherMajors}],
 };
