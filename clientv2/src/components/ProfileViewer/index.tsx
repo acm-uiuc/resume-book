@@ -346,15 +346,16 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                 {editable ? (
                   <>
                     <Checkbox
-                      label="Work Authorization Required?"
+                      label="Work Authorization Required"
                       checked={studentProfile.work_auth_required}
                       onChange={(e) =>
                         handleInputChange('work_auth_required', e.currentTarget.checked)
                       }
                     />
                     <Checkbox
-                      label="Sponsorship Required?"
+                      label="Sponsorship Required"
                       checked={studentProfile.sponsorship_required}
+                      style={{marginTop: '0.25em'}}
                       onChange={(e) =>
                         handleInputChange('sponsorship_required', e.currentTarget.checked)
                       }
