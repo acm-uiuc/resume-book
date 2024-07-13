@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, memo } from 'react';
+import React, { useState, useMemo, useCallback, memo, useEffect } from 'react';
 import {
   Container,
   Text,
@@ -82,7 +82,10 @@ const PdfViewer: React.FC<{ url: File | string, file: File | null, setFile: Call
     setError('Failed to load PDF document.');
     console.error('Error loading PDF document:', error);
   }, []);
-
+  const [fileLoaded, setFileLoaded] = useState<boolean>(file == null)
+  useEffect(() => {
+    setFileLoaded(file instanceof Blob);
+  }, [file])
   return (
     <Box style={{ height: '100vh', minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
       {error && <Text color="red">{error}</Text>}
@@ -97,7 +100,7 @@ const PdfViewer: React.FC<{ url: File | string, file: File | null, setFile: Call
       >
         <Box
           style={{
-            border: '2px solid #FF5F05',
+            border: fileLoaded ? '2px dashed #FF5F05' : '2px solid #FF5F05',
             borderRadius: '4px',
             padding: '8px',
             display: 'inline-block',
