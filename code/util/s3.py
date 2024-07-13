@@ -51,7 +51,8 @@ def create_presigned_url_for_put(bucket_name, object_key, file_size, expiration=
                                                     Params={
                                                         'Bucket': bucket_name,
                                                         'Key': object_key,
-                                                        'ContentLength': file_size
+                                                        'ContentLength': file_size,
+                                                        'ContentType': 'application/pdf'
                                                     },
                                                     ExpiresIn=expiration)
     except Exception:

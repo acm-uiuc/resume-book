@@ -82,7 +82,7 @@ export function StudentHomePage() {
         method: 'PUT',
         body: file,
         headers: {
-          'Content-Type': file.type,
+          'Content-Type': 'application/pdf',
           'Content-Length': file.size.toString(),
         },
       });
@@ -109,6 +109,7 @@ export function StudentHomePage() {
         const response = await api.post('/student/resume_upload_url', {"file_size": file.size});
         if (response.status != 200) {
           setLoading(false);
+          setFile(null);
           return showErrorSaveNotification("Could not upload resume.");
         } else {
           try {
@@ -116,9 +117,13 @@ export function StudentHomePage() {
             if (!presignedUrl) {
               throw new Error("No presigned URL!")
             }
-            await uploadFileToS3(presignedUrl);
+            const s3Response = await uploadFileToS3(presignedUrl);
+            if (s3Response?.status !== 200) {
+              throw new Error("S3 failed to upload.")
+            }
           } catch {
             setLoading(false);
+            setFile(null);
             return showErrorSaveNotification("Could not upload resume.");
           }
         }
