@@ -8,7 +8,7 @@ import json
 from decimal import Decimal
 
 from util.dynamo import convert_to_dynamodb_json, convert_from_dynamodb_json
-from util.structs import ResumeUploadPresignedRequest, StudentProfileDetails
+from util.structs import DEFAULT_USER_PROFILE, ResumeUploadPresignedRequest, StudentProfileDetails
 from util.environ import get_run_environment
 from util.s3 import create_presigned_url_for_put, create_presigned_url_from_s3_url
 from util.logging import get_logger
@@ -46,7 +46,7 @@ def student_get_profile():
         if 'Item' in resp:
             profile_data = resp['Item']
         else:
-            return Response(status_code=404, content_type=content_types.APPLICATION_JSON, body={"message": f"No profile found for {username}"})
+            return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=DEFAULT_USER_PROFILE)
     except Exception as e:
         print(traceback.format_exc(), flush=True)
         return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error getting profile data", "details": str(e)})

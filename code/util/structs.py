@@ -25,6 +25,20 @@ class StudentProfileDetails(BaseModel):
 class ResumeUploadPresignedRequest(BaseModel):
     file_size: int
 
+DEFAULT_USER_PROFILE = {
+    "username": "someone@illinois.edu",
+    "name": "John Doe",
+    "email": "someone@illinois.edu",
+    "linkedin": "",
+    "degrees": [],
+    "bio": "Write a compelling bio about your skills and experience.",
+    "skills": ["Python", "Java", "C++"],
+    "work_auth_required": False,
+    "sponsorship_required": False,
+    "resumePdfUrl": ""
+}
+
+
 if __name__ == "__main__":
     degree = DegreeListing(
         level="BS",
