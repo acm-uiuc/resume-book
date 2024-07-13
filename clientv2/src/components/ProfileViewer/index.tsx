@@ -1,11 +1,39 @@
 import React, { useState, useMemo, useCallback, memo } from 'react';
-import { Container, Text, Title, Group, Stack, Badge, Anchor, List, ThemeIcon, Grid, Box, Button, TextInput, Textarea, Select, Checkbox, NumberInput, Autocomplete } from '@mantine/core';
-import { IconBrandLinkedin, IconMail, IconSchool, IconBriefcase, IconUser, IconCertificate, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import {
+  Container,
+  Text,
+  Title,
+  Group,
+  Stack,
+  Badge,
+  Anchor,
+  List,
+  ThemeIcon,
+  Grid,
+  Box,
+  Button,
+  TextInput,
+  Textarea,
+  Select,
+  Checkbox,
+  NumberInput,
+  Autocomplete,
+} from '@mantine/core';
+import {
+  IconBrandLinkedin,
+  IconMail,
+  IconSchool,
+  IconBriefcase,
+  IconUser,
+  IconCertificate,
+  IconChevronLeft,
+  IconChevronRight,
+} from '@tabler/icons-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { institutionOptions, degreeOptions, DegreeLevel, majorOptions } from './options';
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
+  import.meta.url
 ).toString();
 
 export interface DegreeListing {
@@ -67,11 +95,19 @@ const PdfViewer: React.FC<{ url: string }> = memo(({ url }) => {
         </Box>
       </Document>
       <Group mt="md">
-        <Button onClick={() => setPageNumber((page) => Math.max(page - 1, 1))} disabled={pageNumber <= 1}>
+        <Button
+          onClick={() => setPageNumber((page) => Math.max(page - 1, 1))}
+          disabled={pageNumber <= 1}
+        >
           Previous
         </Button>
-        <Text>Page {pageNumber} of {numPages}</Text>
-        <Button onClick={() => setPageNumber((page) => Math.min(page + 1, numPages))} disabled={pageNumber >= numPages}>
+        <Text>
+          Page {pageNumber} of {numPages}
+        </Text>
+        <Button
+          onClick={() => setPageNumber((page) => Math.min(page + 1, numPages))}
+          disabled={pageNumber >= numPages}
+        >
           Next
         </Button>
       </Group>
@@ -79,7 +115,11 @@ const PdfViewer: React.FC<{ url: string }> = memo(({ url }) => {
   );
 });
 
-const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile, editable, setStudentProfile }) => {
+const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
+  studentProfile,
+  editable,
+  setStudentProfile,
+}) => {
   const handleInputChange = (field: keyof StudentProfileDetails, value: any) => {
     setStudentProfile({
       ...studentProfile,
@@ -98,13 +138,13 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
 
   const addDegree = () => {
     const newDegree: DegreeListing = {
-      level: "BS",
+      level: 'BS',
       yearStarted: new Date().getFullYear() - 4,
       yearEnded: new Date().getFullYear(),
       institution: 'University of Illinois Urbana-Champaign',
       major: [],
       minor: [],
-      gpa: 4.00,
+      gpa: 4.0,
     };
     handleInputChange('degrees', [...studentProfile.degrees, newDegree]);
   };
@@ -122,7 +162,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
       gpa = gpa.slice(0, -1);
     }
     return parseFloat(gpa);
-  }
+  };
   return (
     <Container fluid style={{ marginTop: '2vh' }}>
       <Grid gutter="sm">
@@ -189,8 +229,10 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                           <Select
                             label="Degree Level"
                             value={degree.level}
-                            onChange={(value) => {handleDegreeChange(index, 'level', value);}}
-                            data={degreeOptions.map(option => ({ value: option, label: option }))}
+                            onChange={(value) => {
+                              handleDegreeChange(index, 'level', value);
+                            }}
+                            data={degreeOptions.map((option) => ({ value: option, label: option }))}
                           />
                           <Autocomplete
                             label="Major"
@@ -209,13 +251,21 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                           <TextInput
                             label="Year Started"
                             value={degree.yearStarted.toString()}
-                            onChange={(e) => handleDegreeChange(index, 'yearStarted', parseInt(e.target.value))}
+                            onChange={(e) =>
+                              handleDegreeChange(index, 'yearStarted', parseInt(e.target.value))
+                            }
                             withAsterisk
                           />
                           <TextInput
                             label="Year Ended (or prospective)"
                             value={degree.yearEnded?.toString() || ''}
-                            onChange={(e) => handleDegreeChange(index, 'yearEnded', e.target.value ? parseInt(e.target.value) : undefined)}
+                            onChange={(e) =>
+                              handleDegreeChange(
+                                index,
+                                'yearEnded',
+                                e.target.value ? parseInt(e.target.value) : undefined
+                              )
+                            }
                           />
                           <NumberInput
                             label="GPA"
@@ -229,13 +279,20 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                             onChange={(e) => handleDegreeChange(index, 'gpa', e)}
                             withAsterisk
                           />
-                          <Button onClick={() => removeDegree(index)} style={{marginTop: "0.5em"}} color="red" fullWidth>
+                          <Button
+                            onClick={() => removeDegree(index)}
+                            style={{ marginTop: '0.5em' }}
+                            color="red"
+                            fullWidth
+                          >
                             Remove
                           </Button>
                         </>
                       ) : (
                         <>
-                          <Text>{degree.level} in {degree.major.join(', ')}</Text>
+                          <Text>
+                            {degree.level} in {degree.major.join(', ')}
+                          </Text>
                           <Text size="xs">{degree.institution}</Text>
                           <Group>
                             <Text size="xs" color="dimmed">
@@ -292,21 +349,27 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                     <Checkbox
                       label="Work Authorization Required?"
                       checked={studentProfile.work_auth_required}
-                      onChange={(e) => handleInputChange('work_auth_required', e.currentTarget.checked)}
+                      onChange={(e) =>
+                        handleInputChange('work_auth_required', e.currentTarget.checked)
+                      }
                     />
                     <Checkbox
                       label="Sponsorship Required?"
                       checked={studentProfile.sponsorship_required}
-                      onChange={(e) => handleInputChange('sponsorship_required', e.currentTarget.checked)}
+                      onChange={(e) =>
+                        handleInputChange('sponsorship_required', e.currentTarget.checked)
+                      }
                     />
                   </>
                 ) : (
                   <List spacing="xs" size="sm">
                     <List.Item>
-                      Work Authorization Required? <b>{studentProfile.work_auth_required ? 'Yes' : 'No'}</b>
+                      Work Authorization Required?{' '}
+                      <b>{studentProfile.work_auth_required ? 'Yes' : 'No'}</b>
                     </List.Item>
                     <List.Item>
-                      Sponsorship Required? <b>{studentProfile.sponsorship_required ? 'Yes' : 'No'}</b>
+                      Sponsorship Required?{' '}
+                      <b>{studentProfile.sponsorship_required ? 'Yes' : 'No'}</b>
                     </List.Item>
                   </List>
                 )}

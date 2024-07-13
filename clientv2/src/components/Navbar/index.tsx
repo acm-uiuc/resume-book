@@ -4,23 +4,25 @@ import { Group, Divider, Box, Burger, Drawer, ScrollArea, rem, Badge } from '@ma
 import { useDisclosure } from '@mantine/hooks';
 import classes from './index.module.css';
 import LogoBadge from './Logo';
-import { AuthContextData, AuthSourceEnum } from '../AuthContext';
+import { AuthContextData, AuthRoleEnum, AuthSourceEnum } from '../AuthContext';
 import { AuthenticatedProfileDropdown } from '../ProfileDropdown';
 
 interface HeaderNavbarProps {
   userData?: AuthContextData | null;
 }
 
+const isActiveLink = (path: string) => location.pathname === path;
+
 const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   let badge = null;
-  if (userData?.authenticationMethod === AuthSourceEnum.LOCAL) {
+  if (userData?.role === AuthRoleEnum.RECRUITER) {
     badge = (
       <Badge color="blue" style={{ marginLeft: 10 }}>
         Recruiter
       </Badge>
     );
-  } else if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
+  } else if (userData?.role === AuthRoleEnum.STUDENT) {
     badge = (
       <Badge color="#FF5F05" style={{ marginLeft: 10 }}>
         Student
@@ -34,9 +36,16 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
           <Group justify="start" h="100%" gap={10}>
             <LogoBadge />
             {badge}
-            <a href="/" className={classes.link}>
-              Home
-            </a>
+            {userData?.role !== AuthRoleEnum.STUDENT ? (
+              <a href="/" className={classes.link}>
+                Home
+              </a>
+            ) : null}
+            {userData?.role === AuthRoleEnum.STUDENT ? (
+              <a href="/profile" className={classes.link}>
+                My Profile
+              </a>
+            ) : null}
           </Group>
           <Group h="100%" justify="end" gap={10} visibleFrom="sm">
             {userData ? <AuthenticatedProfileDropdown userData={userData} /> : null}

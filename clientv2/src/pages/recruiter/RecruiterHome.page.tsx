@@ -10,7 +10,7 @@ export function RecruiterHomePage() {
       return;
     }
     console.log(await getToken());
-  }
+  };
   return (
     <>
       <HeaderNavbar userData={userData} />

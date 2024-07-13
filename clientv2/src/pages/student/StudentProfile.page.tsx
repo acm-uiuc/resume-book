@@ -20,7 +20,7 @@ export function StudentHomePage() {
     async function fetch() {
       setLoading(true);
       try {
-        const response = await api.get("/student/profile");
+        const response = await api.get('/student/profile');
         setEnrolled(response.status === 200);
         setLoading(false);
         for (let i = 0; i < response.data['degrees'].length; i++) {
@@ -40,11 +40,14 @@ export function StudentHomePage() {
     if (userData) {
       fetch();
     }
-  }, [userData])
+  }, [userData]);
   if (loading) {
-    return <FullScreenLoader />
+    return <FullScreenLoader />;
   }
-  if (studentData && !studentData?.name || studentData?.name === "" && userData && userData.name) {
+  if (
+    (studentData && !studentData?.name) ||
+    (studentData?.name === '' && userData && userData.name)
+  ) {
     studentData.name = userData!.name!;
     setStudentData(studentData);
   }
@@ -53,7 +56,7 @@ export function StudentHomePage() {
       color: 'red',
       title: 'Error saving profile',
       message: message || 'Please try again or contact support.',
-    })
+    });
   }
 
   function isValidLinkedInProfile(url: string) {
@@ -71,25 +74,25 @@ export function StudentHomePage() {
       return false;
     }
   }
-  
+
   async function saveData() {
     if (!studentData) {
       return showErrorSaveNotification();
-    };
+    }
     if (!isValidLinkedInProfile(studentData?.linkedin)) {
-      return showErrorSaveNotification("LinkedIn field is not a valid LinkedIn URL.");
+      return showErrorSaveNotification('LinkedIn field is not a valid LinkedIn URL.');
     }
     try {
       setLoading(true);
-      const response = await api.post("/student/profile", studentData);
+      const response = await api.post('/student/profile', studentData);
       if (response.status && response.status == 201) {
         notifications.show({
           title: 'Profile saved!',
-          message: ''
-        })
+          message: '',
+        });
         setEditToggle(false);
       } else {
-        showErrorSaveNotification()
+        showErrorSaveNotification();
       }
     } catch (err: any) {
       showErrorSaveNotification();
@@ -102,20 +105,29 @@ export function StudentHomePage() {
     } else {
       setEditToggle(true);
     }
-  }
+  };
   if (unrecoverableError) {
-    return <FullPageError />
+    return <FullPageError />;
   }
   return (
     <>
       <HeaderNavbar userData={userData} />
-      <Container>
-      </Container>
-      <div style={{ display: 'flex', flexDirection: "column" }}>
+      <Container></Container>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Container>
-          <Button onClick={toggleEdit} style={{marginTop: '1em'}}>{editToggle ? "Save" : "Edit"}</Button>
+          <Button onClick={toggleEdit} style={{ marginTop: '1em' }}>
+            {editToggle ? 'Save' : 'Edit'}
+          </Button>
         </Container>
-        {enrolled && studentData ?  <StudentProfilePage editable={editToggle} studentProfile={studentData} setStudentProfile={setStudentData}/> : "User does not have a profile. Need to enroll."}
+        {enrolled && studentData ? (
+          <StudentProfilePage
+            editable={editToggle}
+            studentProfile={studentData}
+            setStudentProfile={setStudentData}
+          />
+        ) : (
+          'User does not have a profile. Need to enroll.'
+        )}
       </div>
     </>
   );
