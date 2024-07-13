@@ -83,9 +83,9 @@ def student_get_s3_presigned():
         return Response(status_code=403, content_type=content_types.APPLICATION_JSON, body={"message": "Error validating payload", "details": str(e)})
     except Exception as e:
         print(traceback.format_exc(), flush=True)
-        return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error storing profile data", "details": str(e)})
+        return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error creating S3 URL", "details": str(e)})
     if data['file_size'] > 1.5e7: # 15 MB
-        return Response(status_code=413, content_type=content_types.APPLICATION_JSON, body={"message": "Payload too big", "details": "Resume PDF cannot be larger than 15 MB."})
+        return Response(status_code=413, content_type=content_types.APPLICATION_JSON, body={"message": "Error creating S3 URL", "details": "Resume PDF cannot be larger than 15 MB."})
     presigned_url = create_presigned_url_for_put(bucket_name=S3_BUCKET, object_key=f"resume_{username}.pdf", file_size=data['file_size'])
     return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body={"message": "URL created", "url": presigned_url})
 
