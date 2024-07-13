@@ -68,19 +68,28 @@ interface StudentProfilePageProps {
   showFilePicker: boolean;
 }
 
-const PdfViewer: React.FC<{ url: string, file: File | null, setFile: CallableFunction, showFilePicker: boolean }> = memo(({ url, file, setFile, showFilePicker }) => {
+const PdfViewer: React.FC<{ url: File | string, file: File | null, setFile: CallableFunction, showFilePicker: boolean }> = memo(({ url, file, setFile, showFilePicker }) => {
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
+  const [error, setError] = useState<string | null>(null);
 
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
+    setError(null);
+  }, []);
+
+  const onDocumentLoadError = useCallback((error: any) => {
+    setError('Failed to load PDF document.');
+    console.error('Error loading PDF document:', error);
   }, []);
 
   return (
     <Box style={{ height: '100vh', minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
+      {error && <Text color="red">{error}</Text>}
       <Document
-        file={(file?.size && file?.size > 0) ? file : url}
+        file={url}
         onLoadSuccess={onDocumentLoadSuccess}
+        onLoadError={onDocumentLoadError}
         options={{
           cMapUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/cmaps/',
           cMapPacked: true,
@@ -169,8 +178,6 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
   };
 
   const memoizedPdfUrl = useMemo(() => studentProfile.resumePdfUrl, [studentProfile.resumePdfUrl]);
-  const memoizedFile = useMemo(() => file, [file]);
-  const memoizedSetFile = useMemo(() => setFile, [setFile]);
 
   const processGPA = (gpaUnparsed: number) => {
     let gpa = gpaUnparsed.toString();
@@ -409,7 +416,9 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
         </Grid.Col>
 
         <Grid.Col span={8}>
-          <PdfViewer url={memoizedPdfUrl} file={memoizedFile} setFile={memoizedSetFile} showFilePicker={showFilePicker}/>
+          {file && file.size > 0 && file.type === "application/pdf" ? <PdfViewer url={file} file={file} setFile={setFile} showFilePicker={showFilePicker}/> : 
+          <PdfViewer url={memoizedPdfUrl} file={file} setFile={setFile} showFilePicker={showFilePicker}/>}
+          
         </Grid.Col>
       </Grid>
     </Container>

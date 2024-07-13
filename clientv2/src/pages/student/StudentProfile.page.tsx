@@ -143,6 +143,7 @@ export function StudentHomePage() {
       showErrorSaveNotification();
     }
     setLoading(false);
+    window.location.reload();
   }
   const toggleEdit = () => {
     if (editToggle) {
