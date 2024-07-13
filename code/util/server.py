@@ -75,11 +75,9 @@ def student_post_profile():
 
 @app.post("/api/v1/student/resume_upload_url")
 def student_get_s3_presigned():
-    if 'json_body' not in app.current_event or not app.current_event.json_body:
-        return Response(status_code=403, content_type=content_types.APPLICATION_JSON, body={"message": "Error validating payload", "details": "No request body provided."})
     try:
         username = app.current_event.request_context.authorizer['username']
-        json_body: dict = app.current_event.json_body
+        json_body: dict = app.current_event.json_body or {}
         data = json.loads(ResumeUploadPresignedRequest(**json_body).model_dump_json(), parse_float=Decimal)
     except pydantic.ValidationError as e:
         return Response(status_code=403, content_type=content_types.APPLICATION_JSON, body={"message": "Error validating payload", "details": str(e)})
