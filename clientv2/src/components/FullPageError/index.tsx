@@ -7,8 +7,7 @@ interface FullPageErrorProps {
   onRetry?: MouseEventHandler<HTMLButtonElement>;
 }
 
-const FullPageError: React.FC<FullPageErrorProps> = ({ errorCode, errorMessage, onRetry }) => {
-  return (
+const FullPageError: React.FC<FullPageErrorProps> = ({ errorCode, errorMessage, onRetry }) => (
     <Container>
       <Paper shadow="md" radius="md">
         <Title>{errorCode || 'An error occurred'}</Title>
@@ -23,6 +22,5 @@ const FullPageError: React.FC<FullPageErrorProps> = ({ errorCode, errorMessage, 
       </Paper>
     </Container>
   );
-};
 
 export default FullPageError;

@@ -1,12 +1,12 @@
+import { useEffect, useState } from 'react';
+import { Button, Container, Grid } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { useAuth } from '@/components/AuthContext';
 import { HeaderNavbar } from '@/components/Navbar';
 import { useApi } from '@/util/api';
-import { useEffect, useState } from 'react';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileViewer';
-import { Button, Container, Grid } from '@mantine/core';
 import FullPageError from '@/components/FullPageError';
-import { notifications } from '@mantine/notifications';
 
 export function StudentHomePage() {
   const { userData } = useAuth();
@@ -14,7 +14,7 @@ export function StudentHomePage() {
   const [enrolled, setEnrolled] = useState(false);
   const [editToggle, setEditToggle] = useState(false);
   const [unrecoverableError, setUnrecoverableError] = useState(false);
-  let [studentData, setStudentData] = useState<StudentProfileDetails>();
+  const [studentData, setStudentData] = useState<StudentProfileDetails>();
   const api = useApi();
   useEffect(() => {
     async function fetch() {
@@ -23,8 +23,8 @@ export function StudentHomePage() {
         const response = await api.get('/student/profile');
         setEnrolled(response.status === 200);
         setLoading(false);
-        for (let i = 0; i < response.data['degrees'].length; i++) {
-          response.data['degrees'][i].gpa = parseFloat(response.data['degrees'][i].gpa);
+        for (let i = 0; i < response.data.degrees.length; i++) {
+          response.data.degrees[i].gpa = parseFloat(response.data.degrees[i].gpa);
         }
         setStudentData(response.data as StudentProfileDetails);
       } catch (err: any) {
@@ -70,9 +70,8 @@ export function StudentHomePage() {
         }
       }
       return true;
-    } else {
-      return false;
     }
+      return false;
   }
 
   async function saveData() {

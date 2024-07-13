@@ -26,11 +26,10 @@ import {
   IconBriefcase,
   IconUser,
   IconCertificate,
-  IconChevronLeft,
-  IconChevronRight,
 } from '@tabler/icons-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { institutionOptions, degreeOptions, DegreeLevel, majorOptions } from './options';
+
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url

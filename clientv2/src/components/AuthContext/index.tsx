@@ -92,9 +92,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         handleMsalResponse(response);
       } else if (accounts.length > 0) {
         // User is already logged in, set the state
+        const [lastName, firstName] = accounts[0].name?.split(",")!
         setUserData({
           email: accounts[0].username,
-          name: accounts[0].name,
+          name: `${firstName} ${lastName}`,
           authenticationMethod: AuthSourceEnum.MSAL,
           role: AuthRoleEnum.STUDENT,
         });
@@ -128,16 +129,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
       try {
-        const accounts = instance.getAllAccounts();
-        if (accounts.length > 0) {
+        const msalAccounts = instance.getAllAccounts();
+        if (msalAccounts.length > 0) {
           const silentRequest = {
-            account: accounts[0],
+            account: msalAccounts[0],
             scopes: ['.default'], // Adjust scopes as needed
           };
           const tokenResponse = await instance.acquireTokenSilent(silentRequest);
           return tokenResponse.accessToken;
         } else {
-          throw new Error('No accounts found.');
+          throw new Error("More than one account found, cannot proceed.")
         }
       } catch (error) {
         console.error('Silent token acquisition failed.', error);
