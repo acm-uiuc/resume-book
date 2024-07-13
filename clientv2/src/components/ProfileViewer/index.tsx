@@ -18,6 +18,7 @@ import {
   Checkbox,
   NumberInput,
   Autocomplete,
+  FileButton,
 } from '@mantine/core';
 import {
   IconBrandLinkedin,
@@ -62,9 +63,12 @@ interface StudentProfilePageProps {
   studentProfile: StudentProfileDetails;
   editable: boolean;
   setStudentProfile: CallableFunction;
+  file: File | null;
+  setFile: CallableFunction;
+  showFilePicker: boolean;
 }
 
-const PdfViewer: React.FC<{ url: string }> = memo(({ url }) => {
+const PdfViewer: React.FC<{ url: string, file: File | null, setFile: CallableFunction, showFilePicker: boolean }> = memo(({ url, file, setFile, showFilePicker }) => {
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
 
@@ -75,7 +79,7 @@ const PdfViewer: React.FC<{ url: string }> = memo(({ url }) => {
   return (
     <Box style={{ height: '100vh', minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
       <Document
-        file={url}
+        file={(file?.size && file?.size > 0) ? file : url}
         onLoadSuccess={onDocumentLoadSuccess}
         options={{
           cMapUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/cmaps/',
@@ -109,6 +113,10 @@ const PdfViewer: React.FC<{ url: string }> = memo(({ url }) => {
         >
           Next
         </Button>
+        {showFilePicker ? 
+        <FileButton onChange={(payload) => {setFile(payload)}} accept="application/pdf">
+          {(props) => <Button {...props}>{file && file.size > 0 ? file.name : "Upload Resume PDF"}</Button>}
+        </FileButton> : null}
       </Group>
     </Box>
   );
@@ -118,6 +126,9 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
   studentProfile,
   editable,
   setStudentProfile,
+  file,
+  setFile,
+  showFilePicker
 }) => {
   const handleInputChange = (field: keyof StudentProfileDetails, value: any) => {
     setStudentProfile({
@@ -158,6 +169,9 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
   };
 
   const memoizedPdfUrl = useMemo(() => studentProfile.resumePdfUrl, [studentProfile.resumePdfUrl]);
+  const memoizedFile = useMemo(() => file, [file]);
+  const memoizedSetFile = useMemo(() => setFile, [setFile]);
+
   const processGPA = (gpaUnparsed: number) => {
     let gpa = gpaUnparsed.toString();
     if (gpa.endsWith('.00')) {
@@ -395,7 +409,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
         </Grid.Col>
 
         <Grid.Col span={8}>
-          <PdfViewer url={memoizedPdfUrl} />
+          <PdfViewer url={memoizedPdfUrl} file={memoizedFile} setFile={memoizedSetFile} showFilePicker={showFilePicker}/>
         </Grid.Col>
       </Grid>
     </Container>

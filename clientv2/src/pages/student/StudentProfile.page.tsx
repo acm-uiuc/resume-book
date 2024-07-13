@@ -15,6 +15,7 @@ export function StudentHomePage() {
   const [editToggle, setEditToggle] = useState(false);
   const [unrecoverableError, setUnrecoverableError] = useState(false);
   const [studentData, setStudentData] = useState<StudentProfileDetails>();
+  const [file, setFile] = useState<File | null>(null);
   const api = useApi();
   useEffect(() => {
     async function fetch() {
@@ -74,6 +75,27 @@ export function StudentHomePage() {
       return false;
   }
 
+  async function uploadFileToS3(presignedUrl: string) {
+    if (!file) return;
+    try {
+      const response = await fetch(presignedUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+          'Content-Length': file.size.toString(),
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to upload file: ${response.statusText}`);
+      } else {
+        return response;
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  }
+
   async function saveData() {
     if (!studentData) {
       return showErrorSaveNotification();
@@ -82,6 +104,22 @@ export function StudentHomePage() {
       return showErrorSaveNotification('LinkedIn field is not a valid LinkedIn URL.');
     }
     try {
+      if (file && file.size !== 0) {
+        setLoading(true);
+        const response = await api.post('/student/resume_upload_url', {"file_size": file.size});
+        if (response.status != 200) {
+          setLoading(false);
+          return showErrorSaveNotification("Could not upload resume.");
+        } else {
+          const presignedUrl = response.data.presigned_url;
+          try {
+            await uploadFileToS3(presignedUrl);
+          } catch {
+            setLoading(false);
+            return showErrorSaveNotification("Could not upload resume.");
+          }
+        }
+      }
       setLoading(true);
       const response = await api.post('/student/profile', studentData);
       if (response.status && response.status == 201) {
@@ -123,6 +161,9 @@ export function StudentHomePage() {
             editable={editToggle}
             studentProfile={studentData}
             setStudentProfile={setStudentData}
+            file={file}
+            setFile={setFile}
+            showFilePicker={editToggle}
           />
         ) : (
           'User does not have a profile. Need to enroll.'
