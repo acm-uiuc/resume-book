@@ -1,16 +1,15 @@
 import React, { useState, useMemo, useCallback, memo } from 'react';
-import { Container, Text, Title, Group, Stack, Badge, Anchor, List, ThemeIcon, Grid, Box, Button, TextInput, Textarea, Select, Checkbox, NumberInput } from '@mantine/core';
+import { Container, Text, Title, Group, Stack, Badge, Anchor, List, ThemeIcon, Grid, Box, Button, TextInput, Textarea, Select, Checkbox, NumberInput, Autocomplete } from '@mantine/core';
 import { IconBrandLinkedin, IconMail, IconSchool, IconBriefcase, IconUser, IconCertificate, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { Document, Page, pdfjs } from 'react-pdf';
+import { institutionOptions, degreeOptions, DegreeLevel, majorOptions } from './options';
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url,
 ).toString();
 
-
-const degreeOptions = ["BS", "BSLAS", "Master's (Thesis)" , "Master's (Non-Thesis)"]
 export interface DegreeListing {
-  level: "BS" | "BSLAS" | "Masters (Thesis)" | "Masters (Non-Thesis)";
+  level: DegreeLevel;
   yearStarted: number;
   yearEnded?: number;
   institution: string;
@@ -105,7 +104,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
       institution: 'University of Illinois Urbana-Champaign',
       major: [],
       minor: [],
-      gpa: 0,
+      gpa: 4.00,
     };
     handleInputChange('degrees', [...studentProfile.degrees, newDegree]);
   };
@@ -117,7 +116,13 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
   };
 
   const memoizedPdfUrl = useMemo(() => studentProfile.resumePdfUrl, [studentProfile.resumePdfUrl]);
-
+  const processGPA = (gpaUnparsed: number) => {
+    let gpa = gpaUnparsed.toString();
+    if (gpa.endsWith('.00')) {
+      gpa = gpa.slice(0, -1);
+    }
+    return parseFloat(gpa);
+  }
   return (
     <Container fluid style={{ marginTop: '2vh' }}>
       <Grid gutter="sm">
@@ -139,13 +144,13 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                     </ThemeIcon>
                     {editable ? (
                       <TextInput
-                        label="LinkedIn"
+                        label="LinkedIn Profile"
                         value={studentProfile.linkedin}
-                        onChange={(e) => handleInputChange('linkedin', e.target.value)}
+                        onChange={(e) => handleInputChange('linkedin', e.target.value.trim())}
                       />
                     ) : (
                       <Anchor href={studentProfile.linkedin} target="_blank" size="sm">
-                        LinkedIn
+                        LinkedIn Profile
                       </Anchor>
                     )}
                   </Group>
@@ -184,23 +189,28 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                           <Select
                             label="Degree Level"
                             value={degree.level}
-                            onChange={(value) => handleDegreeChange(index, 'level', value)}
+                            onChange={(value) => {handleDegreeChange(index, 'level', value);}}
                             data={degreeOptions.map(option => ({ value: option, label: option }))}
                           />
-                          <TextInput
+                          <Autocomplete
                             label="Major"
                             value={degree.major.join(', ')}
-                            onChange={(e) => handleDegreeChange(index, 'major', e.target.value.split(', '))}
+                            onChange={(e) => handleDegreeChange(index, 'major', e.split(', '))}
+                            data={majorOptions[degree.level] || []}
+                            withAsterisk
                           />
-                          <TextInput
+                          <Autocomplete
                             label="Institution"
                             value={degree.institution}
-                            onChange={(e) => handleDegreeChange(index, 'institution', e.target.value)}
+                            onChange={(e) => handleDegreeChange(index, 'institution', e)}
+                            data={institutionOptions}
+                            withAsterisk
                           />
                           <TextInput
                             label="Year Started"
                             value={degree.yearStarted.toString()}
                             onChange={(e) => handleDegreeChange(index, 'yearStarted', parseInt(e.target.value))}
+                            withAsterisk
                           />
                           <TextInput
                             label="Year Ended (or prospective)"
@@ -216,7 +226,8 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                             decimalScale={2}
                             value={degree.gpa}
                             hideControls
-                            onChange={(e) => handleDegreeChange(index, 'gpa', parseFloat(e.target.value))}
+                            onChange={(e) => handleDegreeChange(index, 'gpa', e)}
+                            withAsterisk
                           />
                           <Button onClick={() => removeDegree(index)} style={{marginTop: "0.5em"}} color="red" fullWidth>
                             Remove
@@ -231,7 +242,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({ studentProfile,
                               {degree.yearStarted} - {degree.yearEnded || 'Present'}
                             </Text>
                             <Badge size="sm" color="blue">
-                              GPA: {degree.gpa.toFixed(1)}
+                              GPA: {processGPA(degree.gpa)}
                             </Badge>
                           </Group>
                         </>

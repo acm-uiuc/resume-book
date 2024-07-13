@@ -5,12 +5,15 @@ import { useEffect, useState } from 'react';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileViewer';
 import { Button, Container, Grid } from '@mantine/core';
+import FullPageError from '@/components/FullPageError';
+import { notifications } from '@mantine/notifications';
 
 export function StudentHomePage() {
   const { userData } = useAuth();
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
   const [editToggle, setEditToggle] = useState(false);
+  const [unrecoverableError, setUnrecoverableError] = useState(false);
   let [studentData, setStudentData] = useState<StudentProfileDetails>();
   const api = useApi();
   useEffect(() => {
@@ -25,11 +28,12 @@ export function StudentHomePage() {
         }
         setStudentData(response.data as StudentProfileDetails);
       } catch (err: any) {
-        if (err.response.status === 404) {
+        if (err.response && err.response.status === 404) {
           setEnrolled(false);
           setLoading(false);
         } else {
-          setLoading(true);
+          setLoading(false);
+          setUnrecoverableError(true);
         }
       }
     }
@@ -44,14 +48,63 @@ export function StudentHomePage() {
     studentData.name = userData!.name!;
     setStudentData(studentData);
   }
+  function showErrorSaveNotification(message?: string) {
+    notifications.show({
+      color: 'red',
+      title: 'Error saving profile',
+      message: message || 'Please try again or contact support.',
+    })
+  }
+
+  function isValidLinkedInProfile(url: string) {
+    const linkedinProfilePattern = /^http(s)?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/;
+    if (linkedinProfilePattern.test(url)) {
+      if (url.startsWith('http:')) {
+        url = url.replace('http:', 'https:');
+        if (studentData) {
+          studentData.linkedin = url;
+          setStudentData(studentData);
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  async function saveData() {
+    if (!studentData) {
+      return showErrorSaveNotification();
+    };
+    if (!isValidLinkedInProfile(studentData?.linkedin)) {
+      return showErrorSaveNotification("LinkedIn field is not a valid LinkedIn URL.");
+    }
+    try {
+      setLoading(true);
+      const response = await api.post("/student/profile", studentData);
+      if (response.status && response.status == 201) {
+        notifications.show({
+          title: 'Profile saved!',
+          message: ''
+        })
+        setEditToggle(false);
+      } else {
+        showErrorSaveNotification()
+      }
+    } catch (err: any) {
+      showErrorSaveNotification();
+    }
+    setLoading(false);
+  }
   const toggleEdit = () => {
     if (editToggle) {
-      console.log(userData);
-      setLoading(true);
-      setTimeout(() => {window.location.reload();}, 1000);
+      saveData();
     } else {
       setEditToggle(true);
     }
+  }
+  if (unrecoverableError) {
+    return <FullPageError />
   }
   return (
     <>
