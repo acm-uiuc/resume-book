@@ -22,15 +22,15 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
         <Group justify="space-between" align="center" h="100%">
           <Group justify="start" align="center" h="100%" gap={10}>
             <LogoBadge />
-            <Group justify="start" align="center" h="100%" gap={10} visibleFrom='sm'>
+            <Group justify="start" align="center" h="100%" gap={10} visibleFrom="sm">
               <a href="/" className={classes.link}>
                 Home
               </a>
               {userData?.role === AuthRoleEnum.STUDENT ? (
-              <a href="/profile" className={classes.link}>
-                My Profile
-              </a>
-            ) : null}
+                <a href="/profile" className={classes.link}>
+                  My Profile
+                </a>
+              ) : null}
             </Group>
           </Group>
           <Group h="100%" justify="end" align="center" gap={10} visibleFrom="sm">

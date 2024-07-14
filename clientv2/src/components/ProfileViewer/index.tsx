@@ -111,7 +111,12 @@ const PdfViewer: React.FC<{
           }}
         >
           {/*TODO: Fix this scaling hack*/}
-          <Page scale={isMobile ? window.innerWidth / 700 : 1} pageNumber={pageNumber} renderTextLayer={false} renderAnnotationLayer={false}/>
+          <Page
+            scale={isMobile ? window.innerWidth / 700 : 1}
+            pageNumber={pageNumber}
+            renderTextLayer={false}
+            renderAnnotationLayer={false}
+          />
         </Box>
       </Document>
       <Group mt="md">
@@ -216,57 +221,53 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
   const isMobile = useMediaQuery(`(max-width: ${em(900)})`);
   return (
     <Container fluid style={{ marginTop: '2vh' }}>
-      <Grid gutter="sm" columns={isMobile ? 4 : 12}>
+      <Grid gutter="sm" columns={isMobile ? 4 : 14}>
         <Grid.Col span={4}>
           <Container>
             <Stack>
-              <Group>
-                <Stack>
-                  {editable ? (
-                    <TextInput
-                      label="Name"
-                      value={studentProfile.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                    />
-                  ) : (
-                    <Title order={3}>{studentProfile.name}</Title>
-                  )}
-                  <LinkProfileAttribute
-                    url={`mailto:${studentProfile.email}`}
-                    name={studentProfile.email}
-                    editable={false}
-                    icon={<IconMail size={12} />}
-                    handleInputChange={() => {}}
-                  />
-                  <LinkProfileAttribute
-                    url={studentProfile.linkedin}
-                    name={'LinkedIn Profile'}
-                    editable={editable}
-                    icon={<IconBrandLinkedin size={12} />}
-                    handleInputChange={(payload: string) => {
-                      handleInputChange('linkedin', payload.trim());
-                    }}
-                  />
-                  <LinkProfileAttribute
-                    url={studentProfile.github}
-                    name={'GitHub Profile'}
-                    editable={editable}
-                    icon={<IconBrandGithub size={12} />}
-                    handleInputChange={(payload: string) => {
-                      handleInputChange('github', payload.trim());
-                    }}
-                  />
-                  <LinkProfileAttribute
-                    url={studentProfile.website}
-                    name={'Website'}
-                    editable={editable}
-                    icon={<IconWorld size={12} />}
-                    handleInputChange={(payload: string) => {
-                      handleInputChange('website', payload.trim());
-                    }}
-                  />
-                </Stack>
-              </Group>
+              {editable ? (
+                <TextInput
+                  label="Name"
+                  value={studentProfile.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                />
+              ) : (
+                <Title order={3}>{studentProfile.name}</Title>
+              )}
+              <LinkProfileAttribute
+                url={`mailto:${studentProfile.email}`}
+                name={studentProfile.email}
+                editable={false}
+                icon={<IconMail size={12} />}
+                handleInputChange={() => {}}
+              />
+              <LinkProfileAttribute
+                url={studentProfile.linkedin}
+                name={'LinkedIn Profile'}
+                editable={editable}
+                icon={<IconBrandLinkedin size={12} />}
+                handleInputChange={(payload: string) => {
+                  handleInputChange('linkedin', payload.trim());
+                }}
+              />
+              <LinkProfileAttribute
+                url={studentProfile.github}
+                name={'GitHub Profile'}
+                editable={editable}
+                icon={<IconBrandGithub size={12} />}
+                handleInputChange={(payload: string) => {
+                  handleInputChange('github', payload.trim());
+                }}
+              />
+              <LinkProfileAttribute
+                url={studentProfile.website}
+                name={'Website'}
+                editable={editable}
+                icon={<IconWorld size={12} />}
+                handleInputChange={(payload: string) => {
+                  handleInputChange('website', payload.trim());
+                }}
+              />
 
               <Box>
                 <Title order={5} mb="xs">
@@ -460,7 +461,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
           </Container>
         </Grid.Col>
 
-        <Grid.Col span={8} style={{maxWidth: '100vw'}}>
+        <Grid.Col span={8} style={{ maxWidth: '100vw' }}>
           {!enrolling && file && file.size > 0 && file.type === 'application/pdf' ? (
             <PdfViewer url={file} file={file} setFile={setFile} showFilePicker={showFilePicker} />
           ) : (

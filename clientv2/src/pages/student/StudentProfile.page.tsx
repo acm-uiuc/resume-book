@@ -68,7 +68,7 @@ export function StudentHomePage() {
 
   function isValidLinkedInProfile(url?: string) {
     const linkedinProfilePattern = /^http(s)?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/;
-    if (!url || url === "") {
+    if (!url || url === '') {
       return true;
     }
     if (linkedinProfilePattern.test(url)) {
@@ -86,7 +86,7 @@ export function StudentHomePage() {
 
   function isValidGithubProfile(url?: string) {
     const githubProfilePattern = /^http(s)?:\/\/(www\.)?github\.com\/[a-zA-Z0-9-]+\/?$/;
-    if (!url || url === "") {
+    if (!url || url === '') {
       return true;
     }
     if (githubProfilePattern.test(url)) {
