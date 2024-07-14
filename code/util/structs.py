@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Literal, Optional
 from pydantic import BaseModel, ConfigDict, EmailStr, AnyUrl, HttpUrl
 
 class DegreeListing(BaseModel):
@@ -16,9 +16,9 @@ class StudentProfileDetails(BaseModel):
     username: str
     name: str
     email: EmailStr
-    linkedin: Optional[HttpUrl] = None
-    github: Optional[HttpUrl] = None
-    website: Optional[HttpUrl] = None
+    linkedin: Optional[HttpUrl | Literal[""]] = None
+    github: Optional[HttpUrl | Literal[""]] = None
+    website: Optional[HttpUrl | Literal[""]] = None
     degrees: List[DegreeListing]
     bio: str
     skills: List[str]
