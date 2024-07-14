@@ -29,11 +29,12 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
       </Badge>
     );
   }
+
   return (
     <Box>
       <header className={classes.header}>
-        <Group justify="space-between" h="100%">
-          <Group justify="start" h="100%" gap={10}>
+        <Group justify="space-between" align="center" h="100%">
+          <Group justify="start" align="center" h="100%" gap={10}>
             <LogoBadge />
             {badge}
             {userData?.role !== AuthRoleEnum.STUDENT ? (
@@ -41,13 +42,13 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
                 Home
               </a>
             ) : null}
+          </Group>
+          <Group h="100%" justify="end" align="center" gap={10} visibleFrom="sm">
             {userData?.role === AuthRoleEnum.STUDENT ? (
               <a href="/profile" className={classes.link}>
                 My Profile
               </a>
             ) : null}
-          </Group>
-          <Group h="100%" justify="end" gap={10} visibleFrom="sm">
             {userData ? <AuthenticatedProfileDropdown userData={userData} /> : null}
           </Group>
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
@@ -65,9 +66,14 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
       >
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
-          <a href="#" className={classes.link}>
+          <a href="/" className={classes.link}>
             Home
           </a>
+          {userData?.role === AuthRoleEnum.STUDENT ? (
+            <a href="/profile" className={classes.link}>
+              My Profile
+            </a>
+          ) : null}
           {userData ? <AuthenticatedProfileDropdown userData={userData} /> : null}
         </ScrollArea>
       </Drawer>

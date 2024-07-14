@@ -19,6 +19,7 @@ import {
   NumberInput,
   Autocomplete,
   FileButton,
+  em,
 } from '@mantine/core';
 import {
   IconBrandLinkedin,
@@ -33,6 +34,7 @@ import {
 import { Document, Page, pdfjs } from 'react-pdf';
 import { institutionOptions, degreeOptions, DegreeLevel, majorOptions } from './options';
 import { LinkProfileAttribute } from './LinkProfileAttribute';
+import { useMediaQuery } from '@mantine/hooks';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -73,6 +75,7 @@ const PdfViewer: React.FC<{
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
+  const isMobile = useMediaQuery(`(max-width: ${em(900)})`);
 
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -107,7 +110,8 @@ const PdfViewer: React.FC<{
             display: 'inline-block',
           }}
         >
-          <Page pageNumber={pageNumber} renderTextLayer={false} renderAnnotationLayer={false} />
+          {/*TODO: Fix this scaling hack*/}
+          <Page scale={isMobile ? 0.75 : 1} pageNumber={pageNumber} renderTextLayer={false} renderAnnotationLayer={false}/>
         </Box>
       </Document>
       <Group mt="md">
@@ -209,9 +213,10 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
     }
     return parseFloat(gpa);
   };
+  const isMobile = useMediaQuery(`(max-width: ${em(900)})`);
   return (
     <Container fluid style={{ marginTop: '2vh' }}>
-      <Grid gutter="sm">
+      <Grid gutter="sm" columns={isMobile ? 4 : 12}>
         <Grid.Col span={4}>
           <Container>
             <Stack>
