@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Container, Grid } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
+import { IconInfoCircle } from '@tabler/icons-react';
 import { useAuth } from '@/components/AuthContext';
 import { HeaderNavbar } from '@/components/Navbar';
 import { useApi } from '@/util/api';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileViewer';
 import FullPageError from '@/components/FullPageError';
-import { IconInfoCircle } from '@tabler/icons-react';
 
 export function StudentHomePage() {
   const { userData } = useAuth();
@@ -29,8 +29,8 @@ export function StudentHomePage() {
         for (let i = 0; i < response.data.degrees.length; i++) {
           response.data.degrees[i].gpa = parseFloat(response.data.degrees[i].gpa);
         }
-        if (response.data['defaultResponse']) {
-          response.data['name'] = userData?.name;
+        if (response.data.defaultResponse) {
+          response.data.name = userData?.name;
           setNewUser(true);
         }
         setStudentData(response.data as StudentProfileDetails);
@@ -117,7 +117,7 @@ export function StudentHomePage() {
           setLoading(false);
           setFile(null);
           return showErrorSaveNotification('Could not upload resume.');
-        } else {
+        }
           try {
             const presignedUrl = response.data.url;
             if (!presignedUrl) {
@@ -132,10 +132,9 @@ export function StudentHomePage() {
             setFile(null);
             return showErrorSaveNotification('Could not upload resume.');
           }
-        }
       }
       if ('defaultResponse' in studentData) {
-        delete studentData['defaultResponse'];
+        delete studentData.defaultResponse;
         setStudentData(studentData);
       }
       setLoading(true);
@@ -179,9 +178,15 @@ export function StudentHomePage() {
         </Container>
       </div>
       {newUser ? (
-        <Container style={{marginTop: '1em'}}>
-          <Alert variant="light" color="green" title="Welcome to Resume Book" icon={<IconInfoCircle />}>
-            We've provided you with a basic profile to get started. Fill out the details and save your profile to make it visible to recruiters.
+        <Container style={{ marginTop: '1em' }}>
+          <Alert
+            variant="light"
+            color="green"
+            title="Welcome to Resume Book"
+            icon={<IconInfoCircle />}
+          >
+            We've provided you with a basic profile to get started. Fill out the details and save
+            your profile to make it visible to recruiters.
           </Alert>
         </Container>
       ) : null}

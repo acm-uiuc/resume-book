@@ -137,9 +137,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           };
           const tokenResponse = await instance.acquireTokenSilent(silentRequest);
           return tokenResponse.accessToken;
-        } else {
-          throw new Error('More than one account found, cannot proceed.');
         }
+          throw new Error('More than one account found, cannot proceed.');
       } catch (error) {
         console.error('Silent token acquisition failed.', error);
         if (error instanceof InteractionRequiredAuthError) {
