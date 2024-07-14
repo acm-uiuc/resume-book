@@ -216,7 +216,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                     <TextInput
                       label="Name"
                       value={studentProfile.name}
-                      onChange={(e) => handleInputChange('name', e.target.value.trim())}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
                     />
                   ) : (
                     <Title order={3}>{studentProfile.name}</Title>
