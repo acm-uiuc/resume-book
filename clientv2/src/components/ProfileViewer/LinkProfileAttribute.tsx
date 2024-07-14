@@ -15,22 +15,21 @@ export const LinkProfileAttribute: React.FC<LinkProfileAttributeProps> = ({
   name,
   handleInputChange,
 }) => {
+  if (!url || url === "") {
+    return null;
+  }
   return (
     <Group>
       {editable ? (
         <TextInput label={name} value={url} onChange={(e) => handleInputChange(e.target.value)} />
       ) : (
         <>
-          {url === '' || !url ? null : (
-            <>
-              <ThemeIcon color="blue" size={20} radius="xl">
-                {icon}
-              </ThemeIcon>
-              <Anchor href={url} target="_blank" size="sm">
-                {name}
-              </Anchor>
-            </>
-          )}
+        <ThemeIcon color="blue" size={20} radius="xl">
+          {icon}
+        </ThemeIcon>
+        <Anchor href={url} target="_blank" size="sm">
+          {name}
+        </Anchor>
         </>
       )}
     </Group>

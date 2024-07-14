@@ -84,6 +84,24 @@ export function StudentHomePage() {
     return false;
   }
 
+  function isValidGithubProfile(url?: string) {
+    const githubProfilePattern = /^http(s)?:\/\/(www\.)?github\.com\/[a-zA-Z0-9-]+\/?$/;
+    if (!url || url === "") {
+      return true;
+    }
+    if (githubProfilePattern.test(url)) {
+      if (url.startsWith('http:')) {
+        url = url.replace('http:', 'https:');
+        if (studentData) {
+          studentData.github = url;
+          setStudentData(studentData);
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+
   async function uploadFileToS3(presignedUrl: string) {
     if (!file) return;
     try {
@@ -111,6 +129,9 @@ export function StudentHomePage() {
     }
     if (!isValidLinkedInProfile(studentData?.linkedin)) {
       return showErrorSaveNotification('LinkedIn field is not a valid LinkedIn URL.');
+    }
+    if (!isValidGithubProfile(studentData?.github)) {
+      return showErrorSaveNotification('GitHub field is not a valid GitHub Profile URL.');
     }
     try {
       if (file && file.size !== 0) {
