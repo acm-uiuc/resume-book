@@ -15,7 +15,7 @@ export const LinkProfileAttribute: React.FC<LinkProfileAttributeProps> = ({
   name,
   handleInputChange,
 }) => {
-  if (!url || url === "") {
+  if ((!url || url === "") && !editable) {
     return null;
   }
   return (
