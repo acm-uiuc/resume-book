@@ -229,7 +229,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                 <TextInput
                   label="Name"
                   value={studentProfile.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  onChange={(e) => handleInputChange('name', e.target.value.trimStart())}
                 />
               ) : (
                 <Title order={3}>{studentProfile.name}</Title>
@@ -279,7 +279,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                 {editable ? (
                   <Textarea
                     value={studentProfile.bio}
-                    onChange={(e) => handleInputChange('bio', e.target.value)}
+                    onChange={(e) => handleInputChange('bio', e.target.value.trimStart())}
                   />
                 ) : (
                   <Text size="sm">{studentProfile.bio}</Text>
