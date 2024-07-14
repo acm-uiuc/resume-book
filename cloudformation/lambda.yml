@@ -349,9 +349,6 @@ Resources:
               - PUT
             Id: CORSAllowAll
             MaxAge: 3600
-      Tags:
-        - Key: "SuperuserOnly"
-          Value: "true"
 
 Outputs:
   ApiUrl:
