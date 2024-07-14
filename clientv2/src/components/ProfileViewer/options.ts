@@ -52,7 +52,10 @@ const otherInstitutionOptions = [
   'Indiana University Bloomington',
 ];
 
-export const institutionOptions = ['University of Illinois Urbana-Champaign', ...otherInstitutionOptions.sort()]
+export const institutionOptions = [
+  'University of Illinois Urbana-Champaign',
+  ...otherInstitutionOptions.sort(),
+];
 
 const csPlusXMajors = [
   'Computer Science + Animal Sciences',
@@ -73,7 +76,12 @@ const csPlusXMajors = [
   'Statistics & Computer Science',
 ];
 
-const commonMajors = ['Computer Science', 'Computer Engineering', 'Electrical Engineering', 'Mathematics'];
+const commonMajors = [
+  'Computer Science',
+  'Computer Engineering',
+  'Electrical Engineering',
+  'Mathematics',
+];
 
 const otherMajors = [
   'Accountancy',
@@ -165,18 +173,33 @@ const otherMajors = [
 ];
 
 export const degreeOptions = [
-  'Associate\'s',
+  "Associate's",
   `Bachelor's`,
   "Master's (Thesis)",
   "Master's (Non-Thesis)",
-  'PhD'
+  'PhD',
 ];
 export type DegreeLevel = (typeof degreeOptions)[number];
 
 export const majorOptions: Record<DegreeLevel, any> = {
-  'Associate\'s': [{"group": "Common Majors", items: commonMajors}, {"group": "Other Majors", items: otherMajors}],
-  'Bachelor\'s': [{"group": "Common Majors", items: [...commonMajors, ...csPlusXMajors]}, {"group": "Other Majors", items: otherMajors}],
-  'Master\'s (Thesis)': [{"group": "Common Majors", items: commonMajors}, {"group": "Other Majors", items: otherMajors}],
-  'Master\'s (Non-Thesis)': [{"group": "Common Majors", items: commonMajors}, {"group": "Other Majors", items: otherMajors}],
-  'PhD': [{"group": "Common Majors", items: commonMajors}, {"group": "Other Majors", items: otherMajors}],
+  "Associate's": [
+    { group: 'Common Majors', items: commonMajors },
+    { group: 'Other Majors', items: otherMajors },
+  ],
+  "Bachelor's": [
+    { group: 'Common Majors', items: [...commonMajors, ...csPlusXMajors] },
+    { group: 'Other Majors', items: otherMajors },
+  ],
+  "Master's (Thesis)": [
+    { group: 'Common Majors', items: commonMajors },
+    { group: 'Other Majors', items: otherMajors },
+  ],
+  "Master's (Non-Thesis)": [
+    { group: 'Common Majors', items: commonMajors },
+    { group: 'Other Majors', items: otherMajors },
+  ],
+  PhD: [
+    { group: 'Common Majors', items: commonMajors },
+    { group: 'Other Majors', items: otherMajors },
+  ],
 };

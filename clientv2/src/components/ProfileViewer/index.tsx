@@ -59,16 +59,12 @@ export interface StudentProfileDetails {
   resumePdfUrl: string;
 }
 
-interface StudentProfilePageProps {
-  studentProfile: StudentProfileDetails;
-  editable: boolean;
-  setStudentProfile: CallableFunction;
+const PdfViewer: React.FC<{
+  url: File | string;
   file: File | null;
   setFile: CallableFunction;
   showFilePicker: boolean;
-}
-
-const PdfViewer: React.FC<{ url: File | string, file: File | null, setFile: CallableFunction, showFilePicker: boolean }> = memo(({ url, file, setFile, showFilePicker }) => {
+}> = memo(({ url, file, setFile, showFilePicker }) => {
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
@@ -82,10 +78,10 @@ const PdfViewer: React.FC<{ url: File | string, file: File | null, setFile: Call
     setError('Failed to load PDF document.');
     console.error('Error loading PDF document:', error);
   }, []);
-  const [fileLoaded, setFileLoaded] = useState<boolean>(file == null)
+  const [fileLoaded, setFileLoaded] = useState<boolean>(file == null);
   useEffect(() => {
     setFileLoaded(file instanceof Blob);
-  }, [file])
+  }, [file]);
   return (
     <Box style={{ height: '100vh', minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
       {error && <Text color="red">{error}</Text>}
@@ -125,14 +121,32 @@ const PdfViewer: React.FC<{ url: File | string, file: File | null, setFile: Call
         >
           Next
         </Button>
-        {showFilePicker ? 
-        <FileButton onChange={(payload) => {setFile(payload)}} accept="application/pdf">
-          {(props) => <Button {...props}>{file && file.size > 0 ? file.name : "Upload Resume PDF"}</Button>}
-        </FileButton> : null}
+        {showFilePicker ? (
+          <FileButton
+            onChange={(payload) => {
+              setFile(payload);
+            }}
+            accept="application/pdf"
+          >
+            {(props) => (
+              <Button {...props}>{file && file.size > 0 ? file.name : 'Upload Resume PDF'}</Button>
+            )}
+          </FileButton>
+        ) : null}
       </Group>
     </Box>
   );
 });
+
+interface StudentProfilePageProps {
+  studentProfile: StudentProfileDetails;
+  editable: boolean;
+  setStudentProfile: CallableFunction;
+  file: File | null;
+  setFile: CallableFunction;
+  showFilePicker: boolean;
+  enrolling: boolean;
+}
 
 const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
   studentProfile,
@@ -140,7 +154,8 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
   setStudentProfile,
   file,
   setFile,
-  showFilePicker
+  showFilePicker,
+  enrolling,
 }) => {
   const handleInputChange = (field: keyof StudentProfileDetails, value: any) => {
     setStudentProfile({
@@ -163,7 +178,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
 
   const addDegree = () => {
     const newDegree: DegreeListing = {
-      level: 'Bachelor\'s',
+      level: "Bachelor's",
       yearStarted: new Date().getFullYear() - 4,
       yearEnded: new Date().getFullYear(),
       institution: 'University of Illinois Urbana-Champaign',
@@ -197,7 +212,15 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
             <Stack>
               <Group>
                 <Stack>
-                  <Title order={3}>{studentProfile.name}</Title>
+                  {editable ? (
+                    <TextInput
+                      label="Name"
+                      value={studentProfile.name}
+                      onChange={(e) => handleInputChange('name', e.target.value.trim())}
+                    />
+                  ) : (
+                    <Title order={3}>{studentProfile.name}</Title>
+                  )}
                   <Group>
                     <ThemeIcon color="blue" size={20} radius="xl">
                       <IconMail size={12} />
@@ -205,19 +228,27 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                     <Text size="sm">{studentProfile.email}</Text>
                   </Group>
                   <Group>
-                    <ThemeIcon color="blue" size={20} radius="xl">
-                      <IconBrandLinkedin size={12} />
-                    </ThemeIcon>
                     {editable ? (
                       <TextInput
-                        label="LinkedIn Profile"
+                        label="LinkedIn Profile URL"
                         value={studentProfile.linkedin}
                         onChange={(e) => handleInputChange('linkedin', e.target.value.trim())}
                       />
                     ) : (
-                      <Anchor href={studentProfile.linkedin} target="_blank" size="sm">
-                        LinkedIn Profile
-                      </Anchor>
+                      <>
+                        <ThemeIcon color="blue" size={20} radius="xl">
+                          <IconBrandLinkedin size={12} />
+                        </ThemeIcon>
+                        {studentProfile.linkedin === '' ? (
+                          <Text size="sm" style={{ fontStyle: 'italic' }}>
+                            LinkedIn Profile not provided
+                          </Text>
+                        ) : (
+                          <Anchor href={studentProfile.linkedin} target="_blank" size="sm">
+                            LinkedIn Profile
+                          </Anchor>
+                        )}
+                      </>
                     )}
                   </Group>
                 </Stack>
@@ -283,9 +314,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                             value={degree.yearStarted}
                             min={0}
                             max={new Date().getFullYear() + 10}
-                            onChange={(e) =>
-                              handleDegreeChange(index, 'yearStarted', e)
-                            }
+                            onChange={(e) => handleDegreeChange(index, 'yearStarted', e)}
                             withAsterisk
                             required
                             clampBehavior="strict"
@@ -297,9 +326,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                             value={degree.yearEnded}
                             min={0}
                             max={new Date().getFullYear() + 10}
-                            onChange={(e) =>
-                              handleDegreeChange(index, 'yearEnded', e)
-                            }
+                            onChange={(e) => handleDegreeChange(index, 'yearEnded', e)}
                             withAsterisk
                             required
                             clampBehavior="strict"
@@ -362,6 +389,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                 </Title>
                 {editable ? (
                   <Textarea
+                    description="Seperate skills with a comma."
                     value={studentProfile.skills.join(', ')}
                     onChange={(e) => handleInputChange('skills', e.target.value.split(', '))}
                   />
@@ -395,7 +423,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                     <Checkbox
                       label="Sponsorship Required"
                       checked={studentProfile.sponsorship_required}
-                      style={{marginTop: '0.25em'}}
+                      style={{ marginTop: '0.25em' }}
                       onChange={(e) =>
                         handleInputChange('sponsorship_required', e.currentTarget.checked)
                       }
@@ -419,9 +447,16 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
         </Grid.Col>
 
         <Grid.Col span={8}>
-          {file && file.size > 0 && file.type === "application/pdf" ? <PdfViewer url={file} file={file} setFile={setFile} showFilePicker={showFilePicker}/> : 
-          <PdfViewer url={memoizedPdfUrl} file={file} setFile={setFile} showFilePicker={showFilePicker}/>}
-          
+          {!enrolling && file && file.size > 0 && file.type === 'application/pdf' ? (
+            <PdfViewer url={file} file={file} setFile={setFile} showFilePicker={showFilePicker} />
+          ) : (
+            <PdfViewer
+              url={memoizedPdfUrl}
+              file={file}
+              setFile={setFile}
+              showFilePicker={showFilePicker}
+            />
+          )}
         </Grid.Col>
       </Grid>
     </Container>

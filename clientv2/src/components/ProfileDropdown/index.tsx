@@ -57,7 +57,10 @@ const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({ userData
         </a>
       </Popover.Target>
 
-      <Popover.Dropdown style={{ overflow: 'hidden' }} aria-label="Authenticated My Account Dropdown">
+      <Popover.Dropdown
+        style={{ overflow: 'hidden' }}
+        aria-label="Authenticated My Account Dropdown"
+      >
         <SimpleGrid cols={1} spacing={0}>
           <UnstyledButton className={classes.subLink} key="name">
             <Group wrap="nowrap" align="flex-start">

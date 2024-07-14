@@ -92,7 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         handleMsalResponse(response);
       } else if (accounts.length > 0) {
         // User is already logged in, set the state
-        const [lastName, firstName] = accounts[0].name?.split(",")!
+        const [lastName, firstName] = accounts[0].name?.split(',')!;
         setUserData({
           email: accounts[0].username,
           name: `${firstName} ${lastName}`,
@@ -138,7 +138,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           const tokenResponse = await instance.acquireTokenSilent(silentRequest);
           return tokenResponse.accessToken;
         } else {
-          throw new Error("More than one account found, cannot proceed.")
+          throw new Error('More than one account found, cannot proceed.');
         }
       } catch (error) {
         console.error('Silent token acquisition failed.', error);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Container, Grid } from '@mantine/core';
+import { Alert, Button, Container, Grid } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useAuth } from '@/components/AuthContext';
 import { HeaderNavbar } from '@/components/Navbar';
@@ -7,6 +7,7 @@ import { useApi } from '@/util/api';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileViewer';
 import FullPageError from '@/components/FullPageError';
+import { IconInfoCircle } from '@tabler/icons-react';
 
 export function StudentHomePage() {
   const { userData } = useAuth();
@@ -77,7 +78,7 @@ export function StudentHomePage() {
       }
       return true;
     }
-      return false;
+    return false;
   }
 
   async function uploadFileToS3(presignedUrl: string) {
@@ -111,25 +112,25 @@ export function StudentHomePage() {
     try {
       if (file && file.size !== 0) {
         setLoading(true);
-        const response = await api.post('/student/resume_upload_url', {"file_size": file.size});
+        const response = await api.post('/student/resume_upload_url', { file_size: file.size });
         if (response.status != 200) {
           setLoading(false);
           setFile(null);
-          return showErrorSaveNotification("Could not upload resume.");
+          return showErrorSaveNotification('Could not upload resume.');
         } else {
           try {
             const presignedUrl = response.data.url;
             if (!presignedUrl) {
-              throw new Error("No presigned URL!")
+              throw new Error('No presigned URL!');
             }
             const s3Response = await uploadFileToS3(presignedUrl);
             if (s3Response?.status !== 200) {
-              throw new Error("S3 failed to upload.")
+              throw new Error('S3 failed to upload.');
             }
           } catch {
             setLoading(false);
             setFile(null);
-            return showErrorSaveNotification("Could not upload resume.");
+            return showErrorSaveNotification('Could not upload resume.');
           }
         }
       }
@@ -176,13 +177,22 @@ export function StudentHomePage() {
             {editToggle ? 'Save' : 'Edit'}
           </Button>
         </Container>
-        {newUser ? "Enrolling a new user" : null}
+      </div>
+      {newUser ? (
+        <Container style={{marginTop: '1em'}}>
+          <Alert variant="light" color="green" title="Welcome to Resume Book" icon={<IconInfoCircle />}>
+            We've provided you with a basic profile to get started. Fill out the details and save your profile to make it visible to recruiters.
+          </Alert>
+        </Container>
+      ) : null}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         {enrolled && studentData ? (
           <StudentProfilePage
             editable={editToggle}
             studentProfile={studentData}
             setStudentProfile={setStudentData}
             file={file}
+            enrolling={newUser}
             setFile={setFile}
             showFilePicker={editToggle}
           />
