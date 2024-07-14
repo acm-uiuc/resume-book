@@ -16,9 +16,9 @@ class StudentProfileDetails(BaseModel):
     username: str
     name: str
     email: EmailStr
-    linkedin: Optional[HttpUrl]
-    github: Optional[HttpUrl]
-    website: Optional[HttpUrl]
+    linkedin: Optional[HttpUrl] = ""
+    github: Optional[HttpUrl] = ""
+    website: Optional[HttpUrl] = ""
     degrees: List[DegreeListing]
     bio: str
     skills: List[str]
