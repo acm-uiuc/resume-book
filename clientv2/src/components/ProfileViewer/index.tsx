@@ -111,7 +111,7 @@ const PdfViewer: React.FC<{
           }}
         >
           {/*TODO: Fix this scaling hack*/}
-          <Page scale={isMobile ? 0.75 : 1} pageNumber={pageNumber} renderTextLayer={false} renderAnnotationLayer={false}/>
+          <Page scale={isMobile ? window.innerWidth / 700 : 1} pageNumber={pageNumber} renderTextLayer={false} renderAnnotationLayer={false}/>
         </Box>
       </Document>
       <Group mt="md">
