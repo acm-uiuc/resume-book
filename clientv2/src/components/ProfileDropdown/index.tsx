@@ -35,6 +35,7 @@ const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({ userData
       withinPortal
       opened={opened}
       onClose={() => setOpened(false)}
+      zIndex={1000010}
     >
       <Popover.Target>
         <a
