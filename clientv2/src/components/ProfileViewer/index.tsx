@@ -27,9 +27,12 @@ import {
   IconBriefcase,
   IconUser,
   IconCertificate,
+  IconBrandGithub,
+  IconWorld,
 } from '@tabler/icons-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { institutionOptions, degreeOptions, DegreeLevel, majorOptions } from './options';
+import { LinkProfileAttribute } from './LinkProfileAttribute';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -50,7 +53,9 @@ export interface StudentProfileDetails {
   username: string;
   name: string;
   email: string;
-  linkedin: string;
+  linkedin?: string;
+  github?: string;
+  website?: string;
   degrees: DegreeListing[];
   bio: string;
   skills: string[];
@@ -221,36 +226,40 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                   ) : (
                     <Title order={3}>{studentProfile.name}</Title>
                   )}
-                  <Group>
-                    <ThemeIcon color="blue" size={20} radius="xl">
-                      <IconMail size={12} />
-                    </ThemeIcon>
-                    <Text size="sm">{studentProfile.email}</Text>
-                  </Group>
-                  <Group>
-                    {editable ? (
-                      <TextInput
-                        label="LinkedIn Profile URL"
-                        value={studentProfile.linkedin}
-                        onChange={(e) => handleInputChange('linkedin', e.target.value.trim())}
-                      />
-                    ) : (
-                      <>
-                        <ThemeIcon color="blue" size={20} radius="xl">
-                          <IconBrandLinkedin size={12} />
-                        </ThemeIcon>
-                        {studentProfile.linkedin === '' ? (
-                          <Text size="sm" style={{ fontStyle: 'italic' }}>
-                            LinkedIn Profile not provided
-                          </Text>
-                        ) : (
-                          <Anchor href={studentProfile.linkedin} target="_blank" size="sm">
-                            LinkedIn Profile
-                          </Anchor>
-                        )}
-                      </>
-                    )}
-                  </Group>
+                  <LinkProfileAttribute
+                    url={`mailto:${studentProfile.email}`}
+                    name={studentProfile.email}
+                    editable={false}
+                    icon={<IconMail size={12} />}
+                    handleInputChange={() => {}}
+                  />
+                  <LinkProfileAttribute
+                    url={studentProfile.linkedin}
+                    name={'LinkedIn Profile'}
+                    editable={editable}
+                    icon={<IconBrandLinkedin size={12} />}
+                    handleInputChange={(payload: string) => {
+                      handleInputChange('linkedin', payload.trim());
+                    }}
+                  />
+                  <LinkProfileAttribute
+                    url={studentProfile.github}
+                    name={'GitHub Profile'}
+                    editable={editable}
+                    icon={<IconBrandGithub size={12} />}
+                    handleInputChange={(payload: string) => {
+                      handleInputChange('github', payload.trim());
+                    }}
+                  />
+                  <LinkProfileAttribute
+                    url={studentProfile.website}
+                    name={'Website'}
+                    editable={editable}
+                    icon={<IconWorld size={12} />}
+                    handleInputChange={(payload: string) => {
+                      handleInputChange('website', payload.trim());
+                    }}
+                  />
                 </Stack>
               </Group>
 

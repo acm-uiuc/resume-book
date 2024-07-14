@@ -1,7 +1,8 @@
 from typing import List, Optional
-from pydantic import BaseModel, EmailStr, AnyUrl, HttpUrl
+from pydantic import BaseModel, ConfigDict, EmailStr, AnyUrl, HttpUrl
 
 class DegreeListing(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     level: str
     yearStarted: int
     yearEnded: Optional[int] = None
@@ -11,10 +12,13 @@ class DegreeListing(BaseModel):
     gpa: float
 
 class StudentProfileDetails(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     username: str
     name: str
     email: EmailStr
-    linkedin: HttpUrl
+    linkedin: Optional[HttpUrl]
+    github: Optional[HttpUrl]
+    website: Optional[HttpUrl]
     degrees: List[DegreeListing]
     bio: str
     skills: List[str]

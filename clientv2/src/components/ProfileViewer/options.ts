@@ -174,7 +174,7 @@ const otherMajors = [
 
 export const degreeOptions = [
   "Associate's",
-  'Bachelor\'s',
+  "Bachelor's",
   "Master's (Thesis)",
   "Master's (Non-Thesis)",
   'PhD',

@@ -66,8 +66,11 @@ export function StudentHomePage() {
     });
   }
 
-  function isValidLinkedInProfile(url: string) {
+  function isValidLinkedInProfile(url?: string) {
     const linkedinProfilePattern = /^http(s)?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/;
+    if (!url || url === "") {
+      return true;
+    }
     if (linkedinProfilePattern.test(url)) {
       if (url.startsWith('http:')) {
         url = url.replace('http:', 'https:');
@@ -118,20 +121,20 @@ export function StudentHomePage() {
           setFile(null);
           return showErrorSaveNotification('Could not upload resume.');
         }
-          try {
-            const presignedUrl = response.data.url;
-            if (!presignedUrl) {
-              throw new Error('No presigned URL!');
-            }
-            const s3Response = await uploadFileToS3(presignedUrl);
-            if (s3Response?.status !== 200) {
-              throw new Error('S3 failed to upload.');
-            }
-          } catch {
-            setLoading(false);
-            setFile(null);
-            return showErrorSaveNotification('Could not upload resume.');
+        try {
+          const presignedUrl = response.data.url;
+          if (!presignedUrl) {
+            throw new Error('No presigned URL!');
           }
+          const s3Response = await uploadFileToS3(presignedUrl);
+          if (s3Response?.status !== 200) {
+            throw new Error('S3 failed to upload.');
+          }
+        } catch {
+          setLoading(false);
+          setFile(null);
+          return showErrorSaveNotification('Could not upload resume.');
+        }
       }
       if ('defaultResponse' in studentData) {
         delete studentData.defaultResponse;
