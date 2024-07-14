@@ -37,11 +37,11 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
           <Group justify="start" align="center" h="100%" gap={10}>
             <LogoBadge />
             {badge}
-            {userData?.role !== AuthRoleEnum.STUDENT ? (
+            <Group justify="start" align="center" h="100%" gap={10} visibleFrom='sm'>
               <a href="/" className={classes.link}>
                 Home
               </a>
-            ) : null}
+            </Group>
           </Group>
           <Group h="100%" justify="end" align="center" gap={10} visibleFrom="sm">
             {userData?.role === AuthRoleEnum.STUDENT ? (
