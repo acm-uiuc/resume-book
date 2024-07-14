@@ -6,6 +6,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "code/**"
+      - "cloudformation/**"
+      - "docs/**"
+      - "deploy-dev.sh"
+      - "deploy.sh"
 jobs:
   deploy-dev:
     runs-on: ubuntu-latest
