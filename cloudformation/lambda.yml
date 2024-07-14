@@ -339,16 +339,28 @@ Resources:
     Properties:
       BucketName: !Sub "${ResumeS3BucketName}-${RunEnvironment}"
       CorsConfiguration:
-        CorsRules:
-          - AllowedHeaders:
-              - '*'
-            AllowedOrigins:
-              - '*'
-            AllowedMethods:
-              - GET
-              - PUT
-            Id: CORSAllowAll
-            MaxAge: 3600
+        !If 
+          - IsProd
+          - CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedOrigins:
+                - 'https://resumes.acm.illinois.edu'
+              AllowedMethods:
+                - GET
+                - PUT
+              Id: CORSAllowProdSite
+              MaxAge: 3600
+          - CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedOrigins:
+                - 'http://localhost:5173'
+              AllowedMethods:
+                - GET
+                - PUT
+              Id: CORSAllowLocalhost
+              MaxAge: 3600
 
 Outputs:
   ApiUrl:
