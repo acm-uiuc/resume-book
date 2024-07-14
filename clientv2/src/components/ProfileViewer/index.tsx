@@ -460,7 +460,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
           </Container>
         </Grid.Col>
 
-        <Grid.Col span={8}>
+        <Grid.Col span={8} style={{maxWidth: '100vw'}}>
           {!enrolling && file && file.size > 0 && file.type === 'application/pdf' ? (
             <PdfViewer url={file} file={file} setFile={setFile} showFilePicker={showFilePicker} />
           ) : (
