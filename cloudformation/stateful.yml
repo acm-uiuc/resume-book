@@ -36,3 +36,5 @@ Resources:
           Value: "infra-resume-book"
         - Key: "techlead"
           Value: "dsingh14@illinois.edu"
+        - Key: "SuperuserOnly"
+          Value: "true"
