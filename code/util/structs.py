@@ -35,6 +35,8 @@ DEFAULT_USER_PROFILE = {
     "name": "John Doe",
     "email": "someone@illinois.edu",
     "linkedin": "",
+    "github": "",
+    "website": "",
     "degrees": [],
     "bio": "Student at the University of Illinois Urbana-Champaign seeking software engineering roles.",
     "skills": ["Python", "Java", "C++"],
