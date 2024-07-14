@@ -15,20 +15,6 @@ const isActiveLink = (path: string) => location.pathname === path;
 
 const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
-  let badge = null;
-  if (userData?.role === AuthRoleEnum.RECRUITER) {
-    badge = (
-      <Badge color="blue" style={{ marginLeft: 10 }}>
-        Recruiter
-      </Badge>
-    );
-  } else if (userData?.role === AuthRoleEnum.STUDENT) {
-    badge = (
-      <Badge color="#FF5F05" style={{ marginLeft: 10 }}>
-        Student
-      </Badge>
-    );
-  }
 
   return (
     <Box>
@@ -36,19 +22,18 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
         <Group justify="space-between" align="center" h="100%">
           <Group justify="start" align="center" h="100%" gap={10}>
             <LogoBadge />
-            {badge}
             <Group justify="start" align="center" h="100%" gap={10} visibleFrom='sm'>
               <a href="/" className={classes.link}>
                 Home
               </a>
-            </Group>
-          </Group>
-          <Group h="100%" justify="end" align="center" gap={10} visibleFrom="sm">
-            {userData?.role === AuthRoleEnum.STUDENT ? (
+              {userData?.role === AuthRoleEnum.STUDENT ? (
               <a href="/profile" className={classes.link}>
                 My Profile
               </a>
             ) : null}
+            </Group>
+          </Group>
+          <Group h="100%" justify="end" align="center" gap={10} visibleFrom="sm">
             {userData ? <AuthenticatedProfileDropdown userData={userData} /> : null}
           </Group>
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
