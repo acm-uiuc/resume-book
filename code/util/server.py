@@ -111,3 +111,12 @@ def recruiter_get_profile(username):
     profile_data = convert_from_dynamodb_json(profile_data)
     profile_data['resumePdfUrl'] = create_presigned_url_from_s3_url(profile_data['resumePdfUrl'])
     return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=profile_data)
+
+@app.post("/api/v1/recruiter/search")
+def recruiter_perform_search():
+    try:
+        pass
+    except Exception as e:
+        logger.error(traceback.format_exc(), flush=True)
+        return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error performing profile search", "details": str(e)})
+    return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=[])
