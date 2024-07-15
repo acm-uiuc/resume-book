@@ -6,6 +6,7 @@ import DegreeFilter, { Filters } from '@/components/SearchProfiles';
 import { useApi } from '@/util/api';
 import { notifications } from '@mantine/notifications';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
+import { ProfileSearchResults } from '@/components/SearchProfiles/Results';
 
 
 function showErrorNotification(title?: string) {
@@ -18,6 +19,8 @@ function showErrorNotification(title?: string) {
 export function RecruiterHomePage() {
   const { userData } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
+  const [apiResponse, setApiResponse] = useState<any | null>(null);
+
   const api = useApi();
 
   const handleFilter = async (filters: Filters) => {
@@ -33,7 +36,7 @@ export function RecruiterHomePage() {
       setLoading(false);
       return showErrorNotification();
     }
-    console.log(response);
+    setApiResponse(response.data);
     setLoading(false);
   };
   if (loading) {
@@ -54,7 +57,7 @@ export function RecruiterHomePage() {
           <Title order={1}>Search Resume Book</Title>
         </div>
         <DegreeFilter onFilter={handleFilter} />
-        {/* Render filtered data here based on the filters state */}
+        <ProfileSearchResults data={apiResponse}/>
       </Container>
     </>
   );
