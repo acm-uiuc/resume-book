@@ -7,7 +7,7 @@ import os
 import json
 from decimal import Decimal
 
-from util.dynamo import convert_to_dynamodb_json, convert_from_dynamodb_json
+from util.dynamo import convert_to_dynamodb_json, convert_from_dynamodb_json, preprocess_profile, unpreprocess_profile
 from util.structs import DEFAULT_USER_PROFILE, ResumeUploadPresignedRequest, StudentProfileDetails
 from util.environ import get_run_environment
 from util.s3 import create_presigned_url_for_put, create_presigned_url_from_s3_url
@@ -50,10 +50,10 @@ def student_get_profile():
             DEFAULT_USER_PROFILE['email'] = username
             return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=DEFAULT_USER_PROFILE)
     except Exception as e:
-        print(traceback.format_exc(), flush=True)
+        logger.error(traceback.format_exc(), flush=True)
         return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error getting profile data", "details": str(e)})
-    # generate presigned url for resume pdf 
-    profile_data = convert_from_dynamodb_json(profile_data)
+    # generate presigned url for resume pdf
+    profile_data = unpreprocess_profile(convert_from_dynamodb_json(profile_data))
     profile_data['resumePdfUrl'] = create_presigned_url_from_s3_url(profile_data['resumePdfUrl'])
     return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=profile_data)
 
@@ -66,12 +66,12 @@ def student_post_profile():
     json_body['resumePdfUrl'] = f"s3://{S3_BUCKET}/resume_{email}.pdf"
     try:
         data = json.loads(StudentProfileDetails(**json_body).model_dump_json(), parse_float=Decimal)
-        dynamo_data = convert_to_dynamodb_json(data)
+        dynamo_data = convert_to_dynamodb_json(preprocess_profile(data))
         dynamodb.put_item(TableName=PROFILE_TABLE_NAME, Item=dynamo_data)
     except pydantic.ValidationError as e:
         return Response(status_code=403, content_type=content_types.APPLICATION_JSON, body={"message": "Error validating payload", "details": str(e)})
     except Exception as e:
-        print(traceback.format_exc(), flush=True)
+        logger.error(traceback.format_exc())
         return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error storing profile data", "details": str(e)})
     return Response(status_code=201, content_type=content_types.APPLICATION_JSON, body={"message": "Profile saved"})
 
@@ -84,7 +84,7 @@ def student_get_s3_presigned():
     except pydantic.ValidationError as e:
         return Response(status_code=403, content_type=content_types.APPLICATION_JSON, body={"message": "Error validating payload", "details": str(e)})
     except Exception as e:
-        print(traceback.format_exc(), flush=True)
+        logger.error(traceback.format_exc(), flush=True)
         return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error creating S3 URL", "details": str(e)})
     if data['file_size'] > 1.5e7: # 15 MB
         return Response(status_code=413, content_type=content_types.APPLICATION_JSON, body={"message": "Error creating S3 URL", "details": "Resume PDF cannot be larger than 15 MB."})
@@ -105,7 +105,7 @@ def recruiter_get_profile(username):
         else:
             return Response(status_code=404, content_type=content_types.APPLICATION_JSON, body={"message": f"No profile found for {username}"})
     except Exception as e:
-        print(traceback.format_exc(), flush=True)
+        logger.error(traceback.format_exc(), flush=True)
         return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error getting profile data", "details": str(e)})
     # generate presigned url for resume pdf 
     profile_data = convert_from_dynamodb_json(profile_data)
