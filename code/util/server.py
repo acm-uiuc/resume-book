@@ -7,8 +7,8 @@ import os
 import json
 from decimal import Decimal
 
-from util.dynamo import convert_to_dynamodb_json, convert_from_dynamodb_json, preprocess_profile, unpreprocess_profile
-from util.structs import DEFAULT_USER_PROFILE, ResumeUploadPresignedRequest, StudentProfileDetails
+from util.dynamo import construct_filter_query, convert_to_dynamodb_json, convert_from_dynamodb_json, preprocess_profile, unpreprocess_profile
+from util.structs import DEFAULT_USER_PROFILE, ProfileSearchRequest, ResumeUploadPresignedRequest, StudentProfileDetails
 from util.environ import get_run_environment
 from util.s3 import create_presigned_url_for_put, create_presigned_url_from_s3_url
 from util.logging import get_logger
@@ -50,7 +50,7 @@ def student_get_profile():
             DEFAULT_USER_PROFILE['email'] = username
             return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=DEFAULT_USER_PROFILE)
     except Exception as e:
-        logger.error(traceback.format_exc(), flush=True)
+        logger.error(traceback.format_exc())
         return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error getting profile data", "details": str(e)})
     # generate presigned url for resume pdf
     profile_data = unpreprocess_profile(convert_from_dynamodb_json(profile_data))
@@ -105,7 +105,7 @@ def recruiter_get_profile(username):
         else:
             return Response(status_code=404, content_type=content_types.APPLICATION_JSON, body={"message": f"No profile found for {username}"})
     except Exception as e:
-        logger.error(traceback.format_exc(), flush=True)
+        logger.error(traceback.format_exc())
         return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error getting profile data", "details": str(e)})
     # generate presigned url for resume pdf 
     profile_data = convert_from_dynamodb_json(profile_data)
@@ -114,9 +114,21 @@ def recruiter_get_profile(username):
 
 @app.post("/api/v1/recruiter/search")
 def recruiter_perform_search():
+    json_body: dict = app.current_event.json_body or {}
+    final_response = []
     try:
-        pass
+        data = json.loads(ProfileSearchRequest(**json_body).model_dump_json(), parse_float=Decimal)
+        filter_query = construct_filter_query(data['degreeOptions'], data['gpa'], data['graduationYears'], data['majors'])
+        dynamodb_resource = session.resource('dynamodb')
+        table = dynamodb_resource.Table(PROFILE_TABLE_NAME)
+        response = table.scan(
+            FilterExpression=filter_query
+        )
+        if 'Items' in response:
+            final_response = [unpreprocess_profile(x) for x in response['Items']]
+    except pydantic.ValidationError as e:
+        return Response(status_code=403, content_type=content_types.APPLICATION_JSON, body={"message": "Error validating payload", "details": str(e)})
     except Exception as e:
-        logger.error(traceback.format_exc(), flush=True)
+        logger.error(traceback.format_exc())
         return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error performing profile search", "details": str(e)})
-    return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=[])
+    return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=final_response)
