@@ -21,20 +21,19 @@ def preprocess_profile(profile: dict) -> dict:
         year_ended = degree.get('yearEnded')
         gpa = degree.get('gpa')
 
-        # Update the highest yearEnded by level
         if level and year_ended is not None:
             if level not in highest_year_by_level or year_ended > highest_year_by_level[level]:
                 highest_year_by_level[level] = year_ended
 
-        # Update the highest GPA by level
         if level and gpa is not None:
             if level not in highest_gpa_by_level or gpa > highest_gpa_by_level[level]:
                 highest_gpa_by_level[level] = gpa
 
-    # Add the highest yearEnded and GPA by level as meta attributes
-    for level in highest_year_by_level:
-        preprocessed_profile[f'_meta_highest_yearEnded_{level}'] = highest_year_by_level[level]
-        preprocessed_profile[f'_meta_highest_gpa_{level}'] = highest_gpa_by_level[level]
+    # meta attributes for easy querying
+    preprocessed_profile['_meta_highest_yearEnded'] = highest_year_by_level
+    preprocessed_profile['_meta_highest_gpa'] = highest_gpa_by_level
+    preprocessed_profile['_meta_majors'] = list(set([x['major'][0] for x in degrees]))
+    preprocessed_profile['_meta_minors'] = list(set([x['minor'][0] for x in degrees]))
     
     return preprocessed_profile
 
