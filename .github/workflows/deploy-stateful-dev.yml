@@ -3,6 +3,12 @@ run-name: Deploy stateful resources to AWS DEV by @${{ github.actor }}
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "cloudformation/stateful.yml"
+      - "stateful.sh"
 
 jobs:
   deploy:

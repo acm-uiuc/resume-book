@@ -8,7 +8,7 @@ on:
       - main
     paths:
       - "code/**"
-      - "cloudformation/**"
+      - "cloudformation/lambda.yml"
       - "docs/**"
       - "deploy-dev.sh"
       - "deploy.sh"
