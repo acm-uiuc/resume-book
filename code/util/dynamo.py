@@ -32,8 +32,8 @@ def preprocess_profile(profile: dict) -> dict:
     # meta attributes for easy querying
     preprocessed_profile['_meta_highest_yearEnded'] = highest_year_by_level
     preprocessed_profile['_meta_highest_gpa'] = highest_gpa_by_level
-    preprocessed_profile['_meta_majors'] = list(set([x['major'][0] for x in degrees]))
-    preprocessed_profile['_meta_minors'] = list(set([x['minor'][0] for x in degrees]))
+    preprocessed_profile['_meta_majors'] = list(set([x['major'][0] for x in degrees if 'major' in x and len(x['major']) > 0]))
+    preprocessed_profile['_meta_minors'] = list(set([x['minor'][0] for x in degrees if 'minor' in x and len(x['minor']) > 0]))
     
     return preprocessed_profile
 
