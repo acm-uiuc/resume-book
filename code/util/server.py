@@ -7,11 +7,14 @@ import os
 import json
 from decimal import Decimal
 
+from util.queries import GET_USER_PROFILE_QUERY
+from util.postgres import get_db_connection
 from util.dynamo import construct_filter_query, convert_to_dynamodb_json, convert_from_dynamodb_json, preprocess_profile, unpreprocess_profile
 from util.structs import DEFAULT_USER_PROFILE, ProfileSearchRequest, ResumeUploadPresignedRequest, StudentProfileDetails
 from util.environ import get_run_environment
 from util.s3 import create_presigned_url_for_put, create_presigned_url_from_s3_url
 from util.logging import get_logger
+from util.secretsmanager import get_parameter_from_sm
 
 RUN_ENV = get_run_environment()
 logger = get_logger()
@@ -22,12 +25,13 @@ if RUN_ENV != "prod":
 
 cors_config = CORSConfig(allow_origin="https://resumes.acm.illinois.edu", extra_origins=extra_origins, max_age=300, allow_credentials=True, allow_headers=["authorization"])
 app = APIGatewayRestResolver(cors=cors_config)
-
 session = boto3.Session(region_name=os.environ.get('AWS_REGION', 'us-east-1'))
+secretsmanager = session.client('secretsmanager')
 dynamodb = session.client('dynamodb')
+db_config = get_parameter_from_sm(secretsmanager, 'infra-resume-book-db-config')
 
 PROFILE_TABLE_NAME = "infra-resume-book-profile-data"
-S3_BUCKET = f"infra-resume-book-pdfs-{RUN_ENV}"
+S3_BUCKET = f"infra-resume-book-pdfs-{RUN_ENV if RUN_ENV != 'local' else 'dev'}"
 
 @app.get("/api/v1/healthz")
 def healthz():
@@ -35,25 +39,23 @@ def healthz():
 
 @app.get("/api/v1/student/profile")
 def student_get_profile():
-    username = app.current_event.request_context.authorizer['username']
     try:
-        resp = dynamodb.get_item(
-            TableName=PROFILE_TABLE_NAME,
-            Key={
-                'username': {'S': username}
-            }
-        )
-        if 'Item' in resp:
-            profile_data = resp['Item']
-        else:
+        username = app.current_event.request_context.authorizer['username']
+    except:
+        username = 'dsingh14@illinois.edu'
+    try:
+        db_connection = get_db_connection(db_config, "resume_book_get_profile")
+        with db_connection.transaction():
+            with db_connection.cursor() as cur:
+                cur.execute(GET_USER_PROFILE_QUERY, [username])
+                profile_data = cur.fetchone()
+        if not profile_data:
             DEFAULT_USER_PROFILE['username'] = username
             DEFAULT_USER_PROFILE['email'] = username
             return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=DEFAULT_USER_PROFILE)
     except Exception as e:
         logger.error(traceback.format_exc())
         return Response(status_code=500, content_type=content_types.APPLICATION_JSON, body={"message": "Error getting profile data", "details": str(e)})
-    # generate presigned url for resume pdf
-    profile_data = unpreprocess_profile(convert_from_dynamodb_json(profile_data))
     profile_data['resumePdfUrl'] = create_presigned_url_from_s3_url(profile_data['resumePdfUrl'])
     return Response(status_code=200, content_type=content_types.APPLICATION_JSON, body=profile_data)
 
