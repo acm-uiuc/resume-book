@@ -166,6 +166,15 @@ Resources:
                 Resource:
                   - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ProfileDataTableName}
           PolicyName: lambda-dynamo
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - secretsmanager:GetSecretValue
+                Effect: Allow
+                Resource:
+                  - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret/infra-resume-book-db-config-*
+          PolicyName: lambda-secret
 
   ResumeBookApiLambdaLogGroup:
     Type: AWS::Logs::LogGroup
