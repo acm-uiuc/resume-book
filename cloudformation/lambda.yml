@@ -50,22 +50,20 @@ Conditions:
 Mappings:
   EnvironmentToCidr:
     dev:
-      VpcConfig:
-        SecurityGroupIds:
-          - sg-00443e61d39721a0d
-          - sg-0e99aa1c1e4e9e5b6
-        SubnetIds:
-          - subnet-0cd2b887e61f6edd8
-          - subnet-065857a2bdf3a51aa
-          - subnet-09e12f156435e4cc9
+      SecurityGroupIds:
+        - sg-00443e61d39721a0d
+        - sg-0e99aa1c1e4e9e5b6
+      SubnetIds:
+        - subnet-0cd2b887e61f6edd8
+        - subnet-065857a2bdf3a51aa
+        - subnet-09e12f156435e4cc9
     prod:
-      VpcConfig:
-        SecurityGroupIds:
-          - sg-066e3ae1d05e70fcd
-        SubnetIds:
-          - subnet-0cab899e254858212
-          - subnet-0fd8cc98213e65d48
-          - subnet-0eb99414c71981187
+      SecurityGroupIds:
+        - sg-066e3ae1d05e70fcd
+      SubnetIds:
+        - subnet-0cab899e254858212
+        - subnet-0fd8cc98213e65d48
+        - subnet-0eb99414c71981187
 
 Resources:
   # API Lambda
@@ -84,11 +82,9 @@ Resources:
       Environment:
         Variables:
           RunEnvironment: !Ref RunEnvironment
-      VpcConfig:
-        Fn::FindInMap: 
-          - EnvironmentToCidr
-          - !Ref RunEnvironment
-          - VpcConfig
+      VpcConfig: 
+        SecurityGroupIds: !FindInMap [EnvironmentToCidr, !Ref RunEnvironment, SecurityGroupIds]
+        SubnetIds: !FindInMap [EnvironmentToCidr, !Ref RunEnvironment, SubnetIds]
       Events:
         ApiEvent:
           Type: Api
