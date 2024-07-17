@@ -54,6 +54,8 @@ Mappings:
         - sg-00443e61d39721a0d
         - sg-0e99aa1c1e4e9e5b6
       SubnetIds:
+        - subnet-0cd2b887e61f6edd8
+        - subnet-065857a2bdf3a51aa
         - subnet-09e12f156435e4cc9
     prod:
       SecurityGroupIds:
@@ -81,6 +83,7 @@ Resources:
         Variables:
           RunEnvironment: !Ref RunEnvironment
       VpcConfig: 
+        Ipv6AllowedForDualStack: True
         SecurityGroupIds: !FindInMap [EnvironmentToCidr, !Ref RunEnvironment, SecurityGroupIds]
         SubnetIds: !FindInMap [EnvironmentToCidr, !Ref RunEnvironment, SubnetIds]
       Events:
