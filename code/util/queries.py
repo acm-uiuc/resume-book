@@ -11,3 +11,17 @@ WHERE
 GROUP BY 
     spd.username;
 """
+
+INSERT_BASE_PROFILE = """
+INSERT INTO student_profile_details
+(username, name, email, linkedin, github, website, bio, skills, work_auth_required, sponsorship_required, resumepdfurl)
+VALUES 
+(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+"""
+
+INSERT_DEGREES = """
+INSERT INTO degree_listings
+(username, level, yearStarted, yearEnded, institution, major, minor, gpa)
+VALUES 
+(%s, %s, %s, %s, %s, %s, %s, %s);
+"""
