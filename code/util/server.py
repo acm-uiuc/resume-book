@@ -29,9 +29,7 @@ from psycopg.rows import dict_row
 RUN_ENV = get_run_environment()
 logger = get_logger()
 
-extra_origins = []
-if RUN_ENV != "prod":
-    extra_origins = ["http://localhost:5173"]
+extra_origins = os.environ.get("ValidCorsOrigins", "https://resumes.acm.illinois.edu").split(",")
 
 cors_config = CORSConfig(
     allow_origin="https://resumes.acm.illinois.edu",
