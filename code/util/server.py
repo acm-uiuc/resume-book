@@ -75,6 +75,8 @@ def student_get_profile():
                 if profile_data and 'resumepdfurl' in profile_data:
                     profile_data["resumePdfUrl"] = profile_data["resumepdfurl"]
                     del profile_data["resumepdfurl"]
+                if 'degrees' not in profile_data or not profile_data['degrees']:
+                    profile_data['degrees'] = []
         if not profile_data:
             DEFAULT_USER_PROFILE["username"] = username
             DEFAULT_USER_PROFILE["email"] = username

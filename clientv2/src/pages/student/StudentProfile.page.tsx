@@ -39,6 +39,7 @@ export function StudentHomePage() {
           setEnrolled(false);
           setLoading(false);
         } else {
+          console.error(err);
           setLoading(false);
           setUnrecoverableError(true);
         }
