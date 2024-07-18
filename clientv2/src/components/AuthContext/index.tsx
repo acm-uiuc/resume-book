@@ -154,7 +154,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           try {
             const interactiveRequest = {
               scopes: ['.default'], // Adjust scopes as needed
-              redirectUri: '/login', // Redirect URI after login
+              redirectUri: '/', // Redirect URI after login
             };
             const tokenResponse: any = await instance.acquireTokenRedirect(interactiveRequest);
             return tokenResponse.accessToken;
@@ -166,35 +166,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           throw error;
         }
       }
-    }
-    if (userData?.authenticationMethod === AuthSourceEnum.LOCAL) {
+    } else if (userData?.authenticationMethod === AuthSourceEnum.LOCAL) {
       return getKindeToken();
     }
     throw new Error('Unknown authentication method.');
   }, [userData, instance, getKindeToken]);
 
   const loginMsal = useCallback(() => {
+    console.log('msal login')
     instance.loginRedirect();
   }, [instance]);
 
   const logout = useCallback(async () => {
-    console.log('logout requested', userData)
+    console.log('logout requested', userData);
     try {
       if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
         setIsLoggedIn(false);
         setUserData(null);
         await instance.logoutRedirect();
-      } else {
+      } else if (userData?.authenticationMethod === AuthSourceEnum.LOCAL) {
         setIsLoggedIn(false);
         setUserData(null);
         await kindeLogout();
-        console.log('logout done for kinde')
+        console.log('logout done for kinde');
       }
     } catch (error) {
       console.error('Logout failed:', error);
       // Optionally, you can show a user-friendly error message or retry logic
     }
   }, [instance, kindeLogout, userData]);
+
   return (
     <AuthContext.Provider value={{ isLoggedIn, userData, loginMsal, logout, getToken }}>
       {isLoading || inProgress !== InteractionStatus.None ? (

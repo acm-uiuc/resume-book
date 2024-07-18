@@ -3,6 +3,7 @@ import { AuthRoleEnum, useAuth } from './components/AuthContext';
 import { LoginPage } from './pages/Login.page';
 import { StudentHomePage } from './pages/student/StudentProfile.page';
 import { RecruiterHomePage } from './pages/recruiter/RecruiterHome.page';
+import { useKindeAuth } from '@kinde-oss/kinde-auth-react';
 
 const commonRoutes = [
   {
@@ -63,11 +64,12 @@ const studentRouter = createBrowserRouter([
 
 export function Router() {
   const { isLoggedIn, userData } = useAuth();
+  const {isAuthenticated} = useKindeAuth()
+  console.log(isAuthenticated, userData, isLoggedIn)
   if (!isLoggedIn || !userData) {
     return <RouterProvider router={unauthenticatedRouter} />;
   }
   if (isLoggedIn && userData.role === AuthRoleEnum.RECRUITER) {
-    console.log(userData, isLoggedIn)
     return <RouterProvider router={recruiterRouter} />;
   }
   if (isLoggedIn && userData.role === AuthRoleEnum.STUDENT) {
