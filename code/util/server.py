@@ -114,7 +114,7 @@ def student_post_profile():
     json_body["username"] = email
     json_body["resumePdfUrl"] = f"s3://{S3_BUCKET}/resume_{email}.pdf"
     try:
-        data = StudentProfileDetails(**json_body).model_dump()
+        data = json.loads(StudentProfileDetails(**json_body).model_dump_json(), parse_float=Decimal)
         db_connection = get_db_connection(db_config, "resume_book_post_profile")
         with db_connection.transaction():
             with db_connection.cursor() as cur:
