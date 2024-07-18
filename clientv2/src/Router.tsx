@@ -28,7 +28,7 @@ const recruiterRouter = createBrowserRouter([
   {
     path: '/login',
     element: <Navigate to="/" replace />,
-  }
+  },
 ]);
 
 const studentRouter = createBrowserRouter([
