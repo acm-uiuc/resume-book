@@ -126,6 +126,7 @@ const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({ userData
             onClick={async () => {
               if (userData.authenticationMethod === AuthSourceEnum.LOCAL) {
                 await kindeLogout();
+                await logout();
               } else {
                 await logout();
               }
