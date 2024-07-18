@@ -78,6 +78,9 @@ def student_get_profile():
                     del profile_data["resumepdfurl"]
                 if 'degrees' not in profile_data or profile_data['degrees'] == [None]:
                     profile_data['degrees'] = []
+                for degree in profile_data['degrees']:
+                    degree['yearStarted'] = degree.pop('yearstarted')
+                    degree['yearEnded'] = degree.pop('yearended')
 
         if not profile_data:
             DEFAULT_USER_PROFILE["username"] = username
