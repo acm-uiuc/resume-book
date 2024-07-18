@@ -220,7 +220,7 @@ def recruiter_get_profile(username):
 def recruiter_perform_search():
     json_body: dict = app.current_event.json_body or {}
     try:
-        data = ProfileSearchRequest(**json_body).model_dump_json()
+        data = ProfileSearchRequest(**json_body).model_dump()
         search_query = generate_search_query(data['degreeOptions'], data['gpa'], data['graduationYears'], data['majors'])
         db_connection = get_db_connection(db_config, "resume_book_recruiter_search")
         with db_connection.transaction():
