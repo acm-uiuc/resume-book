@@ -43,6 +43,7 @@ interface AuthContextDataWrapper {
   loginMsal: CallableFunction;
   logout: CallableFunction;
   getToken: CallableFunction;
+  logoutCallback: CallableFunction;
 }
 
 export type AuthContextData = {
@@ -179,23 +180,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = useCallback(async () => {
     try {
-      setIsLoggedIn(false);
-      setUserData(null);
-      setTimeout(async () => {
-        if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
-          await instance.logoutRedirect();
-        } else if (userData?.authenticationMethod === AuthSourceEnum.LOCAL) {
-          await kindeLogout();
-        }
-      }, 1000)
-
+      if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
+        await instance.logoutRedirect();
+      } else if (userData?.authenticationMethod === AuthSourceEnum.LOCAL) {
+        await kindeLogout();
+      }
     } catch (error) {
       console.error('Logout failed:', error);
     }
   }, [instance, kindeLogout, userData]);
-
+  const logoutCallback = () => {
+    setIsLoggedIn(false);
+    setUserData(null);
+  }
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userData, loginMsal, logout, getToken }}>
+    <AuthContext.Provider value={{ isLoggedIn, userData, loginMsal, logout, getToken, logoutCallback }}>
       {isLoading || inProgress !== InteractionStatus.None ? (
         <MantineProvider>
           <FullScreenLoader />

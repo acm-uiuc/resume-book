@@ -4,11 +4,16 @@ import { LoginPage } from './pages/Login.page';
 import { StudentHomePage } from './pages/student/StudentProfile.page';
 import { RecruiterHomePage } from './pages/recruiter/RecruiterHome.page';
 import { useKindeAuth } from '@kinde-oss/kinde-auth-react';
+import { LogoutPage } from './pages/Logout.page';
 
 const commonRoutes = [
   {
     path: '/force_login',
     element: <LoginPage />,
+  },
+  {
+    path: '/logout',
+    element: <LogoutPage />,
   }
 ]
 

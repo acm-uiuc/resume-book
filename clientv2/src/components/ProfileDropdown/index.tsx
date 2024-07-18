@@ -27,7 +27,6 @@ const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({ userData
   const [opened, setOpened] = useState(false);
   const theme = useMantineTheme();
   const { logout } = useAuth();
-  const {logout: kindeLogout} = useKindeAuth();
   return (
     <Popover
       width={300}
@@ -125,7 +124,6 @@ const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({ userData
             fullWidth
             onClick={async () => {
               if (userData.authenticationMethod === AuthSourceEnum.LOCAL) {
-                await kindeLogout();
                 await logout();
               } else {
                 await logout();
