@@ -78,7 +78,6 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
         ? prevSelectedRows.filter((rowId) => rowId !== id)
         : [...prevSelectedRows, id]
     );
-    console.log(selectedRows);
   };
   const rows = data.map((element) => (
     <Table.Tr

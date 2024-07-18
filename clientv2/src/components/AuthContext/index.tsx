@@ -179,16 +179,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = useCallback(async () => {
     if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
-      await instance.logoutRedirect();
       setIsLoggedIn(false);
       setUserData(null);
+      await instance.logoutRedirect();
     } else {
       setIsLoggedIn(false);
       setUserData(null);
-      if (isAuthenticated && !isLoading) {
-        console.log('logging out');
-        await kindeLogout();
-      }
+      await kindeLogout();
     }
   }, [instance, isAuthenticated, isLoading, kindeLogout, userData]);
 

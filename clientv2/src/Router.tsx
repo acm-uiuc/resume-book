@@ -40,10 +40,10 @@ const recruiterRouter = createBrowserRouter([
   ...authRedirect,
   {
     path: '/',
-    element: <Navigate to="/profile" replace />,
+    element: <Navigate to="/search" replace />,
   },
   {
-    path: '/profile',
+    path: '/search',
     element: <RecruiterHomePage />,
   },
 ]);
@@ -67,6 +67,7 @@ export function Router() {
     return <RouterProvider router={unauthenticatedRouter} />;
   }
   if (isLoggedIn && userData.role === AuthRoleEnum.RECRUITER) {
+    console.log(userData, isLoggedIn)
     return <RouterProvider router={recruiterRouter} />;
   }
   if (isLoggedIn && userData.role === AuthRoleEnum.STUDENT) {
