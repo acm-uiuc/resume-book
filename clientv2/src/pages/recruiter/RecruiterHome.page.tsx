@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Title, Container } from '@mantine/core';
+import { Title, Container, em } from '@mantine/core';
 import { useAuth } from '@/components/AuthContext';
 import { HeaderNavbar } from '@/components/Navbar';
 import DegreeFilter, { Filters } from '@/components/SearchProfiles';
@@ -7,19 +7,20 @@ import { useApi } from '@/util/api';
 import { notifications } from '@mantine/notifications';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import { ProfileSearchResults } from '@/components/SearchProfiles/Results';
-
+import { useMediaQuery } from '@mantine/hooks';
 
 function showErrorNotification(title?: string) {
   notifications.show({
-    title: title || "Failed to Fetch Profiles",
-    message: "Please try again or contact the ACM@UIUC Corporate Team.",
-    color: 'red'
-  })
+    title: title || 'Failed to Fetch Profiles',
+    message: 'Please try again or contact the ACM@UIUC Corporate Team.',
+    color: 'red',
+  });
 }
 export function RecruiterHomePage() {
   const { userData } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
   const [apiResponse, setApiResponse] = useState<any | null>(null);
+  const isMobile = useMediaQuery(`(max-width: ${em(900)})`);
 
   const api = useApi();
 
@@ -27,10 +28,10 @@ export function RecruiterHomePage() {
     let response;
     try {
       setLoading(true);
-      response = await api.post("/recruiter/search", filters)
+      response = await api.post('/recruiter/search', filters);
     } catch {
       setLoading(false);
-      return showErrorNotification()
+      return showErrorNotification();
     }
     if (response.status != 200) {
       setLoading(false);
@@ -40,7 +41,7 @@ export function RecruiterHomePage() {
     setLoading(false);
   };
   if (loading) {
-    return <FullScreenLoader />
+    return <FullScreenLoader />;
   }
   return (
     <>
@@ -57,8 +58,11 @@ export function RecruiterHomePage() {
           <Title order={1}>Search Resume Book</Title>
         </div>
         <DegreeFilter onFilter={handleFilter} />
-        <ProfileSearchResults data={apiResponse}/>
       </Container>
+      <div style={{marginLeft: isMobile ? '1vw' : '10vw', marginRight:  isMobile ? '1vw' : '10vw'}}>
+        <ProfileSearchResults data={apiResponse} />
+      </div>
+
     </>
   );
 }

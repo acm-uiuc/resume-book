@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Button, Grid, Group, MultiSelect, NumberInput, Stack, Tooltip } from '@mantine/core';
+import { Button, em, Grid, Group, MultiSelect, NumberInput, Stack, Tooltip } from '@mantine/core';
 import { csPlusXMajors, degreeOptions, majorOptions } from '../ProfileViewer/options';
 import { IconSearch } from '@tabler/icons-react';
+import { useMediaQuery } from '@mantine/hooks';
 
 interface DegreeFilterProps {
   onFilter: CallableFunction;
@@ -20,6 +21,7 @@ const DegreeFilter: React.FC<DegreeFilterProps> = ({ onFilter }) => {
   const [graduationYears, setGraduationYears] = useState<string[]>([]);
   const [majors, setMajors] = useState<string[]>([]);
   const [gpa, setGpa] = useState<number>(3.0);
+  const isMobile = useMediaQuery(`(max-width: ${em(900)})`);
 
   const currentYear = new Date().getFullYear();
   const validGradYears: string[] = [
@@ -55,7 +57,7 @@ const DegreeFilter: React.FC<DegreeFilterProps> = ({ onFilter }) => {
   );
 
   return (
-    <Stack>
+    <Stack style={{ marginBottom: '3vh' }}>
       <MultiSelect
         label="Degree Level"
         placeholder="Select degree level"
@@ -82,8 +84,8 @@ const DegreeFilter: React.FC<DegreeFilterProps> = ({ onFilter }) => {
         value={graduationYears}
         onChange={setGraduationYears}
       />
-      <Grid align="flex-end">
-        <Grid.Col span={9}>
+      {isMobile ? (
+        <div style={{ alignItems: 'flex-start' }}>
           <MultiSelect
             label="Major"
             placeholder="Select majors"
@@ -92,13 +94,32 @@ const DegreeFilter: React.FC<DegreeFilterProps> = ({ onFilter }) => {
             onChange={setMajors}
             clearable
           />
-        </Grid.Col>
-        <Grid.Col span={3}>
           <SelectAllCSButton />
-        </Grid.Col>
-      </Grid>
+        </div>
+      ) : (
+        <Grid align="flex-end">
+          <Grid.Col span={9}>
+            <MultiSelect
+              label="Major"
+              placeholder="Select majors"
+              data={majorOptions["Bachelor's"]}
+              value={majors}
+              onChange={setMajors}
+              clearable
+            />
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <SelectAllCSButton />
+          </Grid.Col>
+        </Grid>
+      )}
       <Group>
-        <Button color="green" leftSection={<IconSearch size={14} />} onClick={handleFilter}>
+        <Button
+          color="green"
+          leftSection={<IconSearch size={14} />}
+          onClick={handleFilter}
+          fullWidth={isMobile}
+        >
           Search
         </Button>
       </Group>

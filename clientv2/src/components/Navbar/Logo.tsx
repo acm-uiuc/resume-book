@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import brandImgUrl from '@/banner-blue.png'
+import brandImgUrl from '@/banner-blue.png';
 
 interface LogoBadgeProps {
   size?: string;
@@ -27,11 +27,7 @@ const LogoBadge: React.FC<LogoBadgeProps> = ({ size, linkTo, showText }) => {
           alignItems: 'center',
         }}
       >
-        <img
-          src={brandImgUrl}
-          alt="ACM Logo"
-          style={{ height: '2em', marginRight: '0.5em' }}
-        />
+        <img src={brandImgUrl} alt="ACM Logo" style={{ height: '2em', marginRight: '0.5em' }} />
         {showText ? 'Resume Book' : null}
       </Link>
     </b>
