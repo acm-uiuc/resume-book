@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useState, useEffect } from 'react';
+import React, { createContext, ReactNode, useContext, useState, useEffect, useCallback } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useKindeAuth } from '@kinde-oss/kinde-auth-react';
 import {
@@ -65,25 +65,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   } = useKindeAuth();
 
   const [userData, setUserData] = useState<AuthContextData | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
-    (isAuthenticated || accounts.length > 0) && !isLoading
-  );
-  if (isAuthenticated && !isLoading && !userData) {
-    const isRecruiter = getKindePermission('recruiter:resume-book').isGranted;
-    if (!isRecruiter) {
-      setUserData(null);
-      setIsLoggedIn(false);
-      window.location.href = '/';
-    } else {
-      setUserData({
-        email: user?.email!,
-        name: `${user?.given_name} ${user?.family_name}`,
-        authenticationMethod: AuthSourceEnum.LOCAL,
-        role: AuthRoleEnum.RECRUITER,
-      });
-      setIsLoggedIn(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isAuthenticated && !isLoading && !userData) {
+      const isRecruiter = getKindePermission('recruiter:resume-book').isGranted;
+      if (!isRecruiter) {
+        setUserData(null);
+        setIsLoggedIn(false);
+        window.location.href = '/';
+      } else {
+        setUserData({
+          email: user?.email!,
+          name: `${user?.given_name} ${user?.family_name}`,
+          authenticationMethod: AuthSourceEnum.LOCAL,
+          role: AuthRoleEnum.RECRUITER,
+        });
+        setIsLoggedIn(true);
+      }
     }
-  }
+  }, [isAuthenticated, isLoading, user, userData, getKindePermission]);
 
   useEffect(() => {
     const handleRedirect = async () => {
@@ -108,7 +109,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [inProgress, accounts, instance]);
 
-  const handleMsalResponse = (response: AuthenticationResult) => {
+  const handleMsalResponse = useCallback((response: AuthenticationResult) => {
     if (response) {
       const { account } = response;
       if (account) {
@@ -121,9 +122,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoggedIn(true);
       }
     }
-  };
+  }, []);
 
-  const getToken = async () => {
+  const getToken = useCallback(async () => {
     if (!userData) {
       return null;
     }
@@ -163,26 +164,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return getKindeToken();
     }
     throw new Error('Unknown authentication method.');
-  };
+  }, [userData, instance, getKindeToken]);
 
-  const loginMsal = () => {
+  const loginMsal = useCallback(() => {
     instance.loginRedirect();
-  };
+  }, [instance]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
-      instance?.logoutRedirect().then(() => {
-        setIsLoggedIn(false);
-        setUserData(null);
-      });
+      await instance.logoutRedirect();
+      setIsLoggedIn(false);
+      setUserData(null);
     } else {
       if (isAuthenticated && !isLoading) {
+        console.log('logging out')
         kindeLogout();
       }
       setIsLoggedIn(false);
       setUserData(null);
     }
-  };
+  }, [instance, isAuthenticated, isLoading, kindeLogout, userData]);
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, userData, loginMsal, logout, getToken }}>
