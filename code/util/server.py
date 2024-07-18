@@ -104,6 +104,8 @@ def student_get_profile():
 def student_post_profile():
     email = app.current_event.request_context.authorizer["username"]
     json_body: dict = app.current_event.json_body or {}
+    if 'defaultResponse' in json_body:
+        del json_body['defaultResponse']
     json_body["email"] = email
     json_body["username"] = email
     json_body["resumePdfUrl"] = f"s3://{S3_BUCKET}/resume_{email}.pdf"
