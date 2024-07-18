@@ -13,7 +13,7 @@ Parameters:
   LambdaFunctionName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
-    Default: infra-resume-book-api-lambda
+    Default: infra-resume-book-lambda
 
   ResumeS3BucketName:
     Type: String

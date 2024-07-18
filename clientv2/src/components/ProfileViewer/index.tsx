@@ -462,16 +462,13 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
         </Grid.Col>
 
         <Grid.Col span={8} style={{ maxWidth: '100vw' }}>
-          {!enrolling && file && file.size > 0 && file.type === 'application/pdf' ? (
-            <PdfViewer url={file} file={file} setFile={setFile} showFilePicker={showFilePicker} />
-          ) : (
+          {!enrolling && file && file.size > 0 && file.type === 'application/pdf' ? <Text>PDF has been modified; save to view new PDF.</Text> : null}
             <PdfViewer
               url={memoizedPdfUrl}
               file={file}
               setFile={setFile}
               showFilePicker={showFilePicker}
             />
-          )}
         </Grid.Col>
       </Grid>
     </Container>
