@@ -18,6 +18,7 @@ from util.structs import (
     ProfileSearchRequest,
     ResumeUploadPresignedRequest,
     StudentProfileDetails,
+    convert_dict_keys_snake_to_camel,
 )
 from util.environ import get_run_environment
 from util.s3 import create_presigned_url_for_put, create_presigned_url_from_s3_url
@@ -46,18 +47,7 @@ PROFILE_TABLE_NAME = "infra-resume-book-profile-data"
 S3_BUCKET = f"infra-resume-book-pdfs-{RUN_ENV if RUN_ENV != 'local' else 'dev'}"
 
 
-@app.get("/api/v1/healthz")
-def healthz():
-    return Response(
-        status_code=200,
-        content_type=content_types.APPLICATION_JSON,
-        body={"message": "UP"},
-    )
-
-
-@app.get("/api/v1/student/profile")
-def student_get_profile():
-    username = app.current_event.request_context.authorizer["username"]
+def shared_get_profile(username):
     try:
         db_connection = get_db_connection(db_config, "resume_book_get_profile")
         with db_connection.transaction():
@@ -97,6 +87,20 @@ def student_get_profile():
     return Response(
         status_code=200, content_type=content_types.APPLICATION_JSON, body=profile_data
     )
+
+@app.get("/api/v1/healthz")
+def healthz():
+    return Response(
+        status_code=200,
+        content_type=content_types.APPLICATION_JSON,
+        body={"message": "UP"},
+    )
+
+
+@app.get("/api/v1/student/profile")
+def student_get_profile():
+    username = app.current_event.request_context.authorizer["username"]
+    return shared_get_profile(username)
 
 
 @app.post("/api/v1/student/profile")
@@ -211,9 +215,7 @@ def student_get_s3_presigned():
 
 @app.get("/api/v1/recruiter/view_profile/<username>")
 def recruiter_get_profile(username):
-    return Response(
-        status_code=200, content_type=content_types.APPLICATION_JSON, body={}
-    )
+    return shared_get_profile(username)
 
 
 @app.post("/api/v1/recruiter/search")
@@ -227,7 +229,7 @@ def recruiter_perform_search():
             with db_connection.cursor(row_factory=dict_row) as cur:
                 logger.info(search_query)
                 cur.execute(search_query)
-                search_result = cur.fetchall()
+                search_result = [convert_dict_keys_snake_to_camel(x) for x in cur.fetchall()]
     except pydantic.ValidationError as e:
         return Response(
             status_code=403,

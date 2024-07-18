@@ -32,7 +32,12 @@ DELETE FROM student_profile_details WHERE username = %s;
 
 def generate_search_query(degree_types, gpa, graduation_years, majors):
     query = """
-    SELECT spd.username, spd.name, spd.email, spd.resumepdfurl as resumePdfUrl
+    SELECT 
+        spd.username,
+        spd.name, 
+        spd.email,
+        spd.resumepdfurl as resume_pdf_url,
+        jsonb_agg(jsonb_build_object('yearEnded', dl.yearEnded, 'level', dl.level)) AS degrees
     FROM student_profile_details spd
     JOIN degree_listings dl ON spd.username = dl.username
     WHERE
