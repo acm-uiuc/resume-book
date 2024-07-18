@@ -3,9 +3,13 @@ run-name: Deploy stateful resources to AWS PROD by @${{ github.actor }}
 
 on:
   workflow_dispatch:
-  paths:
+  push:
+    branches:
+      - main
+    paths:
       - "cloudformation/stateful.yml"
       - "stateful.sh"
+
 
 jobs:
   deploy-dev:
