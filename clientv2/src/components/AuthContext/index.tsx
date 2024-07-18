@@ -183,12 +183,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoggedIn(false);
       setUserData(null);
     } else {
+      setIsLoggedIn(false);
+      setUserData(null);
       if (isAuthenticated && !isLoading) {
         console.log('logging out');
         await kindeLogout();
       }
-      setIsLoggedIn(false);
-      setUserData(null);
     }
   }, [instance, isAuthenticated, isLoading, kindeLogout, userData]);
 
