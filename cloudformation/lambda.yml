@@ -376,8 +376,7 @@ Resources:
         - CorsRules:
           - AllowedHeaders:
               - '*'
-            AllowedOrigins:
-              - !FindInMap [ApiGwConfig, !Ref RunEnvironment, ValidCorsOrigins]
+            AllowedOrigins: !FindInMap [ApiGwConfig, !Ref RunEnvironment, ValidCorsOrigins]
             AllowedMethods:
               - GET
               - PUT
