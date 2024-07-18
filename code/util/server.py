@@ -11,7 +11,7 @@ import os
 import json
 from decimal import Decimal
 
-from util.queries import GET_USER_PROFILE_QUERY, INSERT_BASE_PROFILE, INSERT_DEGREES
+from util.queries import DELETE_PROFILE, GET_USER_PROFILE_QUERY, INSERT_BASE_PROFILE, INSERT_DEGREES
 from util.postgres import get_db_connection
 from util.dynamo import (
     construct_filter_query,
@@ -116,6 +116,7 @@ def student_post_profile():
         db_connection = get_db_connection(db_config, "resume_book_post_profile")
         with db_connection.transaction():
             with db_connection.cursor() as cur:
+                cur.execute(DELETE_PROFILE, [email])
                 cur.execute(
                     INSERT_BASE_PROFILE,
                     [

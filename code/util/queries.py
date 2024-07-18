@@ -25,3 +25,8 @@ INSERT INTO degree_listings
 VALUES 
 (%s, %s, %s, %s, %s, %s, %s, %s);
 """
+
+DELETE_PROFILE = """
+DELETE FROM student_profile_details WHERE username = %s;
+"""
+
