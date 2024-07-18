@@ -20,7 +20,7 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       BillingMode: PAY_PER_REQUEST
-      DeletionProtectionEnabled: True
+      DeletionProtectionEnabled: False
       OnDemandThroughput:
         MaxReadRequestUnits: 5
         MaxWriteRequestUnits: 5
