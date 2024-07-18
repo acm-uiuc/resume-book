@@ -28,6 +28,7 @@ from util.environ import get_run_environment
 from util.s3 import create_presigned_url_for_put, create_presigned_url_from_s3_url
 from util.logging import get_logger
 from util.secretsmanager import get_parameter_from_sm
+from psycopg.rows import dict_row
 
 RUN_ENV = get_run_environment()
 logger = get_logger()
@@ -68,7 +69,7 @@ def student_get_profile():
     try:
         db_connection = get_db_connection(db_config, "resume_book_get_profile")
         with db_connection.transaction():
-            with db_connection.cursor() as cur:
+            with db_connection.cursor(row_factory=dict_row) as cur:
                 cur.execute(GET_USER_PROFILE_QUERY, [username])
                 profile_data = cur.fetchone()
                 if profile_data and 'resumepdfurl' in profile_data:
