@@ -1,4 +1,3 @@
-import profile
 import traceback
 from aws_lambda_powertools.event_handler import (
     APIGatewayRestResolver,
@@ -12,7 +11,7 @@ import os
 import json
 from decimal import Decimal
 
-from util.queries import DELETE_PROFILE, GET_USER_PROFILE_QUERY, INSERT_BASE_PROFILE, INSERT_DEGREES
+from util.queries import DELETE_PROFILE, GET_USER_PROFILE_QUERY, INSERT_BASE_PROFILE, INSERT_DEGREES, generate_search_query
 from util.postgres import get_db_connection
 from util.structs import (
     DEFAULT_USER_PROFILE,
@@ -106,13 +105,12 @@ def student_post_profile():
     json_body: dict = app.current_event.json_body or {}
     if 'defaultResponse' in json_body:
         del json_body['defaultResponse']
+    json_body['name'] = json_body['name'].lstrip()
     json_body["email"] = email
     json_body["username"] = email
     json_body["resumePdfUrl"] = f"s3://{S3_BUCKET}/resume_{email}.pdf"
     try:
-        data = json.loads(
-            StudentProfileDetails(**json_body).model_dump_json(), parse_float=Decimal
-        )
+        data = StudentProfileDetails(**json_body).model_dump_json()
         db_connection = get_db_connection(db_config, "resume_book_post_profile")
         with db_connection.transaction():
             with db_connection.cursor() as cur:
@@ -221,11 +219,14 @@ def recruiter_get_profile(username):
 @app.post("/api/v1/recruiter/search")
 def recruiter_perform_search():
     json_body: dict = app.current_event.json_body or {}
-    final_response = []
     try:
-        data = json.loads(
-            ProfileSearchRequest(**json_body).model_dump_json(), parse_float=Decimal
-        )
+        data = ProfileSearchRequest(**json_body).model_dump_json()
+        search_query = generate_search_query(data['degreeOptions'], data['gpa'], data['graduationYears'], data['majors'])
+        db_connection = get_db_connection(db_config, "resume_book_recruiter_search")
+        with db_connection.transaction():
+            with db_connection.cursor(row_factory=dict_row) as cur:
+                cur.execute(search_query)
+                search_result = cur.fetchall()
     except pydantic.ValidationError as e:
         return Response(
             status_code=403,
@@ -242,5 +243,5 @@ def recruiter_perform_search():
     return Response(
         status_code=200,
         content_type=content_types.APPLICATION_JSON,
-        body=final_response,
+        body=search_result,
     )
