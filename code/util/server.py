@@ -148,6 +148,7 @@ def student_post_profile():
                         ]
                     )
                 cur.executemany(INSERT_DEGREES, degree_payloads)
+                cur.fetchall()
     except pydantic.ValidationError as e:
         return Response(
             status_code=403,
