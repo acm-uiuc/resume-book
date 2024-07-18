@@ -7,8 +7,7 @@ info:
     email: infra@acm.illinois.edu
 
 servers:
-  - url:
-      Ref: ApiDomainName
+  - url: https://resumes.acm.illinois.edu
 
 tags:
   - name: Student

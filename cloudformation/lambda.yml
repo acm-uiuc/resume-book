@@ -34,20 +34,17 @@ Parameters:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-auth-data
-  ApiDomainName:
-    Type: String
-    Default: resume-api.acm.illinois.edu
-  ApiCertificateArn:
-    Type: String
-    Default: arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
-  ProfileDataTableName:
-    Type: String
-    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
-    Default: infra-resume-book-profile-data
 Conditions:
   IsProd: !Equals [!Ref RunEnvironment, 'prod']
 
 Mappings:
+  ApiGwConfig:
+    dev:
+      ApiCertificateArn: arn:aws:acm:us-east-1:427040638965:certificate/07a0f957-15ae-4330-be14-25814728b981
+      ApiDomainName: resume-api-dev.acm.illinois.edu
+    prod:
+      ApiCertificateArn: arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
+      ApiDomainName: resume-api.acm.illinois.edu
   EnvironmentToCidr:
     dev:
       SecurityGroupIds:
@@ -61,9 +58,8 @@ Mappings:
       SecurityGroupIds:
         - sg-066e3ae1d05e70fcd
       SubnetIds:
-        - subnet-0cab899e254858212
-        - subnet-0fd8cc98213e65d48
-        - subnet-0eb99414c71981187
+        - subnet-0cf33aff80b81eb1b
+        - subnet-0cbe89f6ab2665610
 
 Resources:
   # API Lambda
@@ -158,15 +154,6 @@ Resources:
                   - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}
                   - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}/*
           PolicyName: lambda-s3
-        - PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Action:
-                  - dynamodb:*
-                Effect: Allow
-                Resource:
-                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ProfileDataTableName}
-          PolicyName: lambda-dynamo
         - PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -268,8 +255,8 @@ Resources:
           CombinedAuthorizer:
             FunctionArn: !GetAtt ResumeBookAuthLambdaFunction.Arn
       Domain: 
-        DomainName: !Ref ApiDomainName
-        CertificateArn: !Ref ApiCertificateArn
+        DomainName: !FindInMap [ApiGwConfig, !Ref RunEnvironment, ApiDomainName]
+        CertificateArn: !FindInMap [ApiGwConfig, !Ref RunEnvironment, ApiCertificateArn]
       StageName: default
       Cors:
         AllowHeaders: "'Content-Type,Authorization,X-Amz-Date'"
