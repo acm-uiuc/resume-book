@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { Alert, Anchor, Button, Checkbox, Container, Modal, Table, Text, Title } from '@mantine/core';
+import {
+  Alert,
+  Anchor,
+  Button,
+  Checkbox,
+  Container,
+  Modal,
+  Table,
+  Text,
+  Title,
+} from '@mantine/core';
 import { IconQuestionMark } from '@tabler/icons-react';
 import { DegreeLevel } from '../ProfileViewer/options';
 import { ViewStudentProfile } from '@/pages/recruiter/ViewStudentProfile.page';
@@ -58,10 +68,10 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
   const notImplError = () => {
     notifications.show({
       color: 'red',
-      title: "Not Implemented Yet",
-      message: "This feature still in the works. Check back later."
-    })
-  }
+      title: 'Not Implemented Yet',
+      message: 'This feature still in the works. Check back later.',
+    });
+  };
   const handleRowSelect = (id: string) => {
     setSelectedRows((prevSelectedRows) =>
       prevSelectedRows.includes(id)
@@ -109,11 +119,20 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
     <>
       <div>
         <Container>
-          <div style={{display: 'flex', alignContent: 'start'}}>
-          <Title order={2}>
-            {data.length} {data.length === 1 ? 'Profile' : 'Profiles'} Found
-          </Title>
-          {selectedRows.length > 0 ? <Button style={{marginLeft: '2vw'}} onClick={() => {notImplError()}}>Download Selected Profiles</Button> : null}
+          <div style={{ display: 'flex', alignContent: 'start' }}>
+            <Title order={2}>
+              {data.length} {data.length === 1 ? 'Profile' : 'Profiles'} Found
+            </Title>
+            {selectedRows.length > 0 ? (
+              <Button
+                style={{ marginLeft: '2vw' }}
+                onClick={() => {
+                  notImplError();
+                }}
+              >
+                Download Selected Profiles
+              </Button>
+            ) : null}
           </div>
         </Container>
       </div>
