@@ -14,11 +14,6 @@ from decimal import Decimal
 
 from util.queries import DELETE_PROFILE, GET_USER_PROFILE_QUERY, INSERT_BASE_PROFILE, INSERT_DEGREES
 from util.postgres import get_db_connection
-from util.dynamo import (
-    construct_filter_query,
-    convert_from_dynamodb_json,
-    unpreprocess_profile,
-)
 from util.structs import (
     DEFAULT_USER_PROFILE,
     ProfileSearchRequest,
@@ -48,7 +43,6 @@ cors_config = CORSConfig(
 app = APIGatewayRestResolver(cors=cors_config)
 session = boto3.Session(region_name=os.environ.get("AWS_REGION", "us-east-1"))
 secretsmanager = session.client("secretsmanager")
-dynamodb = session.client("dynamodb")
 db_config = get_parameter_from_sm(secretsmanager, "infra-resume-book-db-config")
 
 PROFILE_TABLE_NAME = "infra-resume-book-profile-data"
@@ -220,32 +214,8 @@ def student_get_s3_presigned():
 
 @app.get("/api/v1/recruiter/view_profile/<username>")
 def recruiter_get_profile(username):
-    try:
-        resp = dynamodb.get_item(
-            TableName=PROFILE_TABLE_NAME, Key={"username": {"S": username}}
-        )
-        if "Item" in resp:
-            profile_data = resp["Item"]
-        else:
-            return Response(
-                status_code=404,
-                content_type=content_types.APPLICATION_JSON,
-                body={"message": f"No profile found for {username}"},
-            )
-    except Exception as e:
-        logger.error(traceback.format_exc())
-        return Response(
-            status_code=500,
-            content_type=content_types.APPLICATION_JSON,
-            body={"message": "Error getting profile data", "details": str(e)},
-        )
-    # generate presigned url for resume pdf
-    profile_data = convert_from_dynamodb_json(profile_data)
-    profile_data["resumePdfUrl"] = create_presigned_url_from_s3_url(
-        profile_data["resumePdfUrl"]
-    )
     return Response(
-        status_code=200, content_type=content_types.APPLICATION_JSON, body=profile_data
+        status_code=200, content_type=content_types.APPLICATION_JSON, body={}
     )
 
 
@@ -257,14 +227,6 @@ def recruiter_perform_search():
         data = json.loads(
             ProfileSearchRequest(**json_body).model_dump_json(), parse_float=Decimal
         )
-        filter_query = construct_filter_query(
-            data["degreeOptions"], data["gpa"], data["graduationYears"], data["majors"]
-        )
-        dynamodb_resource = session.resource("dynamodb")
-        table = dynamodb_resource.Table(PROFILE_TABLE_NAME)
-        response = table.scan(FilterExpression=filter_query)
-        if "Items" in response:
-            final_response = [unpreprocess_profile(x) for x in response["Items"]]
     except pydantic.ValidationError as e:
         return Response(
             status_code=403,
