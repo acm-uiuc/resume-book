@@ -48,7 +48,6 @@ DEFAULT_USER_PROFILE = {
     "skills": ["Python", "Java", "C++"],
     "work_auth_required": False,
     "sponsorship_required": False,
-    "resumePdfUrl": ""
 }
 
 

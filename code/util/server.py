@@ -73,8 +73,9 @@ def student_get_profile():
                 logger.info(username)
                 cur.execute(GET_USER_PROFILE_QUERY, [username])
                 profile_data = cur.fetchone()
-                profile_data["resumePdfUrl"] = profile_data["resumepdfurl"]
-                del profile_data["resumepdfurl"]
+                if 'resumepdfurl' in profile_data:
+                    profile_data["resumePdfUrl"] = profile_data["resumepdfurl"]
+                    del profile_data["resumepdfurl"]
         if not profile_data:
             DEFAULT_USER_PROFILE["username"] = username
             DEFAULT_USER_PROFILE["email"] = username
@@ -90,9 +91,10 @@ def student_get_profile():
             content_type=content_types.APPLICATION_JSON,
             body={"message": "Error getting profile data", "details": str(e)},
         )
-    profile_data["resumePdfUrl"] = create_presigned_url_from_s3_url(
-        profile_data["resumePdfUrl"]
-    )
+    if 'resumePdfUrl' in profile_data:
+        profile_data["resumePdfUrl"] = create_presigned_url_from_s3_url(
+            profile_data["resumePdfUrl"]
+        )
     return Response(
         status_code=200, content_type=content_types.APPLICATION_JSON, body=profile_data
     )
