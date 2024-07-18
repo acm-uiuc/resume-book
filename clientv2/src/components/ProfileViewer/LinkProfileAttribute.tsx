@@ -21,7 +21,12 @@ export const LinkProfileAttribute: React.FC<LinkProfileAttributeProps> = ({
   return (
     <Group>
       {editable ? (
-        <TextInput label={name} value={url} onChange={(e) => handleInputChange(e.target.value)} style={{width: '100%'}}/>
+        <TextInput
+          label={name}
+          value={url}
+          onChange={(e) => handleInputChange(e.target.value)}
+          style={{ width: '100%' }}
+        />
       ) : (
         <>
           <ThemeIcon color="blue" size={20} radius="xl">

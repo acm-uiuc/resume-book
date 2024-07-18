@@ -135,3 +135,25 @@ paths:
         type: aws_proxy
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
+
+  /api/v1/recruiter/search:
+    post:
+      summary: Recruiter mode - search for profiles with applied filters
+      operationId: recruiterSearchProfiles
+      responses:
+        200:
+          description: OK
+
+      security:
+        - CombinedAuthorizer: []
+
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"

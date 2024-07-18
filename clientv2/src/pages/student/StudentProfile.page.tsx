@@ -39,6 +39,7 @@ export function StudentHomePage() {
           setEnrolled(false);
           setLoading(false);
         } else {
+          console.error(err);
           setLoading(false);
           setUnrecoverableError(true);
         }
@@ -169,6 +170,8 @@ export function StudentHomePage() {
           message: '',
         });
         setEditToggle(false);
+      } else if (response.status && response.status == 403) {
+        showErrorSaveNotification('Failed to validate form.');
       } else {
         showErrorSaveNotification();
       }

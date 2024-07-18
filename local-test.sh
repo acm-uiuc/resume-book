@@ -1,1 +1,0 @@
-sam local invoke ResumeBookApiLambdaFunction --event test.json -t "cloudformation/lambda.yml"

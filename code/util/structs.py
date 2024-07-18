@@ -29,6 +29,12 @@ class StudentProfileDetails(BaseModel):
 class ResumeUploadPresignedRequest(BaseModel):
     file_size: int
 
+class ProfileSearchRequest(BaseModel):
+    degreeOptions: Optional[List[str]] = []
+    gpa: Optional[float] = 3.0
+    graduationYears: Optional[List[str]] = []
+    majors: Optional[List[str]] = []
+
 DEFAULT_USER_PROFILE = {
     "defaultResponse": True,
     "username": "someone@illinois.edu",
@@ -42,7 +48,6 @@ DEFAULT_USER_PROFILE = {
     "skills": ["Python", "Java", "C++"],
     "work_auth_required": False,
     "sponsorship_required": False,
-    "resumePdfUrl": ""
 }
 
 

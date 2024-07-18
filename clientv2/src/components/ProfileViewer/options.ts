@@ -57,7 +57,7 @@ export const institutionOptions = [
   ...otherInstitutionOptions.sort(),
 ];
 
-const csPlusXMajors = [
+export const csPlusXMajors = [
   'Computer Science + Animal Sciences',
   'Computer Science + Crop Sciences',
   'Computer Science + Education',
@@ -76,14 +76,9 @@ const csPlusXMajors = [
   'Statistics & Computer Science',
 ];
 
-const commonMajors = [
-  'Computer Science',
-  'Computer Engineering',
-  'Electrical Engineering',
-  'Mathematics',
-];
+export const commonMajors = ['Computer Engineering', 'Electrical Engineering', 'Mathematics'];
 
-const otherMajors = [
+export const otherMajors = [
   'Accountancy',
   'Advertising',
   'Aerospace Engineering',
@@ -183,19 +178,19 @@ export type DegreeLevel = (typeof degreeOptions)[number];
 
 export const majorOptions: Record<DegreeLevel, any> = {
   "Associate's": [
-    { group: 'Common Majors', items: commonMajors },
+    { group: 'Common Majors', items: ['Computer Science', ...commonMajors] },
     { group: 'Other Majors', items: otherMajors },
   ],
   "Bachelor's": [
-    { group: 'Common Majors', items: [...commonMajors, ...csPlusXMajors] },
+    { group: 'Common Majors', items: ['Computer Science', ...commonMajors, ...csPlusXMajors] },
     { group: 'Other Majors', items: otherMajors },
   ],
   "Master's (Thesis)": [
-    { group: 'Common Majors', items: commonMajors },
+    { group: 'Common Majors', items: ['Computer Science', ...commonMajors] },
     { group: 'Other Majors', items: otherMajors },
   ],
   "Master's (Non-Thesis)": [
-    { group: 'Common Majors', items: commonMajors },
+    { group: 'Common Majors', items: ['Computer Science', ...commonMajors] },
     { group: 'Other Majors', items: otherMajors },
   ],
   PhD: [

@@ -1,1 +1,0 @@
-aws cloudformation deploy --stack-name=infra-resume-book-stateful --template-file=cloudformation/stateful.yml --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_IAM --no-fail-on-empty-changeset
