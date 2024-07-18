@@ -181,11 +181,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoggedIn(false);
       setUserData(null);
-      if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
-        await instance.logoutRedirect();
-      } else if (userData?.authenticationMethod === AuthSourceEnum.LOCAL) {
-        await kindeLogout();
-      }
+      setTimeout(async () => {
+        if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
+          await instance.logoutRedirect();
+        } else if (userData?.authenticationMethod === AuthSourceEnum.LOCAL) {
+          await kindeLogout();
+        }
+      }, 1000)
+
     } catch (error) {
       console.error('Logout failed:', error);
     }
