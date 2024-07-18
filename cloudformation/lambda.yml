@@ -30,10 +30,6 @@ Parameters:
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-auth-lambda
 
-  UserAuthTableName:
-    Type: String
-    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
-    Default: infra-resume-book-auth-data
 Conditions:
   IsProd: !Equals [!Ref RunEnvironment, 'prod']
 
@@ -370,10 +366,11 @@ Resources:
   ResumeStorageS3Bucket:
     Type: 'AWS::S3::Bucket'
     DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       BucketName: !Sub "${ResumeS3BucketName}-${RunEnvironment}"
       CorsConfiguration:
-        - CorsRules:
+        CorsRules:
           - AllowedHeaders:
               - '*'
             AllowedOrigins: !FindInMap [ApiGwConfig, !Ref RunEnvironment, ValidCorsOrigins]
