@@ -81,6 +81,7 @@ def student_get_profile():
                 for degree in profile_data['degrees']:
                     degree['yearStarted'] = degree.pop('yearstarted')
                     degree['yearEnded'] = degree.pop('yearended')
+                    degree.pop('username')
 
         if not profile_data:
             DEFAULT_USER_PROFILE["username"] = username
