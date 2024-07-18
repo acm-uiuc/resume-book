@@ -178,17 +178,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [instance]);
 
   const logout = useCallback(async () => {
-    if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
-      setIsLoggedIn(false);
-      setUserData(null);
-      await instance.logoutRedirect();
-    } else {
-      setIsLoggedIn(false);
-      setUserData(null);
-      await kindeLogout();
+    console.log('logout requested', userData)
+    try {
+      if (userData?.authenticationMethod === AuthSourceEnum.MSAL) {
+        setIsLoggedIn(false);
+        setUserData(null);
+        await instance.logoutRedirect();
+      } else {
+        setIsLoggedIn(false);
+        setUserData(null);
+        await kindeLogout();
+        console.log('logout done for kinde')
+      }
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Optionally, you can show a user-friendly error message or retry logic
     }
-  }, [instance, isAuthenticated, isLoading, kindeLogout, userData]);
-
+  }, [instance, kindeLogout, userData]);
   return (
     <AuthContext.Provider value={{ isLoggedIn, userData, loginMsal, logout, getToken }}>
       {isLoading || inProgress !== InteractionStatus.None ? (
