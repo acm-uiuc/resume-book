@@ -170,6 +170,8 @@ export function StudentHomePage() {
           message: '',
         });
         setEditToggle(false);
+      } else if (response.status && response.status == 403) {
+        showErrorSaveNotification('Failed to validate form.');
       } else {
         showErrorSaveNotification();
       }
