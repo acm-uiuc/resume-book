@@ -69,5 +69,6 @@ def generate_search_query(degree_types, gpa, graduation_years, majors):
     
     # Combine all conditions
     query += " AND ".join(conditions)
+    query += "\nGROUP BY spd.username;"
     
     return query
