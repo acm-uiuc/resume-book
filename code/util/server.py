@@ -39,14 +39,13 @@ def healthz():
 
 @app.get("/api/v1/student/profile")
 def student_get_profile():
-    try:
-        username = app.current_event.request_context.authorizer['username']
-    except:
-        username = 'dsingh14@illinois.edu'
+    username = app.current_event.request_context.authorizer['username']
     try:
         db_connection = get_db_connection(db_config, "resume_book_get_profile")
         with db_connection.transaction():
             with db_connection.cursor() as cur:
+                logger.info(GET_USER_PROFILE_QUERY)
+                logger.info(username)
                 cur.execute(GET_USER_PROFILE_QUERY, [username])
                 profile_data = cur.fetchone()
         if not profile_data:
