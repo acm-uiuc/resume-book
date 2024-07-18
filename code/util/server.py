@@ -69,8 +69,6 @@ def student_get_profile():
         db_connection = get_db_connection(db_config, "resume_book_get_profile")
         with db_connection.transaction():
             with db_connection.cursor() as cur:
-                logger.info(GET_USER_PROFILE_QUERY)
-                logger.info(username)
                 cur.execute(GET_USER_PROFILE_QUERY, [username])
                 profile_data = cur.fetchone()
                 if profile_data and 'resumepdfurl' in profile_data:
