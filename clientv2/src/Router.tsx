@@ -28,11 +28,7 @@ const recruiterRouter = createBrowserRouter([
   {
     path: '/login',
     element: <Navigate to="/" replace />,
-  },
-  {
-    path: '/studentprofile/:username',
-    element: <ViewStudentProfile />,
-  },
+  }
 ]);
 
 const studentRouter = createBrowserRouter([
