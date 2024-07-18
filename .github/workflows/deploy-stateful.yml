@@ -6,9 +6,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "cloudformation/stateful.yml"
-      - "stateful.sh"
 
 
 jobs:
