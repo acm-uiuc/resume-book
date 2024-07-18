@@ -22,8 +22,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <KindeProvider
     clientId="fdacad7aea554755844105f5606da0f6"
     domain="https://auth.acm.illinois.edu"
-    redirectUri={`${window.location.origin}/login`}
-    logoutUri={window.location.origin}
+    redirectUri={window.location.origin}
+    logoutUri={`${window.location.origin}/login`}
   >
     <MsalProvider instance={pca}>
       <AuthProvider>

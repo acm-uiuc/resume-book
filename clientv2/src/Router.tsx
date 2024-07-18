@@ -3,9 +3,24 @@ import { AuthRoleEnum, useAuth } from './components/AuthContext';
 import { LoginPage } from './pages/Login.page';
 import { StudentHomePage } from './pages/student/StudentProfile.page';
 import { RecruiterHomePage } from './pages/recruiter/RecruiterHome.page';
-import { ViewStudentProfile } from './pages/recruiter/ViewStudentProfile.page';
+
+const commonRoutes = [
+  {
+    path: '/force_login',
+    element: <LoginPage />,
+  }
+]
+
+const authRedirect = [
+  {
+    path: '/login',
+    element: <Navigate to="/" />,
+  }
+]
+
 
 const unauthenticatedRouter = createBrowserRouter([
+  ...commonRoutes,
   {
     path: '/',
     element: <Navigate to="/login" replace />,
@@ -21,24 +36,24 @@ const unauthenticatedRouter = createBrowserRouter([
 ]);
 
 const recruiterRouter = createBrowserRouter([
-  {
-    path: '/',
-    element: <RecruiterHomePage />,
-  },
-  {
-    path: '/login',
-    element: <Navigate to="/" replace />,
-  },
-]);
-
-const studentRouter = createBrowserRouter([
+  ...commonRoutes,
+  ...authRedirect,
   {
     path: '/',
     element: <Navigate to="/profile" replace />,
   },
   {
-    path: '/login',
-    element: <Navigate to="/" replace />,
+    path: '/profile',
+    element: <RecruiterHomePage />,
+  },
+]);
+
+const studentRouter = createBrowserRouter([
+  ...commonRoutes,
+  ...authRedirect,
+  {
+    path: '/',
+    element: <Navigate to="/profile" replace />,
   },
   {
     path: '/profile',
