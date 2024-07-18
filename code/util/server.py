@@ -67,15 +67,6 @@ def student_get_profile():
             with db_connection.cursor(row_factory=dict_row) as cur:
                 cur.execute(GET_USER_PROFILE_QUERY, [username])
                 profile_data = cur.fetchone()
-                if profile_data and 'resumepdfurl' in profile_data:
-                    profile_data["resumePdfUrl"] = profile_data["resumepdfurl"]
-                    del profile_data["resumepdfurl"]
-                if 'degrees' not in profile_data or profile_data['degrees'] == [None]:
-                    profile_data['degrees'] = []
-                for degree in profile_data['degrees']:
-                    degree['yearStarted'] = degree.pop('yearstarted')
-                    degree['yearEnded'] = degree.pop('yearended')
-                    degree.pop('username')
 
         if not profile_data:
             DEFAULT_USER_PROFILE["username"] = username
@@ -85,6 +76,16 @@ def student_get_profile():
                 content_type=content_types.APPLICATION_JSON,
                 body=DEFAULT_USER_PROFILE,
             )
+        else:
+            if profile_data and 'resumepdfurl' in profile_data:
+                profile_data["resumePdfUrl"] = profile_data["resumepdfurl"]
+                del profile_data["resumepdfurl"]
+            if 'degrees' not in profile_data or profile_data['degrees'] == [None]:
+                profile_data['degrees'] = []
+            for degree in profile_data['degrees']:
+                degree['yearStarted'] = degree.pop('yearstarted')
+                degree['yearEnded'] = degree.pop('yearended')
+                degree.pop('username')
     except Exception as e:
         logger.error(traceback.format_exc())
         return Response(
