@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="title" content="ACM@UIUC Resume Book">
+    <meta name="description" content="The ACM@UIUC Resume Book connects UIUC CS/ECE students with recruiters.">
+    <meta name="keywords" content="acm,uiuc">
+    <meta name="robots" content="index, nofollow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="language" content="English">
+    <meta name="author" content="ACM@UIUC">
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://resumes.acm.illinois.edu">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ACM@UIUC Resume Book">
+    <meta property="og:description" content="The ACM@UIUC Resume Book connects UIUC CS/ECE students with recruiters.">
+    <meta property="og:image" content="https://acm-brand-images.s3.amazonaws.com/banner-blue.png">
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="resumes.acm.illinois.edu">
+    <meta property="twitter:url" content="https://resumes.acm.illinois.edu">
+    <meta name="twitter:title" content="ACM@UIUC Resume Book">
+    <meta name="twitter:description" content="The ACM@UIUC Resume Book connects UIUC CS/ECE students with recruiters.">
+    <meta name="twitter:image" content="https://acm-brand-images.s3.amazonaws.com/banner-blue.png">
+    <link rel="icon" href="https://acm-brand-images.s3.amazonaws.com/square-blue.png" />
+    <meta
+      name="viewport"
+      content="minimum-scale=1, initial-scale=1, maximum-scale=1, width=device-width, user-scalable=no"
+    />
+    <title>Resume Book | ACM@UIUC</title>
+    <script type="module" crossorigin src="/assets/index-RsBUeAgP.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/@azure-Cn-T3ijo.js">
+    <link rel="modulepreload" crossorigin href="/assets/@mantine-DIY-ALqz.js">
+    <link rel="stylesheet" crossorigin href="/assets/@mantine-C2eCdqGW.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-BjAGcoCm.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

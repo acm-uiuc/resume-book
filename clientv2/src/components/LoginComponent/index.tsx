@@ -1,13 +1,14 @@
 import { Text, Paper, Group, PaperProps, Divider, Center } from '@mantine/core';
 import { AcmLoginButton } from './AcmLoginButton';
 import { PartnerLoginButton } from './PartnerLoginButton';
+import brandImgUrl from '@/banner-blue.png';
 
 export function LoginComponent(props: PaperProps) {
   return (
     <Paper radius="md" p="xl" withBorder {...props}>
       <Center>
         <img
-          src="https://acm-brand-images.s3.amazonaws.com/banner-blue.png"
+          src={brandImgUrl}
           alt="ACM Logo"
           style={{ height: '5em', marginBottom: '1em' }}
         />
