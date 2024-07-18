@@ -174,7 +174,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [userData, instance, getKindeToken]);
 
   const loginMsal = useCallback(() => {
-    console.log('msal login')
     instance.loginRedirect();
   }, [instance]);
 
