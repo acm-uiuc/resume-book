@@ -42,9 +42,13 @@ Mappings:
     dev:
       ApiCertificateArn: arn:aws:acm:us-east-1:427040638965:certificate/07a0f957-15ae-4330-be14-25814728b981
       ApiDomainName: resume-api-dev.acm.illinois.edu
+      ValidCorsOrigins:
+        - "*"
     prod:
       ApiCertificateArn: arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
       ApiDomainName: resume-api.acm.illinois.edu
+      ValidCorsOrigins:
+        - https://resumes.acm.illinois.edu
   EnvironmentToCidr:
     dev:
       SecurityGroupIds:
@@ -78,6 +82,7 @@ Resources:
       Environment:
         Variables:
           RunEnvironment: !Ref RunEnvironment
+          ValidCorsOrigins: !Join [",", !FindInMap [ApiGwConfig, !Ref RunEnvironment, ValidCorsOrigins]]
       VpcConfig: 
         Ipv6AllowedForDualStack: True
         SecurityGroupIds: !FindInMap [EnvironmentToCidr, !Ref RunEnvironment, SecurityGroupIds]
@@ -368,28 +373,16 @@ Resources:
     Properties:
       BucketName: !Sub "${ResumeS3BucketName}-${RunEnvironment}"
       CorsConfiguration:
-        !If 
-          - IsProd
-          - CorsRules:
-            - AllowedHeaders:
-                - '*'
-              AllowedOrigins:
-                - 'https://resumes.acm.illinois.edu'
-              AllowedMethods:
-                - GET
-                - PUT
-              Id: CORSAllowProdSite
-              MaxAge: 3600
-          - CorsRules:
-            - AllowedHeaders:
-                - '*'
-              AllowedOrigins:
-                - 'http://localhost:5173'
-              AllowedMethods:
-                - GET
-                - PUT
-              Id: CORSAllowLocalhost
-              MaxAge: 3600
+        - CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedOrigins:
+              - !FindInMap [ApiGwConfig, !Ref RunEnvironment, ValidCorsOrigins]
+            AllowedMethods:
+              - GET
+              - PUT
+            Id: CORSAllowProdSite
+            MaxAge: 3600
 
 Outputs:
   ApiUrl:
