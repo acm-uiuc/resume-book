@@ -3,6 +3,7 @@ import { AuthRoleEnum, useAuth } from './components/AuthContext';
 import { LoginPage } from './pages/Login.page';
 import { StudentHomePage } from './pages/student/StudentProfile.page';
 import { RecruiterHomePage } from './pages/recruiter/RecruiterHome.page';
+import { ViewStudentProfile } from './pages/recruiter/ViewStudentProfile.page';
 
 const unauthenticatedRouter = createBrowserRouter([
   {
@@ -27,7 +28,7 @@ const recruiterRouter = createBrowserRouter([
   {
     path: '/login',
     element: <Navigate to="/" replace />,
-  },
+  }
 ]);
 
 const studentRouter = createBrowserRouter([

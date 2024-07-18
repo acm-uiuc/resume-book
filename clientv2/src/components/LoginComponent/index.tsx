@@ -7,11 +7,7 @@ export function LoginComponent(props: PaperProps) {
   return (
     <Paper radius="md" p="xl" withBorder {...props}>
       <Center>
-        <img
-          src={brandImgUrl}
-          alt="ACM Logo"
-          style={{ height: '5em', marginBottom: '1em' }}
-        />
+        <img src={brandImgUrl} alt="ACM Logo" style={{ height: '5em', marginBottom: '1em' }} />
       </Center>
 
       <Text size="lg" fw={500}>

@@ -1,4 +1,11 @@
-import React, { createContext, ReactNode, useContext, useState, useEffect, useCallback } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useKindeAuth } from '@kinde-oss/kinde-auth-react';
 import {
@@ -177,7 +184,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUserData(null);
     } else {
       if (isAuthenticated && !isLoading) {
-        console.log('logging out')
+        console.log('logging out');
         kindeLogout();
       }
       setIsLoggedIn(false);
