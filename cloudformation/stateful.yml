@@ -16,25 +16,3 @@ Parameters:
     Description: User Auth Primary Key Type
 
 Resources:
-  ProfileDataTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      BillingMode: PAY_PER_REQUEST
-      DeletionProtectionEnabled: False
-      OnDemandThroughput:
-        MaxReadRequestUnits: 5
-        MaxWriteRequestUnits: 5
-      TableName: !Ref ProfileDataTableName
-      AttributeDefinitions:
-        - 
-          AttributeName: !Ref HashKeyElementName
-          AttributeType: !Ref HashKeyElementType
-      KeySchema:
-        - 
-          AttributeName: !Ref HashKeyElementName
-          KeyType: HASH
-      Tags:
-        - Key: "project"
-          Value: "infra-resume-book"
-        - Key: "techlead"
-          Value: "dsingh14@illinois.edu"
