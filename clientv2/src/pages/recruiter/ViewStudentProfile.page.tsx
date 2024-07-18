@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/AuthContext';
-import { HeaderNavbar } from '@/components/Navbar';
 import { useApi } from '@/util/api';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileViewer';
 import FullPageError from '@/components/FullPageError';
-import { useParams } from 'react-router-dom';
 
-export function ViewStudentProfile() {
+export interface ViewStudentProfileTypes {
+  username: string;
+}
+
+export const ViewStudentProfile: React.FC<ViewStudentProfileTypes> = ({ username }) => {
   const { userData } = useAuth();
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
   const [unrecoverableError, setUnrecoverableError] = useState(false);
   const [studentData, setStudentData] = useState<StudentProfileDetails>();
-  const { username } = useParams();
   const api = useApi();
   useEffect(() => {
     async function fetch() {
@@ -59,7 +60,6 @@ export function ViewStudentProfile() {
   }
   return (
     <>
-      <HeaderNavbar userData={userData} />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {enrolled && studentData ? (
           <StudentProfilePage
@@ -77,4 +77,4 @@ export function ViewStudentProfile() {
       </div>
     </>
   );
-}
+};

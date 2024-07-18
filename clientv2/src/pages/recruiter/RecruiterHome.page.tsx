@@ -59,10 +59,11 @@ export function RecruiterHomePage() {
         </div>
         <DegreeFilter onFilter={handleFilter} />
       </Container>
-      <div style={{marginLeft: isMobile ? '1vw' : '10vw', marginRight:  isMobile ? '1vw' : '10vw'}}>
+      <div
+        style={{ marginLeft: isMobile ? '1vw' : '10vw', marginRight: isMobile ? '1vw' : '10vw' }}
+      >
         <ProfileSearchResults data={apiResponse} />
       </div>
-
     </>
   );
 }
