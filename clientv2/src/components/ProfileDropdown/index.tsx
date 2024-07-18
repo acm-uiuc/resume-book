@@ -16,7 +16,8 @@ import {
 
 import { IconChevronDown, IconUser, IconMail, IconBuilding } from '@tabler/icons-react';
 import classes from '../Navbar/index.module.css';
-import { AuthContextData, useAuth, roleToString } from '../AuthContext';
+import { AuthContextData, useAuth, roleToString, AuthSourceEnum } from '../AuthContext';
+import { useKindeAuth } from '@kinde-oss/kinde-auth-react';
 
 interface ProfileDropdownProps {
   userData: AuthContextData;
@@ -26,6 +27,7 @@ const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({ userData
   const [opened, setOpened] = useState(false);
   const theme = useMantineTheme();
   const { logout } = useAuth();
+  const {logout: kindeLogout} = useKindeAuth();
   return (
     <Popover
       width={300}
@@ -121,8 +123,12 @@ const AuthenticatedProfileDropdown: React.FC<ProfileDropdownProps> = ({ userData
           <Button
             variant="outline"
             fullWidth
-            onClick={() => {
-              logout();
+            onClick={async () => {
+              if (userData.authenticationMethod === AuthSourceEnum.LOCAL) {
+                await kindeLogout();
+              } else {
+                await logout();
+              }
             }}
           >
             Log Out
