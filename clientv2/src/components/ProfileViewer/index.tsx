@@ -252,7 +252,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                 editingName="Email"
                 editable={editable}
                 icon={<IconMail size={14} />}
-                handleInputChange={() => {}}
+                handleInputChange={(payload: string) => {handleInputChange('email', payload.trim());}}
                 overrideUrl={studentProfile.email}
               />
               <LinkProfileAttribute
