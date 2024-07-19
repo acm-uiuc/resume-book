@@ -11,7 +11,7 @@ import os
 import json
 from decimal import Decimal
 
-from code.util.oai import get_oai_client, oai_get_profile_json
+from util.oai import get_oai_client, oai_get_profile_json
 from util.queries import DELETE_PROFILE, GET_USER_PROFILE_QUERY, INSERT_BASE_PROFILE, INSERT_DEGREES, generate_search_query
 from util.postgres import get_db_connection
 from util.structs import (
