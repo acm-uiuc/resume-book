@@ -227,6 +227,10 @@ def student_gpt():
         response['username'] = username
         if 'email' not in response or response['email'] == '':
             response['email'] = username
+        url_properties = ['linkedin', 'github', 'website']
+        for prop in url_properties:
+            if response[prop] != "" and "http://" not in response[prop] and "https://" not in response[prop]:
+                response[prop] = f"http://{response[prop]}"
         response['resumePdfUrl'] = create_presigned_url_from_s3_url(f"s3://{S3_BUCKET}/resume_{username}.pdf")
     except pydantic.ValidationError as e:
         return Response(
