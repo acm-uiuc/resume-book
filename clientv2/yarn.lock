@@ -3275,6 +3275,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ungap/with-resolvers@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@ungap/with-resolvers@npm:0.1.0"
+  checksum: 10c0/1f1063e5e9a605cd1250c14567f9de3e04fc9fabe6f9b72850405f1e69ab672e748e1b1cec4da91be8e1e2cf222517f2d2e132073a6bb072aa2869543f482365
+  languageName: node
+  linkType: hard
+
 "@vitejs/plugin-react@npm:^4.3.1":
   version: 4.3.1
   resolution: "@vitejs/plugin-react@npm:4.3.1"
@@ -3416,6 +3423,7 @@ __metadata:
     "@types/react-dom": "npm:^18.3.0"
     "@typescript-eslint/eslint-plugin": "npm:^7.13.1"
     "@typescript-eslint/parser": "npm:^7.13.1"
+    "@ungap/with-resolvers": "npm:^0.1.0"
     "@vitejs/plugin-react": "npm:^4.3.1"
     axios: "npm:^1.7.2"
     dotenv: "npm:^16.4.5"

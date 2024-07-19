@@ -4,6 +4,7 @@ import { Configuration, PublicClientApplication } from '@azure/msal-browser';
 import { KindeProvider } from '@kinde-oss/kinde-auth-react';
 import App from './App';
 import { AuthProvider } from './components/AuthContext';
+import '@ungap/with-resolvers';
 
 const msalConfiguration: Configuration = {
   auth: {
