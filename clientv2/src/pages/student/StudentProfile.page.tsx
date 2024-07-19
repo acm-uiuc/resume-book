@@ -1,13 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Container, Grid } from '@mantine/core';
+import { Alert, Button, Container, Grid, Text, Group, Modal, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconInfoCircle } from '@tabler/icons-react';
+import {
+  IconAlertTriangleFilled,
+  IconDeviceFloppy,
+  IconInfoCircle,
+  IconSparkles,
+} from '@tabler/icons-react';
 import { useAuth } from '@/components/AuthContext';
 import { HeaderNavbar } from '@/components/Navbar';
 import { useApi } from '@/util/api';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileViewer';
 import FullPageError from '@/components/FullPageError';
+import { useDisclosure } from '@mantine/hooks';
+
+const genAiEnabled = true;
 
 export function StudentHomePage() {
   const { userData } = useAuth();
@@ -18,6 +26,7 @@ export function StudentHomePage() {
   const [studentData, setStudentData] = useState<StudentProfileDetails>();
   const [file, setFile] = useState<File | null>(null);
   const [newUser, setNewUser] = useState<boolean>(false);
+  const [genProfileOpened, { open: genProfileOpen, close: genProfileClose }] = useDisclosure(false);
   const api = useApi();
   useEffect(() => {
     async function fetch() {
@@ -199,9 +208,28 @@ export function StudentHomePage() {
       <Container></Container>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Container>
-          <Button onClick={toggleEdit} style={{ marginTop: '1em' }}>
-            {editToggle ? 'Save' : 'Edit'}
-          </Button>
+          <Group style={{ marginTop: '1em' }}>
+            <Button
+              leftSection={<IconDeviceFloppy size={16} />}
+              onClick={toggleEdit}
+              color={editToggle ? 'green' : undefined}
+            >
+              {editToggle ? 'Save' : 'Edit'}
+            </Button>
+            {genAiEnabled && editToggle ? (
+              <Tooltip label="Uses Generative AI to create a Resume Book profile from your resume.">
+                <Button
+                  color="purple"
+                  leftSection={<IconSparkles size={16} />}
+                  onClick={() => {
+                    genProfileOpen();
+                  }}
+                >
+                  Generate Profile
+                </Button>
+              </Tooltip>
+            ) : null}
+          </Group>
         </Container>
       </div>
       {newUser ? (
@@ -232,6 +260,20 @@ export function StudentHomePage() {
           'We encountered an error. Please try again later.'
         )}
       </div>
+      <Modal
+        opened={genProfileOpened}
+        onClose={genProfileClose}
+        title="Generative AI Profile Creator"
+      >
+        <Alert color="yellow" title="Privacy Notice" icon={<IconAlertTriangleFilled />}>
+          By using this feature, you agree to send your resume file to OpenAI for processing and
+          response generation. Your resume data is subject to OpenAI's privacy and security
+          policies.
+        </Alert>
+        <Text size="sm">
+          This feature is not generally available. Stay tuned for more information!
+        </Text>
+      </Modal>
     </>
   );
 }
