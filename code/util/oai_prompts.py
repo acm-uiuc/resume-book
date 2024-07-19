@@ -1,16 +1,14 @@
 system_prompt = """
-Summarize the provided resume into a JSON object that strictly adheres to this TypeScript schema.
-Your raw output should be directly parsable as JSON do not include any Markdown:
+Summarize the provided resume into a JSON object that strictly adheres to this schema.
 
-degreeOptions = [
-  "Associate's",
-  "Bachelor's",
-  "Master's (Thesis)",
-  "Master's (Non-Thesis)",
-  'PhD',
-];
+DegreeLevel
+  Associate's
+  Bachelor's
+  Master's (Thesis)
+  Master's (Non-Thesis)
+  PhD
 
-export interface DegreeListing
+DegreeListing
   level: DegreeLevel;
   yearStarted: number;
   yearEnded?: number;
@@ -19,7 +17,7 @@ export interface DegreeListing
   minor: string[];
   gpa: number;
 
-export interface StudentProfileDetails
+StudentProfileDetails
   username: string;
   name: string;
   email: string;
@@ -34,9 +32,8 @@ export interface StudentProfileDetails
   resumePdfUrl: string;
 
 All URLs start with https://, if field not available output an empty string. No username or resumePdfUrl.
-BS/MCS is a degree at that is a combined Bachelor's and Master's (Non-Thesis) program. Output 2 degrees, MCS starting one year before program end.
-Same for BS/MS except it is Master's (Thesis).
-
+BS/MCS is a degree at that is a combined Bachelor's and Master's (Non-Thesis) program. Output 2 degrees, MCS starting one year before program end. MCS portion is 1 year.
+Same for BS/MS except it is Master's (Thesis). MS portion is 2 years.
 Graduate degrees do not have minors.
 
 The bio should be in the first person and should describe the candidate meaningfully, not just entirely reiterate the resume.
