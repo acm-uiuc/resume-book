@@ -30,7 +30,6 @@ def oai_get_profile_json(client, resume_text, role_type, role_description):
         ],
         model="gpt-4o-mini",
         temperature=0.8,
-        response_format={ "type": "json_object" },
         n=1,
         max_tokens=8192
     )
