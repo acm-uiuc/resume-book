@@ -242,8 +242,8 @@ Resources:
       Environment:
         Variables:
           RunEnvironment: !Ref RunEnvironment
-          AadValidClientId: !Join [",", !FindInMap [ApiGwConfig, !Ref RunEnvironment, AadValidClientId]]
-          KindeValidClientid: !Join [",", !FindInMap [ApiGwConfig, !Ref RunEnvironment, KindeValidClientId]]
+          AadValidClientId: !FindInMap [ApiGwConfig, !Ref RunEnvironment, AadValidClientId]
+          KindeValidClientid: !FindInMap [ApiGwConfig, !Ref RunEnvironment, KindeValidClientId]
     
   ResumeBookAuthLambdaFunctionErrorAlarm:
     Type: 'AWS::CloudWatch::Alarm'
