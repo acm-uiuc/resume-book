@@ -7,6 +7,8 @@ interface LinkProfileAttributeProps {
   url?: string;
   name: string;
   handleInputChange: CallableFunction;
+  overrideUrl?: string;
+  editingName?: string;
 }
 export const LinkProfileAttribute: React.FC<LinkProfileAttributeProps> = ({
   editable,
@@ -14,6 +16,8 @@ export const LinkProfileAttribute: React.FC<LinkProfileAttributeProps> = ({
   url,
   name,
   handleInputChange,
+  overrideUrl,
+  editingName,
 }) => {
   if ((!url || url === '') && !editable) {
     return null;
@@ -22,10 +26,11 @@ export const LinkProfileAttribute: React.FC<LinkProfileAttributeProps> = ({
     <Group>
       {editable ? (
         <TextInput
-          label={name}
-          value={url}
+          label={editingName || name}
+          value={overrideUrl || url}
           onChange={(e) => handleInputChange(e.target.value)}
           style={{ width: '100%' }}
+          leftSection={icon}
         />
       ) : (
         <>

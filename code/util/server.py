@@ -110,7 +110,8 @@ def student_post_profile():
     if 'defaultResponse' in json_body:
         del json_body['defaultResponse']
     json_body['name'] = json_body['name'].lstrip()
-    json_body["email"] = email
+    if 'email' not in json_body or json_body['email'] == '':
+        json_body["email"] = email
     json_body["username"] = email
     json_body["resumePdfUrl"] = f"s3://{S3_BUCKET}/resume_{email}.pdf"
     try:
@@ -192,13 +193,13 @@ def student_get_s3_presigned():
             content_type=content_types.APPLICATION_JSON,
             body={"message": "Error creating S3 URL", "details": str(e)},
         )
-    if data["file_size"] > 1.5e7:  # 15 MB
+    if data["file_size"] > 3e7:  # 30 MB
         return Response(
             status_code=413,
             content_type=content_types.APPLICATION_JSON,
             body={
                 "message": "Error creating S3 URL",
-                "details": "Resume PDF cannot be larger than 15 MB.",
+                "details": "Resume PDF cannot be larger than 30 MB.",
             },
         )
     presigned_url = create_presigned_url_for_put(

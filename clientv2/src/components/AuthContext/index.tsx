@@ -191,9 +191,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logoutCallback = () => {
     setIsLoggedIn(false);
     setUserData(null);
-  }
+  };
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userData, loginMsal, logout, getToken, logoutCallback }}>
+    <AuthContext.Provider
+      value={{ isLoggedIn, userData, loginMsal, logout, getToken, logoutCallback }}
+    >
       {isLoading || inProgress !== InteractionStatus.None ? (
         <MantineProvider>
           <FullScreenLoader />

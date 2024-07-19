@@ -30,6 +30,7 @@ import {
   IconCertificate,
   IconBrandGithub,
   IconWorld,
+  IconUserCircle,
 } from '@tabler/icons-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { institutionOptions, degreeOptions, DegreeLevel, majorOptions } from './options';
@@ -224,28 +225,41 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
       <Grid gutter="sm" columns={isMobile ? 4 : 14}>
         <Grid.Col span={4}>
           <Container>
+            {editable ? (
+              <Title order={5} mb="xs">
+                <Group>
+                  <IconUser size={18} />
+                  <Text>
+                    <b>General</b>
+                  </Text>
+                </Group>
+              </Title>
+            ) : null}
             <Stack>
               {editable ? (
                 <TextInput
                   label="Name"
                   value={studentProfile.name}
                   onChange={(e) => handleInputChange('name', e.target.value.trimStart())}
+                  leftSection={<IconUserCircle size={14} />}
                 />
               ) : (
-                <Title order={3}>{studentProfile.name}</Title>
+                <Title order={2}>{studentProfile.name}</Title>
               )}
               <LinkProfileAttribute
                 url={`mailto:${studentProfile.email}`}
                 name={studentProfile.email}
-                editable={false}
-                icon={<IconMail size={12} />}
-                handleInputChange={() => {}}
+                editingName="Email"
+                editable={editable}
+                icon={<IconMail size={14} />}
+                handleInputChange={(payload: string) => {handleInputChange('email', payload.trim());}}
+                overrideUrl={studentProfile.email}
               />
               <LinkProfileAttribute
                 url={studentProfile.linkedin}
                 name={'LinkedIn Profile'}
                 editable={editable}
-                icon={<IconBrandLinkedin size={12} />}
+                icon={<IconBrandLinkedin size={14} />}
                 handleInputChange={(payload: string) => {
                   handleInputChange('linkedin', payload.trim());
                 }}
@@ -254,7 +268,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                 url={studentProfile.github}
                 name={'GitHub Profile'}
                 editable={editable}
-                icon={<IconBrandGithub size={12} />}
+                icon={<IconBrandGithub size={14} />}
                 handleInputChange={(payload: string) => {
                   handleInputChange('github', payload.trim());
                 }}
@@ -263,19 +277,20 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                 url={studentProfile.website}
                 name={'Website'}
                 editable={editable}
-                icon={<IconWorld size={12} />}
+                icon={<IconWorld size={14} />}
                 handleInputChange={(payload: string) => {
                   handleInputChange('website', payload.trim());
                 }}
               />
 
               <Box>
-                <Title order={5} mb="xs">
-                  <Group>
-                    <IconUser size={18} />
-                    <Text>Bio</Text>
-                  </Group>
-                </Title>
+                {editable ? (
+                  <Title order={5} mb="xs">
+                    <Group>
+                      <Text>Bio</Text>
+                    </Group>
+                  </Title>
+                ) : null}
                 {editable ? (
                   <Textarea
                     value={studentProfile.bio}
@@ -290,7 +305,9 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                 <Title order={5} mb="xs">
                   <Group>
                     <IconSchool size={18} />
-                    <Text>Education</Text>
+                    <Text>
+                      <b>Education</b>
+                    </Text>
                   </Group>
                 </Title>
                 <Stack>
@@ -399,7 +416,9 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                 <Title order={5} mb="xs">
                   <Group>
                     <IconBriefcase size={18} />
-                    <Text>Skills</Text>
+                    <Text>
+                      <b>Skills</b>
+                    </Text>
                   </Group>
                 </Title>
                 {editable ? (
@@ -423,7 +442,9 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                 <Title order={5} mb="xs">
                   <Group>
                     <IconCertificate size={18} />
-                    <Text>Work Authorization</Text>
+                    <Text>
+                      <b>Work Authorization</b>
+                    </Text>
                   </Group>
                 </Title>
                 {editable ? (
