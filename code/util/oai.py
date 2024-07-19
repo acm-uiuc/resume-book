@@ -1,6 +1,6 @@
 import json
 from openai import OpenAI
-from oai_prompts import system_prompt
+from .oai_prompts import system_prompt
 
 LENGTH_LIMIT = 30000
 

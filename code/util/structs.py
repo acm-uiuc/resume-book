@@ -37,7 +37,7 @@ class ProfileSearchRequest(BaseModel):
 
 class GenerateProfileRequest(BaseModel):
     resumeText: str
-    roleType: str
+    roleType: Literal["internship"] | Literal['full-time'] | Literal['research assistant']
     roleKeywords: List[str]
 
 DEFAULT_USER_PROFILE = {
