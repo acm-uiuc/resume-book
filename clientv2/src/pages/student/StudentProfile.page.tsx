@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { Alert, Button, Container, Grid, Text, Group, Modal, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
-  IconAlertTriangleFilled,
   IconDeviceFloppy,
   IconInfoCircle,
   IconPencil,
   IconSparkles,
+  IconX,
 } from '@tabler/icons-react';
 import { useAuth } from '@/components/AuthContext';
 import { HeaderNavbar } from '@/components/Navbar';
@@ -16,8 +16,8 @@ import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileV
 import FullPageError from '@/components/FullPageError';
 import { useDisclosure } from '@mantine/hooks';
 import { GenerateProfileModal } from '@/components/ProfileViewer/GenerateProfileModal';
-import pdfToText from 'react-pdftotext'
-import * as pdfjs from "pdfjs-dist";
+import pdfToText from 'react-pdftotext';
+import * as pdfjs from 'pdfjs-dist';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -27,9 +27,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 const genAiEnabled = true;
 
 async function extractTextRemote(pdf_url: string) {
-  const file = await (await fetch(pdf_url)).blob()
+  const file = await (await fetch(pdf_url)).blob();
   if (file) {
-    return await pdfToText(file)
+    return await pdfToText(file);
   }
 }
 
@@ -46,10 +46,9 @@ export function StudentHomePage() {
   const [genProfileOpened, { open: genProfileOpen, close: genProfileClose }] = useDisclosure(false);
   const api = useApi();
 
-
   async function generateProfile(values: Record<string, string | string[]>) {
     const response = await api.post('/student/generate_profile', values);
-    return response.data
+    return response.data;
   }
 
   async function fetchProfile(showLoader: boolean = true) {
@@ -164,24 +163,29 @@ export function StudentHomePage() {
     setGenAiLoading(true);
 
     try {
+      let pdfText: string | undefined | null;
       if (file) {
         console.log('have file locally to parse');
-        const pdfText = await pdfToText(file);
-        console.log(pdfText);
+        pdfText = await pdfToText(file);
       } else {
         if (!studentData?.resumePdfUrl) {
-          throw new Error("No resume PDF url in student profile.")
+          throw new Error('No resume PDF url in student profile.');
         }
-        const pdfText = await extractTextRemote(studentData?.resumePdfUrl)
-        values['resumeText'] = pdfText
+        pdfText = await extractTextRemote(studentData?.resumePdfUrl);
+      }
+      if (pdfText) {
+        values['resumeText'] = pdfText;
         const profile = await generateProfile(values);
         setStudentData(profile as StudentProfileDetails);
+      } else {
+        throw new Error('Could not parse PDF.');
       }
     } catch (err) {
       notifications.show({
         color: 'red',
         title: 'Profile could not be generated',
-        message: 'Could not retrieve current resume. Please ensure a PDF resume was provided and try again.',
+        message:
+          'Could not retrieve current resume. Please ensure a PDF resume was provided and try again.',
       });
       setGenAiLoading(false);
       genProfileClose();
@@ -291,6 +295,17 @@ export function StudentHomePage() {
                   Generate Profile
                 </Button>
               </Tooltip>
+            ) : null}
+            {editToggle && !genAiLoading ? (
+              <Button
+                color="red"
+                leftSection={<IconX />}
+                onClick={() => {
+                  setEditToggle(false);
+                }}
+              >
+                Close
+              </Button>
             ) : null}
           </Group>
         </Container>
