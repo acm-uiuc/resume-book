@@ -3,11 +3,7 @@ from shared import AuthPolicy
 import jwt
 
 def lambda_handler(event, context):
-    """Do not print the auth token unless absolutely necessary """
     method, token = event['authorizationToken'].split(' ')
-    print("Client method: ", method)
-    print("Client token: ", token)
-    print("Method ARN: " + event['methodArn'])
     principalId = token
 
     tmp = event['methodArn'].split(':')

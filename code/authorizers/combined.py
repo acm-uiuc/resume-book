@@ -12,9 +12,6 @@ def lambda_handler(event, context):
     awsAccountId = tmp[4]
     try:
         method, token = event['authorizationToken'].split(' ')
-        print("Client method: ", method)
-        print("Client token: ", token)
-        print("Method ARN: " + event['methodArn'])
         if method == "Bearer":
             decoded = jwt.decode(token, options={"verify_aud": False, "verify_signature": False},)
             if decoded['iss'] == 'https://sts.windows.net/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/' and decoded['appid'] == os.environ.get("AadValidClientId"):
