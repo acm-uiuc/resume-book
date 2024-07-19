@@ -5,6 +5,7 @@ import {
   IconAlertTriangleFilled,
   IconDeviceFloppy,
   IconInfoCircle,
+  IconPencil,
   IconSparkles,
 } from '@tabler/icons-react';
 import { useAuth } from '@/components/AuthContext';
@@ -210,7 +211,7 @@ export function StudentHomePage() {
         <Container>
           <Group style={{ marginTop: '1em' }}>
             <Button
-              leftSection={<IconDeviceFloppy size={16} />}
+              leftSection={editToggle ? <IconDeviceFloppy size={16} /> : <IconPencil size={16} />}
               onClick={toggleEdit}
               color={editToggle ? 'green' : undefined}
             >
