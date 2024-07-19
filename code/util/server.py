@@ -222,7 +222,7 @@ def student_gpt():
     json_body: dict = app.current_event.json_body or {}
     try:
         data = GenerateProfileRequest(**json_body).model_dump()
-        response = oai_get_profile_json(openai_client, data['resumeText'], data['roleType'], data['roleKeywords'].join(','))
+        response = oai_get_profile_json(openai_client, data['resumeText'], data['roleType'], ','.join(data['roleKeywords']))
     except pydantic.ValidationError as e:
         return Response(
             status_code=403,
