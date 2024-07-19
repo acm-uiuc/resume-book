@@ -22,7 +22,7 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
         <Group justify="space-between" align="center" h="100%">
           <Group justify="start" align="center" h="100%" gap={10}>
             <LogoBadge />
-            <Badge color="red">Beta</Badge>
+            {/* <Badge color="red">Beta</Badge> */}
             <Group justify="start" align="center" h="100%" gap={10} visibleFrom="sm">
               <a href="/" className={classes.link}>
                 Home
