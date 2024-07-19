@@ -133,7 +133,7 @@ paths:
         contentHandling: CONVERT_TO_TEXT
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}-oai/invocations"
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}-novpc/invocations"
 
   /api/v1/student/resume_upload_url:
     post:

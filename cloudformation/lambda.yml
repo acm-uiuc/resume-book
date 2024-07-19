@@ -63,14 +63,14 @@ Mappings:
 
 Resources:
   # API Lambda
-  ResumeBookOaiLambdaFunction:
+  ResumeBookNoVpcLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ../code 
       AutoPublishAlias: live
       Runtime: python3.10
-      Description: Resume Book API Lambda - OpenAI
-      FunctionName: !Sub ${LambdaFunctionName}-oai
+      Description: Resume Book API Lambda - No VPC attachment
+      FunctionName: !Sub ${LambdaFunctionName}-novpc
       Handler: app.lambda_handler
       MemorySize: 768
       Role: !GetAtt ResumeBookApiLambdaIAMRole.Arn
@@ -134,12 +134,12 @@ Resources:
         - Name: 'FunctionName'
           Value: !Ref ResumeBookApiLambdaFunction
 
-  ResumeBookApiLambdaFunctionOaiErrorAlarm:
+  ResumeBookApiLambdaFunctionNoVpcErrorAlarm:
     Type: 'AWS::CloudWatch::Alarm'
     Condition: IsProd
     Properties:
-      AlarmName: !Sub '${LambdaFunctionName}-oai-alarm'
-      AlarmDescription: !Sub 'Alarm if ${LambdaFunctionName}-oai function errors are detected.'
+      AlarmName: !Sub '${LambdaFunctionName}-novpc-alarm'
+      AlarmDescription: !Sub 'Alarm if ${LambdaFunctionName}-novpc function errors are detected.'
       Namespace: 'AWS/Lambda'
       MetricName: 'Errors'
       Statistic: 'Sum'
@@ -151,7 +151,7 @@ Resources:
         - !Ref AlertSNSArn
       Dimensions:
         - Name: 'FunctionName'
-          Value: !Sub ${ResumeBookApiLambdaFunction}-oai
+          Value: !Sub ${ResumeBookApiLambdaFunction}-novpc
 
   ResumeBookApiLambdaIAMRole:
     Type: AWS::IAM::Role
@@ -176,7 +176,7 @@ Resources:
                 Effect: Allow
                 Resource:
                   - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunctionName}:*
-                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunctionName}-oai:*
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunctionName}-novpc:*
               - Effect: Allow
                 Action:
                   - ec2:CreateNetworkInterface
@@ -215,10 +215,10 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}
       RetentionInDays: 7
 
-  ResumeBookApiLambdaOaiLogGroup:
+  ResumeBookApiLambdaNoVpcLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}-oai
+      LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}-novpc
       RetentionInDays: 7
 
   # Combined Authorizer (AAD + Username/Password)
