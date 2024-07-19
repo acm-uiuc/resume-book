@@ -223,7 +223,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
   return (
     <Container fluid style={{ marginTop: '2vh' }}>
       <Grid gutter="sm" columns={isMobile ? 4 : editable ? 20 : 14}>
-        <Grid.Col span={editable ? 6 : 4}>
+        <Grid.Col span={editable && !isMobile ? 6 : 4}>
           <Container>
             {editable ? (
               <Title order={5} mb="xs">
