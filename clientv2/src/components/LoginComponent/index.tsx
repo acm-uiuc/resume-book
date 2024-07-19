@@ -1,4 +1,14 @@
-import { Text, Paper, Group, PaperProps, Divider, Center, Alert, Anchor } from '@mantine/core';
+import {
+  Text,
+  Paper,
+  Group,
+  PaperProps,
+  Divider,
+  Center,
+  Alert,
+  Anchor,
+  Title,
+} from '@mantine/core';
 import { AcmLoginButton } from './AcmLoginButton';
 import { PartnerLoginButton } from './PartnerLoginButton';
 import brandImgUrl from '@/banner-blue.png';
@@ -21,10 +31,14 @@ export function LoginComponent(props: PaperProps) {
       <Group grow mb="md" mt="md">
         <AcmLoginButton radius="xl">Sign in with Illinois NetID</AcmLoginButton>
       </Group>
-      <Alert title="Paid ACM@UIUC Members Only" icon={<IconLock />} color="#0053B3">
-        <Text>
+      <Alert
+        title={<Title order={5}>Paid ACM@UIUC Members Only</Title>}
+        icon={<IconLock />}
+        color="#0053B3"
+      >
+        <Text size="sm">
           Not a paid member?{' '}
-          <Anchor href="https://www.acm.illinois.edu/membership?utm_source=resumebook">
+          <Anchor size="sm" href="https://www.acm.illinois.edu/membership?utm_source=resumebook">
             Sign up today!
           </Anchor>
         </Text>

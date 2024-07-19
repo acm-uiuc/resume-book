@@ -27,7 +27,7 @@ const LogoBadge: React.FC<LogoBadgeProps> = ({ size, linkTo, showText }) => {
           alignItems: 'center',
         }}
       >
-        <img src={brandImgUrl} alt="ACM Logo" style={{ height: '2em', marginRight: '0.5em' }} />
+        <img src={brandImgUrl} alt="ACM Logo" style={{ height: '3em', marginRight: '0.5em' }} />
         {showText ? 'Resume Book' : null}
       </Link>
     </b>
