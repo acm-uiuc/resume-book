@@ -41,7 +41,7 @@ Mappings:
       ValidCorsOrigins:
         - "*"
       AadValidClientId: 251efa82-f589-42e1-9ebb-e214a4f40a0f
-      KindeValidClientid: 9dfcd7977da347f3ab55fbb909a4d5cf
+      KindeValidClientId: 9dfcd7977da347f3ab55fbb909a4d5cf
     prod:
       ApiCertificateArn: arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
       ApiDomainName: resume-api.acm.illinois.edu
