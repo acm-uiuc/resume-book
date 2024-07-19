@@ -26,7 +26,7 @@ def lambda_handler(event, context):
         principalId = token
     except Exception:
         print(traceback.format_exc(), flush=True)
-        principalId = uuid4()
+        principalId = str(uuid4())
     print("Denying all", flush=True)
     policy = AuthPolicy(principalId, awsAccountId)
     policy.restApiId = apiGatewayArnTmp[0]
