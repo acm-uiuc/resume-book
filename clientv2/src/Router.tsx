@@ -37,6 +37,10 @@ const unauthenticatedRouter = createBrowserRouter([
     path: '/profile',
     element: <Navigate to="/login" replace />,
   },
+  {
+    path: '/search',
+    element: <Navigate to="/login" replace />,
+  },
 ]);
 
 const recruiterRouter = createBrowserRouter([

@@ -9,6 +9,7 @@ import {
   Table,
   Text,
   Title,
+  Pagination,
 } from '@mantine/core';
 import { IconQuestionMark } from '@tabler/icons-react';
 import { DegreeLevel } from '../ProfileViewer/options';
@@ -36,6 +37,8 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [modalOpened, setModalOpened] = useState(false);
   const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
+  const [activePage, setActivePage] = useState(1);
+  const itemsPerPage = 10;
 
   if (data === null) {
     return null;
@@ -79,7 +82,9 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
         : [...prevSelectedRows, id]
     );
   };
-  const rows = data.map((element) => (
+
+  const paginatedData = data.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+  const rows = paginatedData.map((element) => (
     <Table.Tr
       key={element.username}
       bg={selectedRows.includes(element.username) ? 'var(--mantine-color-blue-light)' : undefined}
@@ -154,6 +159,12 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
+      <Pagination
+        total={Math.ceil(data.length / itemsPerPage)}
+        value={activePage}
+        onChange={setActivePage}
+        style={{ marginTop: '1em', justifyContent: 'center' }}
+      />
       <Modal
         opened={modalOpened}
         onClose={() => setModalOpened(false)}
