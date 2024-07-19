@@ -221,8 +221,13 @@ def student_get_s3_presigned():
 def student_gpt():
     json_body: dict = app.current_event.json_body or {}
     try:
+        username = app.current_event.request_context.authorizer["username"]
         data = GenerateProfileRequest(**json_body).model_dump()
         response = oai_get_profile_json(openai_client, data['resumeText'], data['roleType'], ','.join(data['roleKeywords']))
+        response['username'] = username
+        if 'email' not in response or response['email'] == '':
+            response['email'] = username
+        response['resumePdfUrl'] = create_presigned_url_from_s3_url(f"s3://{S3_BUCKET}/resume_{username}.pdf")
     except pydantic.ValidationError as e:
         return Response(
             status_code=403,
