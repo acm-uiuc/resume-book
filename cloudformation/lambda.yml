@@ -63,6 +63,30 @@ Mappings:
 
 Resources:
   # API Lambda
+  ResumeBookOaiLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../code 
+      AutoPublishAlias: live
+      Runtime: python3.10
+      Description: Resume Book API Lambda - OpenAI
+      FunctionName: !Sub ${LambdaFunctionName}-oai
+      Handler: app.lambda_handler
+      MemorySize: 768
+      Role: !GetAtt ResumeBookApiLambdaIAMRole.Arn
+      Timeout: 30
+      Environment:
+        Variables:
+          RunEnvironment: !Ref RunEnvironment
+          ValidCorsOrigins: !Join [",", !FindInMap [ApiGwConfig, !Ref RunEnvironment, ValidCorsOrigins]]
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ResumeBookApiGateway
+            Path: /api/v1/student/generate_profile
+            Method: ANY
+
   ResumeBookApiLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -110,6 +134,25 @@ Resources:
         - Name: 'FunctionName'
           Value: !Ref ResumeBookApiLambdaFunction
 
+  ResumeBookApiLambdaFunctionOaiErrorAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Condition: IsProd
+    Properties:
+      AlarmName: !Sub '${LambdaFunctionName}-oai-alarm'
+      AlarmDescription: !Sub 'Alarm if ${LambdaFunctionName}-oai function errors are detected.'
+      Namespace: 'AWS/Lambda'
+      MetricName: 'Errors'
+      Statistic: 'Sum'
+      Period: '60'
+      EvaluationPeriods: '1'
+      ComparisonOperator: 'GreaterThanThreshold'
+      Threshold: '0'
+      AlarmActions:
+        - !Ref AlertSNSArn
+      Dimensions:
+        - Name: 'FunctionName'
+          Value: !Sub ${ResumeBookApiLambdaFunction}-oai
+
   ResumeBookApiLambdaIAMRole:
     Type: AWS::IAM::Role
     Properties:
@@ -133,6 +176,7 @@ Resources:
                 Effect: Allow
                 Resource:
                   - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunctionName}:*
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunctionName}-oai:*
               - Effect: Allow
                 Action:
                   - ec2:CreateNetworkInterface
@@ -169,6 +213,12 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}
+      RetentionInDays: 7
+
+  ResumeBookApiLambdaOaiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}-oai
       RetentionInDays: 7
 
   # Combined Authorizer (AAD + Username/Password)
