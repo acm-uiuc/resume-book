@@ -11,6 +11,7 @@ import os
 import json
 from decimal import Decimal
 
+from code.util.oai import get_oai_client, oai_get_profile_json
 from util.queries import DELETE_PROFILE, GET_USER_PROFILE_QUERY, INSERT_BASE_PROFILE, INSERT_DEGREES, generate_search_query
 from util.postgres import get_db_connection
 from util.structs import (
@@ -18,6 +19,7 @@ from util.structs import (
     ProfileSearchRequest,
     ResumeUploadPresignedRequest,
     StudentProfileDetails,
+    GenerateProfileRequest,
     convert_dict_keys_snake_to_camel,
 )
 from util.environ import get_run_environment
@@ -42,6 +44,7 @@ app = APIGatewayRestResolver(cors=cors_config)
 session = boto3.Session(region_name=os.environ.get("AWS_REGION", "us-east-1"))
 secretsmanager = session.client("secretsmanager")
 db_config = get_parameter_from_sm(secretsmanager, "infra-resume-book-db-config")
+openai_client = get_oai_client(db_config['oai_key'])
 
 PROFILE_TABLE_NAME = "infra-resume-book-profile-data"
 S3_BUCKET = f"infra-resume-book-pdfs-{RUN_ENV if RUN_ENV != 'local' else 'dev'}"
@@ -213,6 +216,33 @@ def student_get_s3_presigned():
         body={"message": "URL created", "url": presigned_url},
     )
 
+
+@app.post("/api/v1/student/generate_profile")
+def student_gpt():
+    json_body: dict = app.current_event.json_body or {}
+    try:
+        data = GenerateProfileRequest(**json_body).model_dump()
+        response = oai_get_profile_json(openai_client, data['resumeText'], data['roleType'], data['roleKeywords'].join(','))
+    except pydantic.ValidationError as e:
+        return Response(
+            status_code=403,
+            content_type=content_types.APPLICATION_JSON,
+            body={"message": "Error validating profile generation payload", "details": str(e)},
+        )
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        return Response(
+            status_code=500,
+            content_type=content_types.APPLICATION_JSON,
+            body={"message": "Error performing profile generation", "details": str(e)},
+        )
+    return Response(
+        status_code=200,
+        content_type=content_types.APPLICATION_JSON,
+        body=response,
+    )
+
+        
 
 @app.get("/api/v1/recruiter/view_profile/<username>")
 def recruiter_get_profile(username):

@@ -35,6 +35,11 @@ class ProfileSearchRequest(BaseModel):
     graduationYears: Optional[List[str]] = []
     majors: Optional[List[str]] = []
 
+class GenerateProfileRequest(BaseModel):
+    resumeText: str
+    roleType: str
+    roleKeywords: List[str]
+
 DEFAULT_USER_PROFILE = {
     "defaultResponse": True,
     "username": "someone@illinois.edu",
