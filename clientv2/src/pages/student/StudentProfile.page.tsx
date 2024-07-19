@@ -13,7 +13,7 @@ import { HeaderNavbar } from '@/components/Navbar';
 import { useApi } from '@/util/api';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileViewer';
-import FullPageError from '@/components/FullPageError';
+import { Error500Page as FullPageError } from '../Error500.page';
 import { useDisclosure } from '@mantine/hooks';
 import { GenerateProfileModal } from '@/components/ProfileViewer/GenerateProfileModal';
 import pdfToText from 'react-pdftotext';

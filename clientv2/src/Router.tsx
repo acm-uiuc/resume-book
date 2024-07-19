@@ -1,9 +1,12 @@
+import React, { useState, useEffect, ReactNode, ErrorInfo } from 'react';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import { AuthRoleEnum, useAuth } from './components/AuthContext';
 import { LoginPage } from './pages/Login.page';
 import { StudentHomePage } from './pages/student/StudentProfile.page';
 import { RecruiterHomePage } from './pages/recruiter/RecruiterHome.page';
 import { LogoutPage } from './pages/Logout.page';
+import { Error404Page } from './pages/Error404.page';
+import { Error500Page } from './pages/Error500.page';
 
 const commonRoutes = [
   {
@@ -13,6 +16,10 @@ const commonRoutes = [
   {
     path: '/logout',
     element: <LogoutPage />,
+  },
+  {
+    path: '*',
+    element: <Error404Page />,
   },
 ];
 
@@ -69,15 +76,52 @@ const studentRouter = createBrowserRouter([
   },
 ]);
 
-export function Router() {
-  const { isLoggedIn, userData } = useAuth();
-  if (!isLoggedIn || !userData) {
-    return <RouterProvider router={unauthenticatedRouter} />;
-  }
-  if (isLoggedIn && userData.role === AuthRoleEnum.RECRUITER) {
-    return <RouterProvider router={recruiterRouter} />;
-  }
-  if (isLoggedIn && userData.role === AuthRoleEnum.STUDENT) {
-    return <RouterProvider router={studentRouter} />;
-  }
+interface ErrorBoundaryProps {
+  children: ReactNode;
 }
+
+const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children }) => {
+  const [hasError, setHasError] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const onError = (error: Error, errorInfo: ErrorInfo) => {
+    setHasError(true);
+    setError(error);
+  };
+
+  useEffect(() => {
+    const errorHandler = (event: ErrorEvent) => {
+      onError(event.error, { componentStack: '' });
+    };
+    window.addEventListener('error', errorHandler);
+
+    return () => {
+      window.removeEventListener('error', errorHandler);
+    };
+  }, []);
+
+  if (hasError && error) {
+    if (error.message === '404') {
+      return <Error404Page />;
+    }
+    return <Error500Page />
+  }
+
+  return <>{children}</>;
+};
+
+export const Router: React.FC = () => {
+  const { isLoggedIn, userData } = useAuth();
+
+  const router = !isLoggedIn || !userData
+    ? unauthenticatedRouter
+    : userData.role === AuthRoleEnum.RECRUITER
+      ? recruiterRouter
+      : studentRouter;
+
+  return (
+    <ErrorBoundary>
+      <RouterProvider router={router} />
+    </ErrorBoundary>
+  );
+};
