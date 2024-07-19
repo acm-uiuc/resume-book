@@ -241,6 +241,22 @@ def student_gpt():
             content_type=content_types.APPLICATION_JSON,
             body={"message": "Error performing profile generation", "details": str(e)},
         )
+    # check that the response is valid
+    try:
+        response = json.loads(StudentProfileDetails(**response).model_dump_json(), parse_float=Decimal)
+    except pydantic.ValidationError as e:
+        return Response(
+            status_code=403,
+            content_type=content_types.APPLICATION_JSON,
+            body={"message": "Error validating generated profile", "details": str(e)},
+        )
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        return Response(
+            status_code=500,
+            content_type=content_types.APPLICATION_JSON,
+            body={"message": "Error performing profile generation (post OAI call)", "details": str(e)},
+        )
     return Response(
         status_code=200,
         content_type=content_types.APPLICATION_JSON,
