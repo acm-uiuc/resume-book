@@ -163,7 +163,7 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
         total={Math.ceil(data.length / itemsPerPage)}
         value={activePage}
         onChange={setActivePage}
-        style={{ marginTop: '1em', justifyContent: 'center' }}
+        style={{ margin: '1em', marginLeft: '0', justifyContent: 'center' }}
       />
       <Modal
         opened={modalOpened}
