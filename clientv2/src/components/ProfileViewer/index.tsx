@@ -234,13 +234,21 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
               ) : (
                 <Title order={3}>{studentProfile.name}</Title>
               )}
-              <LinkProfileAttribute
-                url={`mailto:${studentProfile.email}`}
-                name={studentProfile.email}
-                editable={false}
-                icon={<IconMail size={12} />}
-                handleInputChange={() => {}}
-              />
+              {editable ? (
+                <TextInput
+                  label="Email"
+                  value={studentProfile.email}
+                  onChange={(e) => handleInputChange('email', e.target.value.trim())}
+                />
+              ) : (
+                <LinkProfileAttribute
+                  url={`mailto:${studentProfile.email}`}
+                  name={studentProfile.email}
+                  editable={false}
+                  icon={<IconMail size={12} />}
+                  handleInputChange={() => {}}
+                />
+              )}
               <LinkProfileAttribute
                 url={studentProfile.linkedin}
                 name={'LinkedIn Profile'}

@@ -13,16 +13,15 @@ const commonRoutes = [
   {
     path: '/logout',
     element: <LogoutPage />,
-  }
-]
+  },
+];
 
 const authRedirect = [
   {
     path: '/login',
     element: <Navigate to="/" />,
-  }
-]
-
+  },
+];
 
 const unauthenticatedRouter = createBrowserRouter([
   ...commonRoutes,
