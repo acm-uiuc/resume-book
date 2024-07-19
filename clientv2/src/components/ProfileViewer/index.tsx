@@ -91,6 +91,9 @@ const PdfViewer: React.FC<{
   useEffect(() => {
     setFileLoaded(file instanceof Blob);
   }, [file]);
+  const documentOptions = useMemo(() => {
+    return { cMapUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/cmaps/', cMapPacked: true };
+  }, []);
   return (
     <Box style={{ height: '100vh', minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
       {error && <Text color="red">{error}</Text>}
@@ -98,10 +101,7 @@ const PdfViewer: React.FC<{
         file={url}
         onLoadSuccess={onDocumentLoadSuccess}
         onLoadError={onDocumentLoadError}
-        options={{
-          cMapUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/cmaps/',
-          cMapPacked: true,
-        }}
+        options={documentOptions}
       >
         <Box
           style={{

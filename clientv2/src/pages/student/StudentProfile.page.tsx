@@ -15,12 +15,28 @@ import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileViewer';
 import FullPageError from '@/components/FullPageError';
 import { useDisclosure } from '@mantine/hooks';
+import { GenerateProfileModal } from '@/components/ProfileViewer/GenerateProfileModal';
+import pdfToText from 'react-pdftotext'
+import * as pdfjs from "pdfjs-dist";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString();
 
 const genAiEnabled = true;
+
+async function extractTextRemote(pdf_url: string) {
+  const file = await (await fetch(pdf_url)).blob()
+  if (file) {
+    return await pdfToText(file)
+  }
+}
 
 export function StudentHomePage() {
   const { userData } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [genAiLoading, setGenAiLoading] = useState(false);
   const [enrolled, setEnrolled] = useState(false);
   const [editToggle, setEditToggle] = useState(false);
   const [unrecoverableError, setUnrecoverableError] = useState(false);
@@ -29,34 +45,43 @@ export function StudentHomePage() {
   const [newUser, setNewUser] = useState<boolean>(false);
   const [genProfileOpened, { open: genProfileOpen, close: genProfileClose }] = useDisclosure(false);
   const api = useApi();
-  useEffect(() => {
-    async function fetch() {
-      setLoading(true);
-      try {
-        const response = await api.get('/student/profile');
-        setEnrolled(response.status === 200);
-        setLoading(false);
-        for (let i = 0; i < response.data.degrees.length; i++) {
-          response.data.degrees[i].gpa = parseFloat(response.data.degrees[i].gpa);
-        }
-        if (response.data.defaultResponse) {
-          response.data.name = userData?.name;
-          setNewUser(true);
-        }
-        setStudentData(response.data as StudentProfileDetails);
-      } catch (err: any) {
-        if (err.response && err.response.status === 404) {
-          setEnrolled(false);
-          setLoading(false);
-        } else {
-          console.error(err);
-          setLoading(false);
-          setUnrecoverableError(true);
-        }
+
+
+  async function generateProfile(values: Record<string, string | string[]>) {
+    const response = await api.post('/student/generate_profile', values);
+    return response.data
+  }
+
+  async function fetchProfile(showLoader: boolean = true) {
+    showLoader && setLoading(true);
+    try {
+      const response = await api.get('/student/profile');
+      setEnrolled(response.status === 200);
+      showLoader && setLoading(false);
+      for (let i = 0; i < response.data.degrees.length; i++) {
+        response.data.degrees[i].gpa = parseFloat(response.data.degrees[i].gpa);
+      }
+      if (response.data.defaultResponse) {
+        response.data.name = userData?.name;
+        setNewUser(true);
+      }
+      setStudentData(response.data as StudentProfileDetails);
+    } catch (err: any) {
+      if (err.response && err.response.status === 404) {
+        setEnrolled(false);
+        showLoader && setLoading(false);
+      } else {
+        console.error(err);
+        showLoader && setLoading(false);
+        showLoader && setUnrecoverableError(true);
+        throw err;
       }
     }
+  }
+
+  useEffect(() => {
     if (userData) {
-      fetch();
+      fetchProfile(true);
     }
   }, [userData]);
   if (loading) {
@@ -132,6 +157,43 @@ export function StudentHomePage() {
     } catch (error) {
       console.error('Error uploading file:', error);
     }
+  }
+
+  async function handleProfileGeneration(values: Record<string, any>) {
+    console.log(values);
+    setGenAiLoading(true);
+
+    try {
+      if (file) {
+        console.log('have file locally to parse');
+        const pdfText = await pdfToText(file);
+        console.log(pdfText);
+      } else {
+        if (!studentData?.resumePdfUrl) {
+          throw new Error("No resume PDF url in student profile.")
+        }
+        const pdfText = await extractTextRemote(studentData?.resumePdfUrl)
+        values['resumeText'] = pdfText
+        const profile = await generateProfile(values);
+        setStudentData(profile as StudentProfileDetails);
+      }
+    } catch (err) {
+      notifications.show({
+        color: 'red',
+        title: 'Profile could not be generated',
+        message: 'Could not retrieve current resume. Please ensure a PDF resume was provided and try again.',
+      });
+      setGenAiLoading(false);
+      genProfileClose();
+      return console.error(err);
+    }
+    notifications.show({
+      color: 'green',
+      title: 'Profile generated!',
+      message: 'LLMs can make mistakes. Check your profile for accuracy.',
+    });
+    setGenAiLoading(false);
+    genProfileClose();
   }
 
   async function saveData() {
@@ -266,14 +328,12 @@ export function StudentHomePage() {
         onClose={genProfileClose}
         title="Generative AI Profile Creator"
       >
-        <Alert color="yellow" title="Privacy Notice" icon={<IconAlertTriangleFilled />}>
-          By using this feature, you agree to send your resume file to OpenAI for processing and
-          response generation. Your resume data is subject to OpenAI's privacy and security
-          policies.
-        </Alert>
-        <Text size="sm">
-          This feature is not generally available. Stay tuned for more information!
-        </Text>
+        <GenerateProfileModal
+          loading={genAiLoading}
+          onModalSubmit={(values: Record<string, any>) => {
+            handleProfileGeneration(values);
+          }}
+        />
       </Modal>
     </>
   );

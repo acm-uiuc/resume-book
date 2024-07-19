@@ -198,3 +198,5 @@ export const majorOptions: Record<DegreeLevel, any> = {
     { group: 'Other Majors', items: otherMajors },
   ],
 };
+
+export const commonRolesDesired = ['Full-Stack Development', ''];

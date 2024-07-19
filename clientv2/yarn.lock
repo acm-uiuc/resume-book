@@ -1954,6 +1954,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mantine/form@npm:^7.11.2":
+  version: 7.11.2
+  resolution: "@mantine/form@npm:7.11.2"
+  dependencies:
+    fast-deep-equal: "npm:^3.1.3"
+    klona: "npm:^2.0.6"
+  peerDependencies:
+    react: ^18.2.0
+  checksum: 10c0/79690c28b67556a51010115e2d405dfd45618a630770efcbbc193a2e8bc7cf48b116faf1e65106dea8a4e0a09eb703639369ff518c700ca212016f739390089a
+  languageName: node
+  linkType: hard
+
 "@mantine/hooks@npm:7.11.1":
   version: 7.11.1
   resolution: "@mantine/hooks@npm:7.11.1"
@@ -3385,6 +3397,7 @@ __metadata:
     "@eslint/compat": "npm:^1.1.1"
     "@kinde-oss/kinde-auth-react": "npm:^4.0.1"
     "@mantine/core": "npm:7.11.1"
+    "@mantine/form": "npm:^7.11.2"
     "@mantine/hooks": "npm:7.11.1"
     "@mantine/notifications": "npm:^7.11.1"
     "@storybook/addon-essentials": "npm:^8.1.10"
@@ -3416,6 +3429,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^4.6.2"
     identity-obj-proxy: "npm:^3.0.0"
     jsdom: "npm:^24.1.0"
+    pdfjs-dist: "npm:^4.4.168"
     postcss: "npm:^8.4.38"
     postcss-preset-mantine: "npm:1.15.0"
     postcss-simple-vars: "npm:^7.0.1"
@@ -3424,6 +3438,7 @@ __metadata:
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-pdf: "npm:^9.1.0"
+    react-pdftotext: "npm:^1.3.0"
     react-router-dom: "npm:^6.23.1"
     storybook: "npm:^8.1.10"
     storybook-dark-mode: "npm:^4.0.2"
@@ -7041,6 +7056,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"klona@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "klona@npm:2.0.6"
+  checksum: 10c0/94eed2c6c2ce99f409df9186a96340558897b3e62a85afdc1ee39103954d2ebe1c1c4e9fe2b0952771771fa96d70055ede8b27962a7021406374fdb695fd4d01
+  languageName: node
+  linkType: hard
+
 "known-css-properties@npm:^0.31.0":
   version: 0.31.0
   resolution: "known-css-properties@npm:0.31.0"
@@ -8132,6 +8154,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"path2d-polyfill@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "path2d-polyfill@npm:2.0.1"
+  checksum: 10c0/b6d8c0764f65438cd884ef3b62c5af07d4f526b379c4c804effc26dd17936f18076941941f9e804c0df96d39720f155e9f0723e4b30feaee152ea4a441df023e
+  languageName: node
+  linkType: hard
+
 "path2d@npm:^0.2.0":
   version: 0.2.1
   resolution: "path2d@npm:0.2.1"
@@ -8153,7 +8182,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pdfjs-dist@npm:4.4.168":
+"pdfjs-dist@npm:3.11.174":
+  version: 3.11.174
+  resolution: "pdfjs-dist@npm:3.11.174"
+  dependencies:
+    canvas: "npm:^2.11.2"
+    path2d-polyfill: "npm:^2.0.1"
+  dependenciesMeta:
+    canvas:
+      optional: true
+    path2d-polyfill:
+      optional: true
+  checksum: 10c0/0cb26561fd9bea90f2c1c8029d4cf972d338838de0f7f7aa3f369b2e555b99a2d8bbf1b81cc682fb26331241201a432726ae356a7ad3a930d86a308ca941d29c
+  languageName: node
+  linkType: hard
+
+"pdfjs-dist@npm:4.4.168, pdfjs-dist@npm:^4.4.168":
   version: 4.4.168
   resolution: "pdfjs-dist@npm:4.4.168"
   dependencies:
@@ -8617,6 +8661,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-pdf@npm:^8.0.2":
+  version: 8.0.2
+  resolution: "react-pdf@npm:8.0.2"
+  dependencies:
+    clsx: "npm:^2.0.0"
+    dequal: "npm:^2.0.3"
+    make-cancellable-promise: "npm:^1.3.1"
+    make-event-props: "npm:^1.6.0"
+    merge-refs: "npm:^1.3.0"
+    pdfjs-dist: "npm:3.11.174"
+    tiny-invariant: "npm:^1.0.0"
+    warning: "npm:^4.0.0"
+  peerDependencies:
+    "@types/react": ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10c0/83064e77030207bf4a7c80e24968c8957c9dedccadbf6f8e28b1a28166d9b7aa6cc473dc31bddcc57660d636756db763a39c0fdf1bc0d4cea49ffc3bb0f5d1d1
+  languageName: node
+  linkType: hard
+
 "react-pdf@npm:^9.1.0":
   version: 9.1.0
   resolution: "react-pdf@npm:9.1.0"
@@ -8637,6 +8704,15 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/24b30cc092ac49531f874e4698406495de6b9046fd73c51747642f312c8bfdcb5e11415e261d8405c1e8f02522464a80157ef90469d33f9b48bbec1983fd8f50
+  languageName: node
+  linkType: hard
+
+"react-pdftotext@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "react-pdftotext@npm:1.3.0"
+  dependencies:
+    react-pdf: "npm:^8.0.2"
+  checksum: 10c0/f967e60038bf4cda0ffb8d68523e8181afb951c325d619888d241f14d09208bb1342bd8cc06a472fb83d280af970d3104c98ee11321943b8817e5459c8766fa1
   languageName: node
   linkType: hard
 
