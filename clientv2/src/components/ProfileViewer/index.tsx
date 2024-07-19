@@ -327,14 +327,13 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                             withAsterisk
                             allowDeselect={false}
                           />
-                          <Select
+                          <Autocomplete
                             label="Major"
                             value={degree.major[0]}
                             onChange={(e) => handleDegreeChange(index, 'major', e?.split(', '))}
                             data={majorOptions[degree.level] || []}
                             withAsterisk
                             required
-                            allowDeselect={false}
                           />
                           <Autocomplete
                             label="Institution"
