@@ -10,7 +10,7 @@ const createAxiosInstance = (baseURL: string) =>
 
 const useApi = () => {
   const { getToken } = useAuth();
-  const baseUrl = `${import.meta.env.VITE_API_URL || 'https://resume-api.acm.illinois.edu/api/v1/'}`;
+  const baseUrl = import.meta.env.VITE_API_URL;
 
   const api = useMemo(() => {
     const instance = createAxiosInstance(baseUrl);

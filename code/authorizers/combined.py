@@ -3,7 +3,9 @@ from uuid import uuid4
 from aad import lambda_handler as aad_handler
 from local import lambda_handler as kinde_handler
 from shared import AuthPolicy
+import os 
 import jwt
+
 def lambda_handler(event, context):
     tmp = event['methodArn'].split(':')
     apiGatewayArnTmp = tmp[5].split('/')
@@ -15,12 +17,12 @@ def lambda_handler(event, context):
         print("Method ARN: " + event['methodArn'])
         if method == "Bearer":
             decoded = jwt.decode(token, options={"verify_aud": False, "verify_signature": False},)
-            if decoded['iss'] == 'https://sts.windows.net/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/' and decoded['appid'] == "5178a6b1-f46d-40a2-b550-1389b9316446":
+            if decoded['iss'] == 'https://sts.windows.net/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/' and decoded['appid'] == os.environ.get("AadValidClientId"):
                 return aad_handler(event, context)
-            elif decoded['iss'] == 'https://auth.acm.illinois.edu':
+            elif decoded['iss'] == 'https://auth.acm.illinois.edu' and decoded['azp'] == os.environ.get("KindeValidClientId"):
                 return kinde_handler(event, context)
             else:
-                raise ValueError("invalid issuer")
+                raise ValueError("invalid issuer or environment token")
         principalId = token
     except Exception:
         print(traceback.format_exc(), flush=True)

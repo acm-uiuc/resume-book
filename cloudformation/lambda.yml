@@ -40,11 +40,15 @@ Mappings:
       ApiDomainName: resume-api-dev.acm.illinois.edu
       ValidCorsOrigins:
         - "*"
+      AadValidClientId: 251efa82-f589-42e1-9ebb-e214a4f40a0f
+      KindeValidClientid: 9dfcd7977da347f3ab55fbb909a4d5cf
     prod:
       ApiCertificateArn: arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
       ApiDomainName: resume-api.acm.illinois.edu
       ValidCorsOrigins:
         - https://resumes.acm.illinois.edu
+      AadValidClientId: 5178a6b1-f46d-40a2-b550-1389b9316446
+      KindeValidClientId: fdacad7aea554755844105f5606da0f6
   EnvironmentToCidr:
     dev:
       SecurityGroupIds:
@@ -235,6 +239,11 @@ Resources:
       MemorySize: 2048
       Role: !GetAtt ResumeBookAuthLambdaIAMRole.Arn
       Timeout: 60
+      Environment:
+        Variables:
+          RunEnvironment: !Ref RunEnvironment
+          AadValidClientId: !Join [",", !FindInMap [ApiGwConfig, !Ref RunEnvironment, AadValidClientId]]
+          KindeValidClientid: !Join [",", !FindInMap [ApiGwConfig, !Ref RunEnvironment, KindeValidClientId]]
     
   ResumeBookAuthLambdaFunctionErrorAlarm:
     Type: 'AWS::CloudWatch::Alarm'
