@@ -24,9 +24,6 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
             <LogoBadge />
             {/* <Badge color="red">Beta</Badge> */}
             <Group justify="start" align="center" h="100%" gap={10} visibleFrom="sm">
-              <a href="/" className={classes.link}>
-                Home
-              </a>
               {userData?.role === AuthRoleEnum.STUDENT ? (
                 <a href="/profile" className={classes.link}>
                   My Profile
