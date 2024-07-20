@@ -1,16 +1,17 @@
+import traceback
 import requests
 import jwt
 from jwt.algorithms import RSAAlgorithm
 from roles import setRolePolicies
 from shared import AuthPolicy
+import os 
 
 MICROSOFT_ISSUER = "https://sts.windows.net/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/"
-MICROSOFT_OPENID_CONFIG_URL = f"{MICROSOFT_ISSUER}/.well-known/openid-configuration"
+MICROSOFT_CLIENT_ID = os.environ.get("AadValidClientId")
+MICROSOFT_KEYS_URL = f"https://login.microsoftonline.com/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/discovery/keys?appid={MICROSOFT_CLIENT_ID}"
 
-def get_microsoft_public_keys():
-    response = requests.get(MICROSOFT_OPENID_CONFIG_URL)
-    jwks_uri = response.json()['jwks_uri']
-    keys_response = requests.get(jwks_uri)
+def get_microsoft_public_keys(kid):
+    keys_response = requests.get(MICROSOFT_KEYS_URL)
     return {key['kid']: RSAAlgorithm.from_jwk(key) for key in keys_response.json()['keys']}
 
 public_keys = get_microsoft_public_keys()
@@ -32,6 +33,7 @@ def lambda_handler(event, context):
         try:
             headers = jwt.get_unverified_header(token)
             key = public_keys[headers['kid']]
+            print(key)
             
             decoded = jwt.decode(token, key=key, algorithms=["RS256"], issuer=MICROSOFT_ISSUER, options={"verify_aud": False},)
             
@@ -48,8 +50,8 @@ def lambda_handler(event, context):
             print("Token has expired")
             policy.denyAllMethods()
             authResponse = policy.build()
-        except jwt.InvalidTokenError as e:
-            print("Invalid token", str(e), flush=True)
+        except jwt.InvalidTokenError:
+            print("Invalid token:", traceback.format_exc(), flush=True)
             policy.denyAllMethods()
             authResponse = policy.build()
     else:
