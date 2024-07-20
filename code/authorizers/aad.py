@@ -1,20 +1,17 @@
 import traceback
 import requests
 import jwt
-from jwt.algorithms import RSAAlgorithm
 from roles import setRolePolicies
 from shared import AuthPolicy
-import os 
 
 MICROSOFT_ISSUER = "https://sts.windows.net/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/"
-MICROSOFT_CLIENT_ID = os.environ.get("AadValidClientId")
-MICROSOFT_KEYS_URL = f"https://login.microsoftonline.com/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/discovery/keys?appid={MICROSOFT_CLIENT_ID}"
 
-def get_microsoft_public_keys():
-    keys_response = requests.get(MICROSOFT_KEYS_URL)
-    return {key['kid']: RSAAlgorithm.from_jwk(key) for key in keys_response.json()['keys']}
+def get_token_valid(token):
+    """Requires User.Read permission"""
+    response =requests.get("https://graph.microsoft.com/v1.0/me", headers={"Authorization": f"Bearer {token}"})
+    response.raise_for_status()
+    return True
 
-public_keys = get_microsoft_public_keys()
 
 def lambda_handler(event, context):
     method, token = event['authorizationToken'].split(' ')
@@ -31,19 +28,15 @@ def lambda_handler(event, context):
     
     if method == "Bearer" and token != "" and token:
         try:
-            headers = jwt.get_unverified_header(token)
-            key = public_keys[headers['kid']]
-            print(key)
-            
-            decoded = jwt.decode(token, key=key, algorithms=["RS256"], issuer=MICROSOFT_ISSUER, options={"verify_aud": False},)
-            
+            valid = get_token_valid(token)
+            if not valid:
+                raise ValueError("Invalid token after calling Graph API")
+            decoded = jwt.decode(token, algorithms=["RS256"], issuer=MICROSOFT_ISSUER, options={"verify_aud": False, "verify_signature": False},)
             setRolePolicies('student', policy)
-            
             context = {
                 'authStrategy': 'msal',
                 'username': decoded['unique_name']
             }
-            
             authResponse = policy.build()
             authResponse['context'] = context
         except jwt.ExpiredSignatureError:
@@ -54,7 +47,16 @@ def lambda_handler(event, context):
             print("Invalid token:", traceback.format_exc(), flush=True)
             policy.denyAllMethods()
             authResponse = policy.build()
+        except requests.exceptions.HTTPError:
+            print("Could not call Graph API (usually means invalid token):", traceback.format_exc(), flush=True)
+            policy.denyAllMethods()
+            authResponse = policy.build()
+        except Exception:
+            print("Unknown error occurred", traceback.format_exc(), flush=True)
+            policy.denyAllMethods()
+            authResponse = policy.build()
     else:
+        print("Token invalid structure or not provided.")
         policy.denyAllMethods()
         authResponse = policy.build()
 
