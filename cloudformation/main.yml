@@ -13,7 +13,7 @@ Parameters:
   LambdaFunctionName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
-    Default: infra-resume-book-lambda
+    Default: infra-resume-book-api-lambda
 
   ResumeS3BucketName:
     Type: String
@@ -87,6 +87,8 @@ Resources:
 
   ResumeBookNoVpcLambdaFunction:
     Type: AWS::Serverless::Function
+    DependsOn:
+      - ResumeBookLogGroups
     Properties:
       CodeUri: ../code 
       AutoPublishAlias: live
@@ -111,6 +113,8 @@ Resources:
 
   ResumeBookApiLambdaFunction:
     Type: AWS::Serverless::Function
+    DependsOn:
+      - ResumeBookLogGroups
     Properties:
       CodeUri: ../code 
       AutoPublishAlias: live
@@ -139,6 +143,8 @@ Resources:
             
   ResumeBookAuthLambdaFunction:
     Type: AWS::Serverless::Function
+    DependsOn:
+      - ResumeBookLogGroups
     Properties:
       CodeUri: ../code/authorizers/
       AutoPublishAlias: live
@@ -216,59 +222,62 @@ Resources:
         application/json: "{\"error\": true, \"message\": \"Request could not be authenticated. Perhaps reauthenticate and try again?\"}"
 
   # ALARMS
-  ResumeBookAllLambdasFunctionErrorAlarm:
+  ResumeBookApiLambdaFunctionErrorAlarm:
     Type: 'AWS::CloudWatch::Alarm'
     Condition: IsProd
     Properties:
-      AlarmName: !Sub '${LambdaFunctionName}-error-alarm'
+      AlarmName: !Sub '${LambdaFunctionName}-alarm'
       AlarmDescription: !Sub 'Alarm if ${LambdaFunctionName} function errors are detected.'
       Namespace: 'AWS/Lambda'
       MetricName: 'Errors'
       Statistic: 'Sum'
       Period: '60'
-      EvaluationPeriods: '2'
+      EvaluationPeriods: '1'
       ComparisonOperator: 'GreaterThanThreshold'
       Threshold: '0'
       AlarmActions:
         - !Ref AlertSNSArn
-      Metrics:
-        - Id: main_lambda
-          MetricStat:
-            Metric:
-              Namespace: 'AWS/Lambda'
-              MetricName: 'Errors'
-              Dimensions:
-                - Name: 'FunctionName'
-                  Value: !Ref ResumeBookApiLambdaFunction
-            Period: 60
-            Stat: 'Sum'
-          ReturnData: false
-        - Id: novpc_lambda
-          MetricStat:
-            Metric:
-              Namespace: 'AWS/Lambda'
-              MetricName: 'Errors'
-              Dimensions:
-                - Name: 'FunctionName'
-                  Value: !Sub '${ResumeBookApiLambdaFunction}-novpc'
-            Period: 60
-            Stat: 'Sum'
-          ReturnData: false
-        - Id: auth_lambda
-          MetricStat:
-            Metric:
-              Namespace: 'AWS/Lambda'
-              MetricName: 'Errors'
-              Dimensions:
-                - Name: 'FunctionName'
-                  Value: !Ref ResumeBookAuthLambdaFunction
-            Period: 60
-            Stat: 'Sum'
-          ReturnData: false
-        - Id: totalerrors
-          Expression: 'main_lambda + novpc_lambda + auth_lambda'
-          Label: 'Total Errors'
-          ReturnData: true
+      Dimensions:
+        - Name: 'FunctionName'
+          Value: !Ref ResumeBookApiLambdaFunction
+
+  ResumeBookApiLambdaFunctionNoVpcErrorAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Condition: IsProd
+    Properties:
+      AlarmName: !Sub '${LambdaFunctionName}-novpc-alarm'
+      AlarmDescription: !Sub 'Alarm if ${LambdaFunctionName}-novpc function errors are detected.'
+      Namespace: 'AWS/Lambda'
+      MetricName: 'Errors'
+      Statistic: 'Sum'
+      Period: '60'
+      EvaluationPeriods: '1'
+      ComparisonOperator: 'GreaterThanThreshold'
+      Threshold: '0'
+      AlarmActions:
+        - !Ref AlertSNSArn
+      Dimensions:
+        - Name: 'FunctionName'
+          Value: !Sub ${ResumeBookApiLambdaFunction}-novpc
+
+  ResumeBookApiAuthLambdaFunctionErrorAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Condition: IsProd
+    Properties:
+      AlarmName: !Sub '${AuthLambdaFunctionName}-alarm'
+      AlarmDescription: !Sub 'Alarm if ${AuthLambdaFunctionName} function errors are detected.'
+      Namespace: 'AWS/Lambda'
+      MetricName: 'Errors'
+      Statistic: 'Sum'
+      Period: '60'
+      EvaluationPeriods: '1'
+      ComparisonOperator: 'GreaterThanThreshold'
+      Threshold: '0'
+      AlarmActions:
+        - !Ref AlertSNSArn
+      Dimensions:
+        - Name: 'FunctionName'
+          Value: !Ref AuthLambdaFunctionName
 
   ResumeBookApiGatewayLatencyAlarm:
     Type: 'AWS::CloudWatch::Alarm'

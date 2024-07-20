@@ -1,8 +1,8 @@
 version = 0.1
 [default.deploy.parameters]
-stack_name = "infra-resume-book-v2"
+stack_name = "infra-resume-book"
 resolve_s3 = true
-s3_prefix = "infra-resume-book-v2"
+s3_prefix = "infra-resume-book"
 region = "us-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM CAPABILITY_NAMED_IAM"
