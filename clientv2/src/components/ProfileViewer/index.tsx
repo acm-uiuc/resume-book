@@ -297,6 +297,9 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                 {editable ? (
                   <Textarea
                     value={studentProfile.bio}
+                    autosize
+                    minRows={2}
+                    maxRows={8}
                     onChange={(e) => handleInputChange('bio', e.target.value.trimStart())}
                   />
                 ) : (
