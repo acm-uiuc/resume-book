@@ -1,8 +1,13 @@
-# resume book 🤩
+# ACM@UIUC Resume Book
 
-## todo / roadmap
+## Deployment Environments
+### Dev/QA
+API: https://resume-api-dev.acm.illinois.edu
+Web UI: https://resumes.qa.acm.illinois.edu
 
-- [ ] wip...
+### Prod
+API: https://resume-api.acm.illinois.edu
+Web UI: https://resumes.acm.illinois.edu
 
 ## PR Guidelines
 
