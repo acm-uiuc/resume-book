@@ -1,5 +1,7 @@
 import json
 from aws_lambda_powertools.utilities.typing import LambdaContext
+from sympy import true
+from torch import log_
 from util.server import app
 from util.logging import configure_request_id, get_logger
 import traceback
@@ -33,4 +35,5 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
         }
         status_code = 502
     log_string = f"REQUEST LOG - FINISH - [{ctx['requestId']} finished with status code {status_code}"
+    print(log_string, flush=True)
     return rval
