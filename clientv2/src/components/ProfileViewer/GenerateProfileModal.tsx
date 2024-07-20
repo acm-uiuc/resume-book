@@ -54,7 +54,7 @@ export const GenerateProfileModal: React.FC<GenerateProfileModalProps> = ({
         />
         <TextInput
           label="Desired Job Functions"
-          description="Comma-seperated list, e.g. 'Full-Stack Development, DevOps'"
+          description="Comma-seperated list of keywords (max 300 characters)."
           withAsterisk
           key={form.key('roleKeywords')}
           {...form.getInputProps('roleKeywords')}

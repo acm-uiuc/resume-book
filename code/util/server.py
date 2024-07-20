@@ -223,6 +223,12 @@ def student_gpt():
     try:
         username = app.current_event.request_context.authorizer["username"]
         data = GenerateProfileRequest(**json_body).model_dump()
+        if len(''.join(data['roleKeywords'])) > 300:
+            return Response(
+                status_code=403,
+                content_type=content_types.APPLICATION_JSON,
+                body={"message": "Error validating profile generation payload", "details": "Role keywords are too long."}
+            )
         response = oai_get_profile_json(openai_client, data['resumeText'], data['roleType'], ','.join(data['roleKeywords']))
         response['username'] = username
         if 'email' not in response or response['email'] == '':
