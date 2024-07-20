@@ -24,10 +24,43 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - run: make deploy_dev
+  deploy-cf-pages-dev:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: resume-book-cf-pages-dev
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      deployments: write  
+    name: Deploy to Cloudflare Pages DEV
+    environment: "Cloudflare Pages - Dev"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Build
+        run: cd clientv2 && corepack enable && yarn && yarn run build
+        env:
+          VITE_AAD_CLIENT_ID: 251efa82-f589-42e1-9ebb-e214a4f40a0f
+          VITE_API_URL: https://resume-api.qa.acm.illinois.edu/api/v1
+          VITE_KINDE_CLIENT_ID: 9dfcd7977da347f3ab55fbb909a4d5cf
+          VITE_RUN_ENVIRONMENT: dev
+      - name: Publish
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: resume-book-dev
+          directory: clientv2/dist/
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
   test:
     runs-on: ubuntu-latest
     needs:
       - deploy
+      - deploy-cf-pages-dev
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.11 for testing
