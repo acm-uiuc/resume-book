@@ -12,7 +12,7 @@ on:
       - "docs/**"
       - "Makefile"
 jobs:
-  deploy-dev:
+  deploy-aws-dev:
     runs-on: ubuntu-latest
     concurrency:
       group: resume-book-aws-dev
@@ -32,7 +32,7 @@ jobs:
   test-dev:
     runs-on: ubuntu-latest
     needs:
-      - deploy-dev
+      - deploy-aws-dev
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.11 for testing
@@ -41,14 +41,14 @@ jobs:
           python-version: 3.11
       - name: Run live testing
         run: make test_ci
-  deploy-prod:
+  deploy-aws-prod:
     runs-on: ubuntu-latest
     concurrency:
       group: resume-book-aws-prod
       cancel-in-progress: false
     needs:
       - test-dev
-      - deploy-dev
+      - deploy-aws-dev
     environment: "AWS PROD"
     steps:
       - uses: actions/checkout@v3
@@ -61,11 +61,35 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - run: make deploy_prod
+  deploy-cf-pages-prod:
+    runs-on: ubuntu-latest
+    needs:
+      - test-dev
+    permissions:
+      contents: read
+      deployments: write
+    name: Deploy to Cloudflare Pages Prod
+    environment: "Cloudflare Pages - Prod"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build
+        run: cd clientv2 && yarn && yarn run build
+      - name: Publish
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: resume-book-prod
+          directory: clientv2/dist/
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
   health-check-prod:
     runs-on: ubuntu-latest
     needs:
-      - deploy-prod
+      - deploy-aws-prod
+      - deploy-cf-pages-prod
     steps:
-      - name: Call the healthz endpoint
+      - name: Call the API healthz endpoint
         run: curl -f https://resume-api.acm.illinois.edu/api/v1/healthz 
-
+      - name: Call the base UI endpoint
+        run: curl -f https://resumes.acm.illinois.edu
