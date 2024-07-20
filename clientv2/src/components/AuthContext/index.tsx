@@ -15,6 +15,7 @@ import {
 } from '@azure/msal-browser';
 import { MantineProvider } from '@mantine/core';
 import FullScreenLoader from './LoadingScreen';
+import { notifications } from '@mantine/notifications';
 
 export enum AuthSourceEnum {
   MSAL,
@@ -82,6 +83,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUserData(null);
         setIsLoggedIn(false);
         window.location.href = '/';
+        notifications.show({
+          color: 'red',
+          title: "Access Denied",
+          message: `You do not have permission for the recruiter view in the ${import.meta.env.VITE_RUN_ENVIRONMENT} environment.`
+        })
       } else {
         setUserData({
           email: user?.email!,
