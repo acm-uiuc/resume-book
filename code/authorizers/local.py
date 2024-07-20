@@ -3,6 +3,7 @@ from shared import AuthPolicy
 import jwt
 import requests
 import json
+import os
 
 def get_jwks():
     jwks_url = "https://auth.acm.illinois.edu/.well-known/jwks.json"
@@ -19,6 +20,7 @@ def get_public_key(jwks, kid):
 
 
 ALGORITHMS = ["RS256"]
+RUN_ENV = os.environ.get("RunEnvironment")
 
 def lambda_handler(event, context):
     method, token = event['authorizationToken'].split(' ')
@@ -37,7 +39,7 @@ def lambda_handler(event, context):
         jwks = get_jwks()
         rsa_key = get_public_key(jwks, unverified_header["kid"])
         decoded = jwt.decode(token, rsa_key, algorithms=ALGORITHMS, options={"verify_aud": False},)
-        if "recruiter:resume-book" in decoded['permissions']:
+        if f"recruiter:resume-book-{RUN_ENV}" in decoded['permissions']:
             setRolePolicies('recruiter', policy)
         else:
             policy.denyAllMethods()
