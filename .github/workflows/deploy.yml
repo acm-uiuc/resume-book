@@ -44,6 +44,11 @@ jobs:
           node-version: 18
       - name: Build
         run: cd clientv2 && corepack enable && yarn && yarn run build
+        env:
+          VITE_AAD_CLIENT_ID: 251efa82-f589-42e1-9ebb-e214a4f40a0f
+          VITE_API_URL: https://resume-api.qa.acm.illinois.edu/api/v1
+          VITE_KINDE_CLIENT_ID: 9dfcd7977da347f3ab55fbb909a4d5cf
+          VITE_RUN_ENVIRONMENT: dev
       - name: Publish
         uses: cloudflare/pages-action@v1
         with:
@@ -108,6 +113,11 @@ jobs:
           node-version: 18
       - name: Build
         run: cd clientv2 && corepack enable && yarn && yarn run build
+        env:
+          VITE_AAD_CLIENT_ID: 5178a6b1-f46d-40a2-b550-1389b9316446
+          VITE_API_URL: https://resume-api.acm.illinois.edu/api/v1
+          VITE_KINDE_CLIENT_ID: fdacad7aea554755844105f5606da0f6
+          VITE_RUN_ENVIRONMENT: prod
       - name: Publish
         uses: cloudflare/pages-action@v1
         with:
