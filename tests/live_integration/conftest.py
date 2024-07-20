@@ -13,6 +13,6 @@ class LiveServerSession(Session):
     
 @pytest.fixture
 def api_client():
-    ENDPOINT = "https://resume-api-dev.acm.illinois.edu/"
+    ENDPOINT = "https://resume-api.qa.acm.illinois.edu/"
     client = LiveServerSession(base_url=ENDPOINT)
     yield client

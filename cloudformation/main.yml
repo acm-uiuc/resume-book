@@ -36,10 +36,11 @@ Conditions:
 Mappings:
   ApiGwConfig:
     dev:
-      ApiCertificateArn: arn:aws:acm:us-east-1:427040638965:certificate/07a0f957-15ae-4330-be14-25814728b981
-      ApiDomainName: resume-api-dev.acm.illinois.edu
+      ApiCertificateArn: arn:aws:acm:us-east-1:427040638965:certificate/0397afb9-f519-40a1-aecc-f65c39aa7083
+      ApiDomainName: resume-api.qa.acm.illinois.edu
       ValidCorsOrigins:
-        - "*"
+        - https://resumes.qa.acm.illinois.edu
+        - http://localhost:5173
       AadValidClientId: 251efa82-f589-42e1-9ebb-e214a4f40a0f
       KindeValidClientId: 9dfcd7977da347f3ab55fbb909a4d5cf
     prod:
