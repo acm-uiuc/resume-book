@@ -10,7 +10,7 @@ MICROSOFT_ISSUER = "https://sts.windows.net/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e
 MICROSOFT_CLIENT_ID = os.environ.get("AadValidClientId")
 MICROSOFT_KEYS_URL = f"https://login.microsoftonline.com/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/discovery/keys?appid={MICROSOFT_CLIENT_ID}"
 
-def get_microsoft_public_keys(kid):
+def get_microsoft_public_keys():
     keys_response = requests.get(MICROSOFT_KEYS_URL)
     return {key['kid']: RSAAlgorithm.from_jwk(key) for key in keys_response.json()['keys']}
 
