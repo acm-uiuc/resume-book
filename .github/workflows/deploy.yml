@@ -1,5 +1,5 @@
-name: Deploy Resources to AWS PROD/DEV
-run-name: Deploy resources to AWS PROD/DEV by @${{ github.actor }}
+name: Deploy all resources to DEV and PROD
+run-name: DEV/PROD deploy - @${{ github.actor }}
 
 on:
   workflow_dispatch:
