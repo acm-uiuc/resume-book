@@ -20,6 +20,7 @@ import {
   Autocomplete,
   FileButton,
   em,
+  rem,
 } from '@mantine/core';
 import {
   IconBrandLinkedin,
@@ -221,9 +222,9 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
   };
   const isMobile = useMediaQuery(`(max-width: ${em(900)})`);
   return (
-    <Container fluid style={{ marginTop: '2vh' }}>
-      <Grid gutter="sm" columns={isMobile ? 4 : editable ? 20 : 14}>
-        <Grid.Col span={editable && !isMobile ? 6 : 4}>
+    <Container size={rem(1000)} style={{ marginTop: '2vh' }}>
+      <Grid gutter="xs" columns={isMobile ? 4 : 22}>
+        <Grid.Col span={isMobile ? 4 : 6}>
           <Container>
             {editable ? (
               <Title order={5} mb="xs">
