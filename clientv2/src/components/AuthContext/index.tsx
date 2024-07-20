@@ -77,7 +77,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated && !isLoading && !userData) {
-      const isRecruiter = getKindePermission('recruiter:resume-book').isGranted;
+      const isRecruiter = getKindePermission(`recruiter:resume-book-${import.meta.env.VITE_RUN_ENVIRONMENT}`).isGranted;
       if (!isRecruiter) {
         setUserData(null);
         setIsLoggedIn(false);
