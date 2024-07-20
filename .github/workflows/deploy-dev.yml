@@ -9,6 +9,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    concurrency:
+      group: resume-book-aws-dev
+      cancel-in-progress: false
     environment: "AWS DEV"
     steps:
       - uses: actions/checkout@v3

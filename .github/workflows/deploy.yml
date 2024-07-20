@@ -14,6 +14,9 @@ on:
 jobs:
   deploy-dev:
     runs-on: ubuntu-latest
+    concurrency:
+      group: resume-book-aws-dev
+      cancel-in-progress: false
     environment: "AWS DEV"
     steps:
       - uses: actions/checkout@v3
@@ -40,6 +43,9 @@ jobs:
         run: make test_ci
   deploy-prod:
     runs-on: ubuntu-latest
+    concurrency:
+      group: resume-book-aws-prod
+      cancel-in-progress: false
     needs:
       - test-dev
       - deploy-dev
