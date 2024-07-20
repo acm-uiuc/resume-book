@@ -4,8 +4,8 @@ from jwt.algorithms import RSAAlgorithm
 from roles import setRolePolicies
 from shared import AuthPolicy
 
-MICROSOFT_OPENID_CONFIG_URL = "https://login.microsoftonline.com/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/v2.0/.well-known/openid-configuration"
 MICROSOFT_ISSUER = "https://sts.windows.net/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/"
+MICROSOFT_OPENID_CONFIG_URL = f"{MICROSOFT_ISSUER}/.well-known/openid-configuration"
 
 def get_microsoft_public_keys():
     response = requests.get(MICROSOFT_OPENID_CONFIG_URL)
