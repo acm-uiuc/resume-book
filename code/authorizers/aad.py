@@ -1,18 +1,19 @@
-"""
-Copyright 2015-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
-
-     http://aws.amazon.com/apache2.0/
-
-or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-"""
+import traceback
+import requests
+import jwt
 from roles import setRolePolicies
 from shared import AuthPolicy
-import jwt
+
+MICROSOFT_ISSUER = "https://sts.windows.net/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/"
+
+def get_token_valid(token):
+    """Requires User.Read permission"""
+    response =requests.get("https://graph.microsoft.com/v1.0/me", headers={"Authorization": f"Bearer {token}"})
+    response.raise_for_status()
+    return True
+
 
 def lambda_handler(event, context):
-    """Do not print the auth token unless absolutely necessary """
     method, token = event['authorizationToken'].split(' ')
     principalId = token
 
@@ -24,20 +25,39 @@ def lambda_handler(event, context):
     policy.restApiId = apiGatewayArnTmp[0]
     policy.region = tmp[3]
     policy.stage = apiGatewayArnTmp[1]
-    if method == "Bearer" and token != "" and token:
-        setRolePolicies('student', policy)
-    else:
-        policy.denyAllMethods()
-
-    # Finally, build the policy
-    authResponse = policy.build()
-    decoded = jwt.decode(token, options={"verify_aud": False, "verify_signature": False},)
-    context = {
-        'authStrategy': 'msal',
-        'username': decoded['unique_name']
-    }
- 
-    authResponse['context'] = context
     
-    return authResponse
+    if method == "Bearer" and token != "" and token:
+        try:
+            valid = get_token_valid(token)
+            if not valid:
+                raise ValueError("Invalid token after calling Graph API")
+            decoded = jwt.decode(token, algorithms=["RS256"], issuer=MICROSOFT_ISSUER, options={"verify_aud": False, "verify_signature": False},)
+            setRolePolicies('student', policy)
+            context = {
+                'authStrategy': 'msal',
+                'username': decoded['unique_name']
+            }
+            authResponse = policy.build()
+            authResponse['context'] = context
+        except jwt.ExpiredSignatureError:
+            print("Token has expired")
+            policy.denyAllMethods()
+            authResponse = policy.build()
+        except jwt.InvalidTokenError:
+            print("Invalid token:", traceback.format_exc(), flush=True)
+            policy.denyAllMethods()
+            authResponse = policy.build()
+        except requests.exceptions.HTTPError:
+            print("Could not call Graph API (usually means invalid token):", traceback.format_exc(), flush=True)
+            policy.denyAllMethods()
+            authResponse = policy.build()
+        except Exception:
+            print("Unknown error occurred", traceback.format_exc(), flush=True)
+            policy.denyAllMethods()
+            authResponse = policy.build()
+    else:
+        print("Token invalid structure or not provided.")
+        policy.denyAllMethods()
+        authResponse = policy.build()
 
+    return authResponse
