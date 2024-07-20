@@ -82,7 +82,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!isRecruiter) {
         setUserData(null);
         setIsLoggedIn(false);
-        window.location.href = '/';
         notifications.show({
           color: 'red',
           title: "Access Denied",
