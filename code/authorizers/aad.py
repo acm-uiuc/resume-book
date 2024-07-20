@@ -4,7 +4,7 @@ from jwt.algorithms import RSAAlgorithm
 from roles import setRolePolicies
 from shared import AuthPolicy
 
-MICROSOFT_OPENID_CONFIG_URL = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
+MICROSOFT_OPENID_CONFIG_URL = "https://login.microsoftonline.com/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/v2.0/.well-known/openid-configuration"
 MICROSOFT_ISSUER = "https://sts.windows.net/c8d9148f-9a59-4db3-827d-42ea0c2b6e2e/"
 
 def get_microsoft_public_keys():
@@ -48,8 +48,8 @@ def lambda_handler(event, context):
             print("Token has expired")
             policy.denyAllMethods()
             authResponse = policy.build()
-        except jwt.InvalidTokenError:
-            print("Invalid token")
+        except jwt.InvalidTokenError as e:
+            print("Invalid token", str(e), flush=True)
             policy.denyAllMethods()
             authResponse = policy.build()
     else:
