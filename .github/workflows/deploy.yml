@@ -27,6 +27,9 @@ jobs:
       - run: make deploy_dev
   deploy-cf-pages-dev:
     runs-on: ubuntu-latest
+    concurrency:
+      group: resume-book-cf-pages-dev
+      cancel-in-progress: false
     permissions:
       contents: read
       deployments: write  
@@ -91,6 +94,9 @@ jobs:
     permissions:
       contents: read
       deployments: write
+    concurrency:
+      group: resume-book-cf-pages-prod
+      cancel-in-progress: false
     name: Deploy to Cloudflare Pages Prod
     environment: "Cloudflare Pages - Prod"
     steps:
