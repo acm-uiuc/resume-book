@@ -1,7 +1,5 @@
 import json
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from sympy import true
-from torch import log_
 from util.server import app
 from util.logging import configure_request_id, get_logger
 import traceback
