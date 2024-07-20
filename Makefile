@@ -24,3 +24,7 @@ deploy_prod: check_account_prod build
 	sam deploy $(common_params) --parameter-overrides $(run_env)=prod
 deploy_dev: check_account_dev build
 	sam deploy $(common_params) --parameter-overrides $(run_env)=dev
+
+test_ci:
+	pip install -r tests/live_integration/requirements.txt
+	pytest tests/live_integration/
