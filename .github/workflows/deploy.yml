@@ -13,6 +13,7 @@ jobs:
       group: resume-book-aws-dev
       cancel-in-progress: false
     environment: "AWS DEV"
+    name: Deploy to AWS DEV
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/setup-sam@v2
@@ -24,10 +25,35 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - run: make deploy_dev
+  deploy-cf-pages-dev:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write  
+    name: Deploy to Cloudflare Pages DEV
+    environment: "Cloudflare Pages - Dev"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Build
+        run: cd clientv2 && corepack enable && yarn && yarn run build
+      - name: Publish
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: resume-book-dev
+          directory: clientv2/dist/
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
   test-dev:
     runs-on: ubuntu-latest
     needs:
       - deploy-aws-dev
+    name: Perform live testing
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.11 for testing
@@ -38,6 +64,7 @@ jobs:
         run: make test_ci
   deploy-aws-prod:
     runs-on: ubuntu-latest
+    name: Deploy to AWS PROD
     concurrency:
       group: resume-book-aws-prod
       cancel-in-progress: false
@@ -71,7 +98,7 @@ jobs:
       - name: Setup Node LTS
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts'
+          node-version: 18
       - name: Build
         run: cd clientv2 && corepack enable && yarn && yarn run build
       - name: Publish
@@ -84,6 +111,7 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
   health-check-prod:
     runs-on: ubuntu-latest
+    name: Confirm services healthy
     needs:
       - deploy-aws-prod
       - deploy-cf-pages-prod
