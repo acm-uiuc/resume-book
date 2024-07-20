@@ -289,7 +289,6 @@ def recruiter_perform_search():
         db_connection = get_db_connection(db_config, "resume_book_recruiter_search")
         with db_connection.transaction():
             with db_connection.cursor(row_factory=dict_row) as cur:
-                logger.info(search_query)
                 cur.execute(search_query)
                 search_result = [convert_dict_keys_snake_to_camel(x) for x in cur.fetchall()]
     except pydantic.ValidationError as e:
