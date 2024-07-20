@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!isRecruiter) {
         setUserData(null);
         setIsLoggedIn(false);
-        window.location.href = '/';
+        kindeLogout();
       } else {
         setUserData({
           email: user?.email!,
