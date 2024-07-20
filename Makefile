@@ -1,5 +1,5 @@
 build:
-	sam build --template-file cloudformation/lambda.yml
+	sam build --template-file cloudformation/main.yml
 local:
 	sam local start-api --env-vars local.env.json --warm-containers EAGER
 deploy_prod: build

@@ -66,7 +66,16 @@ Mappings:
         - subnet-0cbe89f6ab2665610
 
 Resources:
-  # API Lambda
+  ResumeBookIAMRoles:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./iam.yml
+      Parameters:
+        RunEnvironment: !Ref RunEnvironment
+        LambdaFunctionName: !Ref LambdaFunctionName
+        ResumeS3BucketName: !Ref ResumeS3BucketName
+        AuthLambdaFunctionName: !Ref AuthLambdaFunctionName
+
   ResumeBookNoVpcLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -77,7 +86,7 @@ Resources:
       FunctionName: !Sub ${LambdaFunctionName}-novpc
       Handler: app.lambda_handler
       MemorySize: 768
-      Role: !GetAtt ResumeBookApiLambdaIAMRole.Arn
+      Role: !GetAtt ResumeBookIAMRoles.Outputs.MainFunctionRoleArn
       Timeout: 30
       Environment:
         Variables:
@@ -101,7 +110,7 @@ Resources:
       FunctionName: !Ref LambdaFunctionName
       Handler: app.lambda_handler
       MemorySize: 512
-      Role: !GetAtt ResumeBookApiLambdaIAMRole.Arn
+      Role: !GetAtt ResumeBookIAMRoles.Outputs.MainFunctionRoleArn
       Timeout: 60
       Environment:
         Variables:
@@ -119,99 +128,6 @@ Resources:
             Path: /{proxy+}
             Method: ANY
 
-  ResumeBookApiLambdaFunctionErrorAlarm:
-    Type: 'AWS::CloudWatch::Alarm'
-    Condition: IsProd
-    Properties:
-      AlarmName: !Sub '${LambdaFunctionName}-alarm'
-      AlarmDescription: !Sub 'Alarm if ${LambdaFunctionName} function errors are detected.'
-      Namespace: 'AWS/Lambda'
-      MetricName: 'Errors'
-      Statistic: 'Sum'
-      Period: '60'
-      EvaluationPeriods: '1'
-      ComparisonOperator: 'GreaterThanThreshold'
-      Threshold: '0'
-      AlarmActions:
-        - !Ref AlertSNSArn
-      Dimensions:
-        - Name: 'FunctionName'
-          Value: !Ref ResumeBookApiLambdaFunction
-
-  ResumeBookApiLambdaFunctionNoVpcErrorAlarm:
-    Type: 'AWS::CloudWatch::Alarm'
-    Condition: IsProd
-    Properties:
-      AlarmName: !Sub '${LambdaFunctionName}-novpc-alarm'
-      AlarmDescription: !Sub 'Alarm if ${LambdaFunctionName}-novpc function errors are detected.'
-      Namespace: 'AWS/Lambda'
-      MetricName: 'Errors'
-      Statistic: 'Sum'
-      Period: '60'
-      EvaluationPeriods: '1'
-      ComparisonOperator: 'GreaterThanThreshold'
-      Threshold: '0'
-      AlarmActions:
-        - !Ref AlertSNSArn
-      Dimensions:
-        - Name: 'FunctionName'
-          Value: !Sub ${ResumeBookApiLambdaFunction}-novpc
-
-  ResumeBookApiLambdaIAMRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Action:
-              - sts:AssumeRole
-            Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-      Policies:
-        - PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Effect: Allow
-                Resource:
-                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunctionName}:*
-                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunctionName}-novpc:*
-              - Effect: Allow
-                Action:
-                  - ec2:CreateNetworkInterface
-                  - ec2:DescribeNetworkInterfaces
-                  - ec2:DeleteNetworkInterface
-                  - ec2:DescribeSubnets
-                  - ec2:DeleteNetworkInterface
-                  - ec2:AssignPrivateIpAddresses
-                  - ec2:UnassignPrivateIpAddresses
-                Resource: '*' 
-          PolicyName: lambda
-        - PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Action:
-                  - s3:*
-                  - "s3-object-lambda:*"
-                Effect: Allow
-                Resource:
-                  - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}
-                  - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}/*
-          PolicyName: lambda-s3
-        - PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Action:
-                  - secretsmanager:GetSecretValue
-                Effect: Allow
-                Resource:
-                  - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:infra-resume-book-db-config*
-          PolicyName: lambda-db-secret
 
   ResumeBookApiLambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -225,7 +141,7 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}-novpc
       RetentionInDays: 7
 
-  # Combined Authorizer (AAD + Username/Password)
+  # Combined Authorizer (AAD + Kinde)
 
   ResumeBookAuthLambdaFunction:
     Type: AWS::Serverless::Function
@@ -237,58 +153,13 @@ Resources:
       FunctionName: !Ref AuthLambdaFunctionName
       Handler: combined.lambda_handler
       MemorySize: 2048
-      Role: !GetAtt ResumeBookAuthLambdaIAMRole.Arn
+      Role: !GetAtt ResumeBookIAMRoles.Outputs.AuthFunctionRoleArn
       Timeout: 60
       Environment:
         Variables:
           RunEnvironment: !Ref RunEnvironment
           AadValidClientId: !FindInMap [ApiGwConfig, !Ref RunEnvironment, AadValidClientId]
           KindeValidClientId: !FindInMap [ApiGwConfig, !Ref RunEnvironment, KindeValidClientId]
-    
-  ResumeBookAuthLambdaFunctionErrorAlarm:
-    Type: 'AWS::CloudWatch::Alarm'
-    Condition: IsProd
-    Properties:
-      AlarmName: !Sub '${AuthLambdaFunctionName}-alarm'
-      AlarmDescription: !Sub 'Alarm if ${AuthLambdaFunctionName} function errors are detected.'
-      Namespace: 'AWS/Lambda'
-      MetricName: 'Errors'
-      Statistic: 'Sum'
-      Period: '60'
-      EvaluationPeriods: '1'
-      ComparisonOperator: 'GreaterThanThreshold'
-      Threshold: '0'
-      AlarmActions:
-        - !Ref AlertSNSArn
-      Dimensions:
-        - Name: 'FunctionName'
-          Value: !Ref ResumeBookAuthLambdaFunction
-
-  ResumeBookAuthLambdaIAMRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Action:
-              - sts:AssumeRole
-            Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-                - apigateway.amazonaws.com
-      Policies:
-        - PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Effect: Allow
-                Resource:
-                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AuthLambdaFunctionName}:*
-          PolicyName: lambda
 
   ResumeBookAuthLambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -356,12 +227,67 @@ Resources:
       ResponseTemplates:
         application/json: "{\"error\": true, \"message\": \"Request could not be authenticated. Perhaps reauthenticate and try again?\"}"
 
+  # ALARMS
+  ResumeBookAllLambdasFunctionErrorAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Condition: IsProd
+    Properties:
+      AlarmName: !Sub '${LambdaFunctionName}-error-alarm'
+      AlarmDescription: !Sub 'Alarm if ${LambdaFunctionName} function errors are detected.'
+      Namespace: 'AWS/Lambda'
+      MetricName: 'Errors'
+      Statistic: 'Sum'
+      Period: '60'
+      EvaluationPeriods: '2'
+      ComparisonOperator: 'GreaterThanThreshold'
+      Threshold: '0'
+      AlarmActions:
+        - !Ref AlertSNSArn
+      Metrics:
+        - Id: main_lambda
+          MetricStat:
+            Metric:
+              Namespace: 'AWS/Lambda'
+              MetricName: 'Errors'
+              Dimensions:
+                - Name: 'FunctionName'
+                  Value: !Ref ResumeBookApiLambdaFunction
+            Period: 60
+            Stat: 'Sum'
+            ReturnData: false
+        - Id: novpc_lambda
+          MetricStat:
+            Metric:
+              Namespace: 'AWS/Lambda'
+              MetricName: 'Errors'
+              Dimensions:
+                - Name: 'FunctionName'
+                  Value: !Sub '${ResumeBookApiLambdaFunction}-novpc'
+            Period: 60
+            Stat: 'Sum'
+            ReturnData: false
+        - Id: auth_lambda
+          MetricStat:
+            Metric:
+              Namespace: 'AWS/Lambda'
+              MetricName: 'Errors'
+              Dimensions:
+                - Name: 'FunctionName'
+                  Value: !Ref ResumeBookAuthLambdaFunction
+            Period: 60
+            Stat: 'Sum'
+            ReturnData: false
+        - Id: totalerrors
+          Expression: 'main_lambda + novpc_lambda + auth_lambda'
+          Label: 'Total Errors'
+          ReturnData: true
+
   ResumeBookApiGatewayLatencyAlarm:
     Type: 'AWS::CloudWatch::Alarm'
     Condition: IsProd
     Properties:
       AlarmName: !Sub '${ResumeBookApiGWName}-latency-alarm'
-      AlarmDescription: !Sub 'Alarm if ${ResumeBookApiGWName} API gateway latency is > 2s.'
+      AlarmDescription: !Sub 'Alarm if ${ResumeBookApiGWName} API gateway latency is > 3s.'
       Namespace: 'AWS/ApiGateway'
       MetricName: 'Latency'
       Statistic: 'Average'
@@ -394,7 +320,7 @@ Resources:
         - Name: 'ApiName'
           Value: !Ref ResumeBookApiGWName
 
-  AadAuthorizerPermission:
+  LambdaAuthorizerPermission:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
