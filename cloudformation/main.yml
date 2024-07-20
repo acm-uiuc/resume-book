@@ -76,6 +76,15 @@ Resources:
         ResumeS3BucketName: !Ref ResumeS3BucketName
         AuthLambdaFunctionName: !Ref AuthLambdaFunctionName
 
+  ResumeBookLogGroups:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./logs.yml
+      Parameters:
+        LambdaFunctionName: !Ref LambdaFunctionName
+        AuthLambdaFunctionName: !Ref AuthLambdaFunctionName
+        LogRetentionDays: 7
+
   ResumeBookNoVpcLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -127,22 +136,7 @@ Resources:
             RestApiId: !Ref ResumeBookApiGateway
             Path: /{proxy+}
             Method: ANY
-
-
-  ResumeBookApiLambdaLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}
-      RetentionInDays: 7
-
-  ResumeBookApiLambdaNoVpcLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}-novpc
-      RetentionInDays: 7
-
-  # Combined Authorizer (AAD + Kinde)
-
+            
   ResumeBookAuthLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -160,12 +154,6 @@ Resources:
           RunEnvironment: !Ref RunEnvironment
           AadValidClientId: !FindInMap [ApiGwConfig, !Ref RunEnvironment, AadValidClientId]
           KindeValidClientId: !FindInMap [ApiGwConfig, !Ref RunEnvironment, KindeValidClientId]
-
-  ResumeBookAuthLambdaLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${AuthLambdaFunctionName}
-      RetentionInDays: 7
  
 # API Gateway
   ResumeBookApiGateway:
@@ -254,7 +242,7 @@ Resources:
                   Value: !Ref ResumeBookApiLambdaFunction
             Period: 60
             Stat: 'Sum'
-            ReturnData: false
+          ReturnData: false
         - Id: novpc_lambda
           MetricStat:
             Metric:
@@ -265,7 +253,7 @@ Resources:
                   Value: !Sub '${ResumeBookApiLambdaFunction}-novpc'
             Period: 60
             Stat: 'Sum'
-            ReturnData: false
+          ReturnData: false
         - Id: auth_lambda
           MetricStat:
             Metric:
@@ -276,7 +264,7 @@ Resources:
                   Value: !Ref ResumeBookAuthLambdaFunction
             Period: 60
             Stat: 'Sum'
-            ReturnData: false
+          ReturnData: false
         - Id: totalerrors
           Expression: 'main_lambda + novpc_lambda + auth_lambda'
           Label: 'Total Errors'
