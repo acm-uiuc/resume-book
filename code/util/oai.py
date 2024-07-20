@@ -1,6 +1,9 @@
 import json
 from openai import OpenAI
+
+from .logging import get_logger
 from .oai_prompts import system_prompt
+logger = get_logger()
 
 LENGTH_LIMIT = 30000
 
@@ -34,4 +37,13 @@ def oai_get_profile_json(client, resume_text, role_type, role_description):
         max_tokens=8192
     )
     result = chat_completion.choices[0]
+    finish_reason = result.finish_reason
+    logger.info(f"""
+Performed OpenAI call to generate profile 
+Finish reason: {finish_reason}
+Total Tokens: {chat_completion.usage.total_tokens} 
+Completion Tokens: {chat_completion.usage.completion_tokens}
+Prompt Tokens: {chat_completion.usage.prompt_tokens}
+OpenAI ID: {chat_completion.id})
+""")
     return json.loads(result.message.content)

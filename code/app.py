@@ -15,6 +15,12 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
     else:
         full_path = ctx["path"]
     try:
+        username = app.current_event.request_context.authorizer["username"]
+    except Exception:
+        username = "public@acm.illinois.edu"
+    log_string = f"REQUEST LOG - START - [{ctx['requestId']}] {ctx['identity']['sourceIp']}: {({username})} - [{ctx['requestTime']}] \"{ctx['httpMethod']} {full_path} {ctx['protocol']}\" {ctx['identity']['userAgent']}"
+    print(log_string, flush=True)
+    try:
         rval = app.resolve(event, context)
         status_code = rval["statusCode"]
     except Exception:
@@ -25,6 +31,5 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
             "body": json.dumps({"message": "An internal server error occurred."}),
         }
         status_code = 502
-    log_string = f"[{ctx['requestId']}] REQUEST FROM {ctx['identity']['sourceIp']} - [{ctx['requestTime']}] \"{ctx['httpMethod']} {full_path} {ctx['protocol']}\" {status_code} {ctx['identity']['userAgent']}"
-    print(log_string, flush=True)
+    log_string = f"REQUEST LOG - FINISH - [{ctx['requestId']} finished with status code {status_code}"
     return rval
