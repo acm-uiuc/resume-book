@@ -85,6 +85,9 @@ Resources:
         AuthLambdaFunctionName: !Ref AuthLambdaFunctionName
         LogRetentionDays: 7
 
+  # Since having a Lambda in a VPC disables IPv4 network access to WAN
+  # this is a non-VPCed version of the same lambda that we can call from API Gateway 
+  # to call routes that need IPv4 internet access, such as OpenAI calls.
   ResumeBookNoVpcLambdaFunction:
     Type: AWS::Serverless::Function
     DependsOn:
