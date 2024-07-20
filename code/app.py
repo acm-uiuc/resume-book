@@ -1,13 +1,14 @@
 import json
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from util.server import app
-from util.logging import configure_request_id
+from util.logging import configure_request_id, get_logger
 import traceback
 
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     request_id = event["requestContext"]["requestId"]
     ctx = event["requestContext"]
     configure_request_id(request_id)  # Configure the logger with the request ID
+    logger = get_logger()
     if "queryStringParameters" in event and event["queryStringParameters"] is not None:
         full_path = f"{ctx['path']}?" + "&".join(
             [f"{key}={value}" for key, value in event["queryStringParameters"].items()]
@@ -24,7 +25,7 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
         rval = app.resolve(event, context)
         status_code = rval["statusCode"]
     except Exception:
-        print("An error occured and bubbled up: ", traceback.format_exc(), flush=True)
+        logger.info(f"An error occured and bubbled up: {traceback.format_exc()}")
         rval = {
             "statusCode": 502,
             "headers": {"Content-Type": "application/json"},
