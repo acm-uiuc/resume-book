@@ -70,8 +70,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Node LTS
         uses: actions/setup-node@v4
-          with:
-            node-version: 'lts'
+        with:
+          node-version: 'lts'
       - name: Build
         run: cd clientv2 && corepack enable && yarn && yarn run build
       - name: Publish
