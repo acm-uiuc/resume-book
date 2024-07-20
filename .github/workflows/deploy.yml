@@ -6,11 +6,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "code/**"
-      - "cloudformation/main.yml"
-      - "docs/**"
-      - "Makefile"
 jobs:
   deploy-aws-dev:
     runs-on: ubuntu-latest
