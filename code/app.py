@@ -15,7 +15,7 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
     else:
         full_path = ctx["path"]
     try:
-        username = app.current_event.request_context.authorizer["username"]
+        username = event["requestContext"]["authorizer"]["username"]
     except Exception:
         username = "public@acm.illinois.edu"
     log_string = f"REQUEST LOG - START - [{ctx['requestId']}] {ctx['identity']['sourceIp']}: {({username})} - [{ctx['requestTime']}] \"{ctx['httpMethod']} {full_path} {ctx['protocol']}\" {ctx['identity']['userAgent']}"
