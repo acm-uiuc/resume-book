@@ -82,11 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!isRecruiter) {
         setUserData(null);
         setIsLoggedIn(false);
-        notifications.show({
-          color: 'red',
-          title: "Access Denied",
-          message: `You do not have permission for the recruiter view in the ${import.meta.env.VITE_RUN_ENVIRONMENT} environment.`
-        })
+        window.location.href = '/';
       } else {
         setUserData({
           email: user?.email!,
