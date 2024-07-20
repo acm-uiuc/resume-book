@@ -21,12 +21,6 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}
       RetentionInDays: !Ref LogRetentionDays
 
-  ResumeBookApiLambdaNoVpcLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}-novpc
-      RetentionInDays: !Ref LogRetentionDays
-
   ResumeBookAuthLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:

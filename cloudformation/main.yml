@@ -99,6 +99,8 @@ Resources:
       MemorySize: 768
       Role: !GetAtt ResumeBookIAMRoles.Outputs.MainFunctionRoleArn
       Timeout: 30
+      LoggingConfig:
+        LogGroup: !Sub /aws/lambda/${LambdaFunctionName}
       Environment:
         Variables:
           RunEnvironment: !Ref RunEnvironment
