@@ -68,8 +68,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup Node LTS
+        uses: actions/setup-node@v4
+          with:
+            node-version: 'lts'
       - name: Build
-        run: cd clientv2 && yarn && yarn run build
+        run: cd clientv2 && corepack enable && yarn && yarn run build
       - name: Publish
         uses: cloudflare/pages-action@v1
         with:
