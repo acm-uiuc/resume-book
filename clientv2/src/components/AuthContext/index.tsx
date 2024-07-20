@@ -174,8 +174,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     throw new Error('Unknown authentication method.');
   }, [userData, instance, getKindeToken]);
 
-  const loginMsal = useCallback(() => {
-    instance.loginRedirect();
+  const loginMsal = useCallback(async () => {
+    const accounts = instance.getAllAccounts();
+    if (accounts.length > 0) {
+      instance.setActiveAccount(accounts[0]);
+    } else {
+      await instance.loginRedirect();
+    }
   }, [instance]);
 
   const logout = useCallback(async () => {
