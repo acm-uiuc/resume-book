@@ -10,7 +10,7 @@ servers:
   - url: 
       Fn::FindInMap:
         - ApiGwConfig
-        - Fn::Ref: RunEnvironment
+        - Ref: RunEnvironment
         - ApiDomainName
     name: 
       Fn::Sub: API Server for ${RunEnvironment} environment
