@@ -7,8 +7,13 @@ info:
     email: infra@acm.illinois.edu
 
 servers:
-  - url: !FindInMap [ApiGwConfig, !Ref RunEnvironment, ApiDomainName]
-    name: !Sub API Server for ${RunEnvironment} environment
+  - url: 
+      Fn::FindInMap:
+        - ApiGwConfig
+        - Fn::Ref: RunEnvironment
+        - ApiDomainName
+    name: 
+      Fn::Sub: API Server for ${RunEnvironment} environment
 
 tags:
   - name: Student
