@@ -9,6 +9,7 @@ interface LogoBadgeProps {
 }
 
 const LogoBadge: React.FC<LogoBadgeProps> = ({ size, linkTo, showText }) => {
+  const isNonProd = import.meta.env.VITE_RUN_ENVIRONMENT !== 'prod';
   if (!showText) {
     showText = true;
   }
@@ -22,13 +23,13 @@ const LogoBadge: React.FC<LogoBadgeProps> = ({ size, linkTo, showText }) => {
         style={{
           fontSize: size,
           textDecoration: 'none',
-          color: '#0053B3',
+          color: isNonProd ? 'red' : '#0053B3',
           display: 'flex',
           alignItems: 'center',
         }}
       >
         <img src={brandImgUrl} alt="ACM Logo" style={{ height: '3em', marginRight: '0.5em' }} />
-        {showText ? 'Resume Book' : null}
+        {showText ? isNonProd ? `Resume Book ${import.meta.env.VITE_RUN_ENVIRONMENT.toUpperCase()} ENV` : 'Resume Book' : null}
       </Link>
     </b>
   );

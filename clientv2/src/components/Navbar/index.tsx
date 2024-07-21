@@ -15,14 +15,12 @@ const isActiveLink = (path: string) => location.pathname === path;
 
 const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
-
   return (
     <Box>
       <header className={classes.header}>
         <Group justify="space-between" align="center" h="100%">
           <Group justify="start" align="center" h="100%" gap={10}>
             <LogoBadge />
-            {/* <Badge color="red">Beta</Badge> */}
             <Group justify="start" align="center" h="100%" gap={10} visibleFrom="sm">
               {userData?.role === AuthRoleEnum.STUDENT ? (
                 <a href="/profile" className={classes.link}>
