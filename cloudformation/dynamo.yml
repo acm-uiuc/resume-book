@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Resume Book API - Dynamo Tables
+Transform: AWS::Serverless-2016-10-31
+
+
+Parameters:
+  CacheDynamoTableName:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+
+
+Resources:
+  CacheDynamoTable:
+    Type: 'AWS::DynamoDB::Table'
+    DeletionPolicy: "Delete"
+    Properties:
+      BillingMode: 'PAY_PER_REQUEST'
+      TableName: !Ref CacheDynamoTableName
+      DeletionProtectionEnabled: true
+      AttributeDefinitions:
+        - AttributeName: username
+          AttributeType: S
+      KeySchema:
+        - AttributeName: username
+          KeyType: HASH
+
+Outputs:
+  CacheDynamoTableArn:
+    Description: "Profile Cache Table ARN"
+    Value: !GetAtt CacheDynamoTable.Arn
