@@ -36,20 +36,22 @@ Conditions:
 Mappings:
   ApiGwConfig:
     dev:
-      ApiCertificateArn: arn:aws:acm:us-east-1:427040638965:certificate/0397afb9-f519-40a1-aecc-f65c39aa7083
-      ApiDomainName: resume-api.qa.acm.illinois.edu
+      ApiCertificateArn: arn:aws:acm:us-east-1:427040638965:certificate/63ccdf0b-d2b5-44f0-b589-eceffb935c23
+      ApiDomainName: resumes.aws.qa.acmuiuc.org
       ValidCorsOrigins:
-        - https://resumes.qa.acm.illinois.edu
+        - https://resumes.qa.acmuiuc.org
         - http://localhost:5173
       AadValidClientId: 251efa82-f589-42e1-9ebb-e214a4f40a0f
       KindeValidClientId: 9dfcd7977da347f3ab55fbb909a4d5cf
+      HostedZoneId: Z04502822NVIA85WM2SML
     prod:
-      ApiCertificateArn: arn:aws:acm:us-east-1:298118738376:certificate/4ba7200a-cfc7-4234-b242-0281030df5f5
-      ApiDomainName: resume-api.acm.illinois.edu
+      ApiCertificateArn: arn:aws:acm:us-east-1:298118738376:certificate/6142a0e2-d62f-478e-bf15-5bdb616fe705
+      ApiDomainName: resumes.aws.acmuiuc.org
       ValidCorsOrigins:
         - https://resumes.acm.illinois.edu
       AadValidClientId: 5178a6b1-f46d-40a2-b550-1389b9316446
       KindeValidClientId: fdacad7aea554755844105f5606da0f6
+      HostedZoneId: Z05246633460N5MEB9DBF
   EnvironmentToCidr:
     dev:
       SecurityGroupIds:
@@ -189,6 +191,8 @@ Resources:
       Domain: 
         DomainName: !FindInMap [ApiGwConfig, !Ref RunEnvironment, ApiDomainName]
         CertificateArn: !FindInMap [ApiGwConfig, !Ref RunEnvironment, ApiCertificateArn]
+        Route53:
+          HostedZoneId: !FindInMap [ApiGwConfig, !Ref RunEnvironment, HostedZoneId]
       StageName: default
       Cors:
         AllowHeaders: "'Content-Type,Authorization,X-Amz-Date'"
