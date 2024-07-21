@@ -46,6 +46,7 @@ Mappings:
         - http://localhost:5173
       AadValidClientId: 251efa82-f589-42e1-9ebb-e214a4f40a0f
       KindeValidClientId: 9dfcd7977da347f3ab55fbb909a4d5cf
+      LogRetentionDays: 7
     prod:
       ApiCertificateArn: arn:aws:acm:us-east-1:298118738376:certificate/6142a0e2-d62f-478e-bf15-5bdb616fe705 # DO NOT CHANGE
       HostedZoneId: Z05246633460N5MEB9DBF # DO NOT CHANGE (account constant)
@@ -54,6 +55,7 @@ Mappings:
         - https://resumes.acm.illinois.edu
       AadValidClientId: 5178a6b1-f46d-40a2-b550-1389b9316446
       KindeValidClientId: fdacad7aea554755844105f5606da0f6
+      LogRetentionDays: 30
   EnvironmentToCidr:
     dev:
       SecurityGroupIds:
@@ -87,16 +89,16 @@ Resources:
     Properties:
       Location: ./logs.yml
       Parameters:
-        CacheDynamoTableName: !Ref CacheDynamoTableName
+        LambdaFunctionName: !Ref LambdaFunctionName
+        AuthLambdaFunctionName: !Ref AuthLambdaFunctionName
+        LogRetentionDays: !FindInMap [ApiGwConfig, !Ref RunEnvironment, LogRetentionDays]
 
   ResumeBookDynamoTables:
     Type: AWS::Serverless::Application
     Properties:
       Location: ./dynamo.yml
       Parameters:
-        LambdaFunctionName: !Ref LambdaFunctionName
-        AuthLambdaFunctionName: !Ref AuthLambdaFunctionName
-        LogRetentionDays: 7
+        CacheDynamoTableName: !Ref CacheDynamoTableName
 
   # Since having a Lambda in a VPC disables IPv4 network access to WAN
   # this is a non-VPCed version of the same lambda that we can call from API Gateway 
