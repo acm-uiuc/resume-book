@@ -99,6 +99,11 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
       </Table.Td>
       <Table.Td>{element.name}</Table.Td>
       <Table.Td>
+        <Button variant="light" color="green" onClick={() => openProfileModal(element.username)}>
+          View Profile
+        </Button>
+      </Table.Td>
+      <Table.Td>
         <Anchor href={`mailto:${element.email}`}>{element.email}</Anchor>
       </Table.Td>
       <Table.Td>
@@ -110,11 +115,6 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
             - {degree.yearEnded}
           </Text>
         ))}
-      </Table.Td>
-      <Table.Td>
-        <Button variant="light" color="green" onClick={() => openProfileModal(element.username)}>
-          View Profile
-        </Button>
       </Table.Td>
     </Table.Tr>
   ));
@@ -152,9 +152,9 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
               />
             </Table.Th>
             <Table.Th>Name</Table.Th>
+            <Table.Th>Actions</Table.Th>
             <Table.Th>Email</Table.Th>
             <Table.Th>Degree(s)</Table.Th>
-            <Table.Th>Actions</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
