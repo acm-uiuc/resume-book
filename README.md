@@ -2,11 +2,11 @@
 
 ## Deployment Environments
 ### Dev/QA
-API: https://resume-api.qa.acmuiuc.org
+API: https://resumes.aws.qa.acmuiuc.org
 Web UI: https://resumes.qa.acmuiuc.org
 
 ### Prod
-API: https://resume-api.acm.illinois.edu
+API: https://resumes.aws.acmuiuc.org
 Web UI: https://resumes.acm.illinois.edu
 
 ## PR Guidelines
