@@ -16,8 +16,6 @@ Parameters:
   AuthLambdaFunctionName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
-  CacheDynamoTableArn:
-    Type: String
 
 Resources:
   ResumeBookAuthLambdaIAMRole:
@@ -90,15 +88,6 @@ Resources:
                   - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}
                   - !Sub arn:aws:s3:::${ResumeS3BucketName}-${RunEnvironment}/*
           PolicyName: lambda-s3
-        - PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Action:
-                  - dynamodb:*
-                Effect: Allow
-                Resource:
-                  - !Ref CacheDynamoTableArn
-          PolicyName: lambda-dynamo
         - PolicyDocument:
             Version: 2012-10-17
             Statement:

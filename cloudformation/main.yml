@@ -14,23 +14,21 @@ Parameters:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-api-lambda
+
   ResumeS3BucketName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-pdfs
+
   ResumeBookApiGWName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-api-gw
+
   AuthLambdaFunctionName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-auth-lambda
-  CacheDynamoTableName:
-    Type: String
-    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
-    Default: infra-resume-book-profile-cache
-  
 
 Conditions:
   IsProd: !Equals [!Ref RunEnvironment, 'prod']
@@ -85,7 +83,6 @@ Resources:
         LambdaFunctionName: !Ref LambdaFunctionName
         ResumeS3BucketName: !Ref ResumeS3BucketName
         AuthLambdaFunctionName: !Ref AuthLambdaFunctionName
-        CacheDynamoTableArn: !GetAtt ResumeBookDynamoTables.Outputs.CacheDynamoTableArn
 
   ResumeBookLogGroups:
     Type: AWS::Serverless::Application
@@ -95,13 +92,6 @@ Resources:
         LambdaFunctionName: !Ref LambdaFunctionName
         AuthLambdaFunctionName: !Ref AuthLambdaFunctionName
         LogRetentionDays: !FindInMap [General, !Ref RunEnvironment, LogRetentionDays]
-
-  ResumeBookDynamoTables:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./dynamo.yml
-      Parameters:
-        CacheDynamoTableName: !Ref CacheDynamoTableName
 
   # Since having a Lambda in a VPC disables IPv4 network access to WAN
   # this is a non-VPCed version of the same lambda that we can call from API Gateway 
@@ -126,7 +116,6 @@ Resources:
         Variables:
           RunEnvironment: !Ref RunEnvironment
           ValidCorsOrigins: !Join [",", !FindInMap [ApiGwConfig, !Ref RunEnvironment, ValidCorsOrigins]]
-          CacheDynamoTableName: !Ref CacheDynamoTableName
       Events:
         ApiEvent:
           Type: Api
@@ -153,7 +142,6 @@ Resources:
         Variables:
           RunEnvironment: !Ref RunEnvironment
           ValidCorsOrigins: !Join [",", !FindInMap [ApiGwConfig, !Ref RunEnvironment, ValidCorsOrigins]]
-          CacheDynamoTableName: !Ref CacheDynamoTableName
       VpcConfig: 
         Ipv6AllowedForDualStack: True
         SecurityGroupIds: !FindInMap [EnvironmentToCidr, !Ref RunEnvironment, SecurityGroupIds]
