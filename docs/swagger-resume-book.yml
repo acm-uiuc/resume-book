@@ -7,7 +7,8 @@ info:
     email: infra@acm.illinois.edu
 
 servers:
-  - url: https://resumes.acm.illinois.edu
+  - url: !FindInMap [ApiGwConfig, !Ref RunEnvironment, ApiDomainName]
+    name: !Sub API Server for ${RunEnvironment} environment
 
 tags:
   - name: Student
