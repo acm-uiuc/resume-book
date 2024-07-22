@@ -34,6 +34,11 @@ Conditions:
   IsProd: !Equals [!Ref RunEnvironment, 'prod']
 
 Mappings:
+  General:
+    dev:
+      LogRetentionDays: 7
+    prod:
+      LogRetentionDays: 30
   ApiGwConfig:
     dev:
       ApiCertificateArn: arn:aws:acm:us-east-1:427040638965:certificate/63ccdf0b-d2b5-44f0-b589-eceffb935c23 # DO NOT CHANGE (account constant)
@@ -86,7 +91,7 @@ Resources:
       Parameters:
         LambdaFunctionName: !Ref LambdaFunctionName
         AuthLambdaFunctionName: !Ref AuthLambdaFunctionName
-        LogRetentionDays: 7
+        LogRetentionDays: !FindInMap [General, !Ref RunEnvironment, LogRetentionDays]
 
   # Since having a Lambda in a VPC disables IPv4 network access to WAN
   # this is a non-VPCed version of the same lambda that we can call from API Gateway 
