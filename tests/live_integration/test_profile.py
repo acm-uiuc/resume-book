@@ -11,10 +11,20 @@ def test_unauthenticated(api_client):
         "Message": "User is not authorized to access this resource with an explicit deny"
     }
 
+def test_recruiter_noaccess_profile(api_client, jwt_generator):
+    """Sad Path: Test that accessing the profile when authenticated as a recruiter returns a failure."""
+    jwt = jwt_generator(role="recruiter", env="dev", email="noone@testing.megacorp.com")
+    response = api_client.get(
+        "/api/v1/student/profile", headers={"Authorization": f"Bearer {jwt}"}
+    )
+    assert response.status_code == 403
+    assert response.json() == {
+        "Message": "User is not authorized to access this resource"
+    }
 
 def test_default_profile(api_client, jwt_generator):
     """Happy Path: Test that the default profile is returned when the user doesn't exist"""
-    jwt = jwt_generator(role="student", env="dev", email="noone@illinois.edu")
+    jwt = jwt_generator(role="student", env="dev", email="noone@testing.illinois.edu")
     response = api_client.get(
         "/api/v1/student/profile", headers={"Authorization": f"Bearer {jwt}"}
     )
@@ -22,9 +32,9 @@ def test_default_profile(api_client, jwt_generator):
     json_response = response.json()
     assert json_response == {
         "defaultResponse": True,
-        "username": "noone@illinois.edu",
+        "username": "noone@testing.illinois.edu",
         "name": "John Doe",
-        "email": "noone@illinois.edu",
+        "email": "noone@testing.illinois.edu",
         "linkedin": "",
         "github": "",
         "website": "",
@@ -38,7 +48,7 @@ def test_default_profile(api_client, jwt_generator):
 
 def test_invalid_profile_email(api_client, jwt_generator):
     """Sad Path: Test that a profile with an invalid email cannot be submited."""
-    username = f"{str(uuid4())}@illinois.edu"
+    username = f"{str(uuid4())}@testing.illinois.edu"
     print(f"Using username {username}")
     jwt = jwt_generator(role="student", env="dev", email=username)
     profile = {
@@ -74,7 +84,7 @@ def test_invalid_profile_email(api_client, jwt_generator):
 
 def test_valid_profile(api_client, jwt_generator):
     """Happy Path: Test that a valid profile can be submitted, retrieved, and deleted correctly."""
-    username = f"{str(uuid4())}@illinois.edu"
+    username = f"{str(uuid4())}@testing.illinois.edu"
     print(f"Using username {username}")
     jwt = jwt_generator(role="student", env="dev", email=username)
     profile = {
@@ -117,7 +127,7 @@ def test_valid_profile(api_client, jwt_generator):
 
 def test_valid_profile_sparse(api_client, jwt_generator):
     """Happy Path: Test that a valid profile (with the bare minimum information) can be submitted, retrieved, and deleted correctly."""
-    username = f"{str(uuid4())}@illinois.edu"
+    username = f"{str(uuid4())}@testing.illinois.edu"
     print(f"Using username {username}")
     jwt = jwt_generator(role="student", env="dev", email=username)
     profile = {

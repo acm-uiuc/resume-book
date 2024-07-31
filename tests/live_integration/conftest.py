@@ -1,6 +1,4 @@
-import string
 import pytest 
-from rdflib import Literal
 from requests import Session
 from urllib.parse import urljoin
 import datetime
