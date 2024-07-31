@@ -69,3 +69,5 @@ jobs:
           python-version: 3.11
       - name: Run live testing
         run: make test_ci
+        env:
+          RB_JWT_SECRET: ${{ secrets.RB_JWT_SECRET }}

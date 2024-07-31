@@ -29,7 +29,7 @@ deploy_dev: check_account_dev build
 
 test_ci:
 	pip install -r tests/live_integration/requirements.txt
-	pytest tests/live_integration/
+	pytest -rP tests/live_integration/
 
 generate_jwt:
 	python utils/generate_jwt.py
