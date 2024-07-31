@@ -1,4 +1,7 @@
-import re, base64
+import re
+import base64
+import json
+from typing import Dict
 
 class HttpVerb:
     GET     = "GET"
@@ -171,3 +174,26 @@ def base64dec(base64_string: str) -> str:
     sample_string_bytes = base64.b64decode(base64_bytes)
     sample_string = sample_string_bytes.decode("ascii")
     return sample_string
+
+def get_parameter_from_sm(sm_client, parameter_name) ->  Dict[str, str | int]:
+    try:
+        # Retrieve the parameter
+        response = sm_client.get_secret_value(
+            SecretId=parameter_name
+        )
+        # Get the parameter value
+        parameter_value = response['SecretString']
+        # Parse the parameter value into a dictionary
+        parameter_dict = json.loads(parameter_value)
+
+        return parameter_dict
+
+    except sm_client.exceptions.ResourceNotFoundException:
+        print(f"Parameter \"{parameter_name}\" not found.", flush=True)
+        return None
+    except json.JSONDecodeError:
+        print(f"Parameter \"{parameter_name}\" is not in valid JSON format.", flush=True)
+        return None
+    except Exception as e:
+        print(f"An error occurred: {e}", flush=True)
+        return None

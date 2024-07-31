@@ -2,9 +2,13 @@ import traceback
 from uuid import uuid4
 from aad import lambda_handler as aad_handler
 from local import lambda_handler as kinde_handler
+from custom import lambda_handler as custom_jwt_handler
 from shared import AuthPolicy
 import os 
 import jwt
+import logging
+
+run_env = os.environ.get("RunEnvironment") # assume prod by default as it is the most restrictive environment
 
 def lambda_handler(event, context):
     tmp = event['methodArn'].split(':')
@@ -18,13 +22,18 @@ def lambda_handler(event, context):
                 return aad_handler(event, context)
             elif decoded['iss'] == 'https://auth.acm.illinois.edu' and decoded['azp'] == os.environ.get("KindeValidClientId"):
                 return kinde_handler(event, context)
+            elif decoded['iss'] == 'custom_jwt':
+                if not run_env or run_env == 'prod':
+                    logging.warn(f"Attempt to use a testing JWT against the prod environment: {token}")
+                    raise ValueError("invalid token issuer.")
+                return custom_jwt_handler(event, context)
             else:
                 raise ValueError("invalid issuer or environment token")
         principalId = token
     except Exception:
-        print(traceback.format_exc(), flush=True)
+        logging.error(traceback.format_exc())
         principalId = str(uuid4())
-    print("Denying all", flush=True)
+    logging.info("Denying all")
     policy = AuthPolicy(principalId, awsAccountId)
     policy.restApiId = apiGatewayArnTmp[0]
     policy.region = tmp[3]
