@@ -3,6 +3,8 @@ run_env = ParameterKey=RunEnvironment,ParameterValue
 prod_aws_account = 298118738376
 dev_aws_account = 427040638965
 
+.PHONY: generate_jwt
+
 check_account_prod:
 	@aws_account_id=$$(aws sts get-caller-identity --query Account --output text); \
 	if [ "$$aws_account_id" != "$(prod_aws_account)" ]; then \
@@ -28,3 +30,6 @@ deploy_dev: check_account_dev build
 test_ci:
 	pip install -r tests/live_integration/requirements.txt
 	pytest tests/live_integration/
+
+generate_jwt:
+	python utils/generate_jwt.py
