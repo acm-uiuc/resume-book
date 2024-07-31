@@ -24,7 +24,7 @@ def lambda_handler(event, context):
                 return kinde_handler(event, context)
             elif decoded['iss'] == 'custom_jwt':
                 if not run_env or run_env == 'prod':
-                    logging.warn(f"Attempt to use a testing JWT against the {run_env or "UNKNOWN"} environment: {token}")
+                    logging.warn(f"Attempt to use a testing JWT against the prod environment: {token}")
                     raise ValueError("invalid token issuer.")
                 return custom_jwt_handler(event, context)
             else:
