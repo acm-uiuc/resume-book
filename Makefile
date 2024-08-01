@@ -27,9 +27,17 @@ deploy_prod: check_account_prod build
 deploy_dev: check_account_dev build
 	sam deploy $(common_params) --parameter-overrides $(run_env)=dev
 
-test_ci:
+install_deps_python:
 	pip install -r tests/live_integration/requirements.txt
+
+install_deps_node:
+	cd clientv2 && yarn
+
+test_integration: install_deps_python
 	pytest -rP tests/live_integration/
+
+test_unit: install_deps_node
+	cd clientv2 && yarn test
 
 generate_jwt:
 	python utils/generate_jwt.py
