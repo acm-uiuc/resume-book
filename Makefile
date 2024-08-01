@@ -32,7 +32,7 @@ install_deps_python:
 	pip install -r api/requirements-testing.txt
 
 install_deps_node:
-	cd clientv2 && yarn corepack enable && yarn
+	cd clientv2 && corepack enable && yarn
 
 test_live_integration: install_deps_python
 	pytest -rP tests/live_integration/
