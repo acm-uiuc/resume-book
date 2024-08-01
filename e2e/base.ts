@@ -24,27 +24,55 @@ function generateJWT(email: string, role: string = 'student', env: string = 'dev
 
     return sign(payload, JWT_SECRET, { algorithm: 'HS256' });
 }
-
-async function becomeUser(page, email: string, role: string = 'student') {
-    const jwt = generateJWT(email, role);
-    await page.route('**/*', async route => {
-        if (route.request().url().startsWith('https://resumes.aws.qa.acmuiuc.org/')) {
-          const token = generateJWT("newuser@testing.illinois.edu")
-          const headers = {
-            ...route.request().headers(),
-            'Authorization': `Bearer ${jwt}`
-          };
-      
-          // Continue with modified headers
-          route.continue({ headers });
-        } else {
-          // Continue with the normal routing for other URLs
-          route.continue();
-        }
-    });
+interface BecomeUserParams {
+    email?: string
+    role: string;
+}
+async function becomeUser(page, {email, role}: BecomeUserParams) {
+    if (!email) {
+        email = process.env.RB_PLAYWRIGHT_USERNAME!;
+    }
+    if (email !== process.env.RB_PLAYWRIGHT_USERNAME!) {
+        const jwt = generateJWT(email, role);
+        await page.route('**/*', async route => {
+            if (route.request().url().startsWith('https://resumes.aws.qa.acmuiuc.org/')) {
+              const token = generateJWT("newuser@testing.illinois.edu")
+              const headers = {
+                ...route.request().headers(),
+                'Authorization': `Bearer ${jwt}`
+              };
+          
+              // Continue with modified headers
+              route.continue({ headers });
+            } else {
+              // Continue with the normal routing for other URLs
+              route.continue();
+            }
+        });
+    }
+    if (role === 'student') {
+        await page.goto('https://resumes.qa.acmuiuc.org/login');
+        await page.getByRole('button', { name: 'Sign in with Illinois NetID' }).click();
+        await page.getByPlaceholder('NetID@illinois.edu').click();
+        await page.getByPlaceholder('NetID@illinois.edu').fill(process.env.RB_PLAYWRIGHT_USERNAME!);
+        await page.getByPlaceholder('NetID@illinois.edu').press('Enter');
+        await page.getByPlaceholder('Password').click();
+        await page.getByPlaceholder('Password').fill(process.env.RB_PLAYWRIGHT_PASSWORD!);
+        await page.getByRole('button', { name: 'Sign in' }).click();
+        await page.getByRole('button', { name: 'No' }).click();
+    } else if (role === 'recruiter') {
+        await page.goto('https://resumes.qa.acmuiuc.org/login');
+        await page.getByRole('button', { name: 'ACM@UIUC Partner Login' }).click();
+        await page.getByTestId('auth-email-username-field').click();
+        await page.getByTestId('auth-email-username-field').fill(process.env.RB_PLAYWRIGHT_USERNAME!);
+        await page.getByRole('button', { name: 'Continue' }).click();
+        await page.getByLabel('Password', { exact: true }).fill(process.env.RB_PLAYWRIGHT_PASSWORD!);
+        await page.getByLabel('Password', { exact: true }).click();
+        await page.getByRole('button', { name: 'Continue' }).click();
+    }
 }
 
-export const test = base.extend<{ generateJWT: CallableFunction, becomeUser: CallableFunction }>({
+export const test = base.extend<{ generateJWT: CallableFunction, becomeUser: (page, params: BecomeUserParams) => Promise<void> }>({
     generateJWT: async ({}, use) => {
         use(generateJWT)
     },
