@@ -46,5 +46,7 @@ test_unit: install_deps_python install_deps_node
 
 test_e2e: install_deps_node_e2e
 	cd e2e && yarn run test
+test_e2e_ui: install_deps_node_e2e
+	cd e2e && yarn run test --ui
 generate_jwt:
 	python utils/generate_jwt.py
