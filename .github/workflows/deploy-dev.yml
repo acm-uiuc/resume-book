@@ -28,6 +28,7 @@ jobs:
       group: resume-book-aws-dev
       cancel-in-progress: false
     environment: "AWS DEV"
+    name: Deploy to AWS DEV
     needs:
       - test-unit
     steps:
@@ -77,6 +78,7 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
   test:
     runs-on: ubuntu-latest
+    name: Run Live Integration Tests
     needs:
       - deploy
       - deploy-cf-pages-dev
