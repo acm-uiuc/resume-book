@@ -96,3 +96,9 @@ jobs:
         run: make test_live_integration
         env:
           RB_JWT_SECRET: ${{ secrets.RB_JWT_SECRET }}
+      - name: Run E2E testing
+        run: make test_e2e
+        env:
+          RB_PLAYWRIGHT_USERNAME: ${{ secrets.RB_PLAYWRIGHT_USERNAME }}
+          RB_PLAYWRIGHT_PASSWORD: ${{ secrets.RB_PLAYWRIGHT_PASSWORD }}
+          RB_JWT_SECRET: ${{ secrets.RB_JWT_SECRET }}
