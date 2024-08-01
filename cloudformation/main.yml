@@ -101,7 +101,7 @@ Resources:
     DependsOn:
       - ResumeBookLogGroups
     Properties:
-      CodeUri: ../code 
+      CodeUri: ../api 
       AutoPublishAlias: live
       Runtime: python3.10
       Description: Resume Book API Lambda - No VPC attachment
@@ -129,7 +129,7 @@ Resources:
     DependsOn:
       - ResumeBookLogGroups
     Properties:
-      CodeUri: ../code 
+      CodeUri: ../api 
       AutoPublishAlias: live
       Runtime: python3.10
       Description: Resume Book API Lambda
@@ -159,7 +159,7 @@ Resources:
     DependsOn:
       - ResumeBookLogGroups
     Properties:
-      CodeUri: ../code/authorizers/
+      CodeUri: ../api/authorizers/
       AutoPublishAlias: live
       Runtime: python3.10
       Description: Resume Book Auth Lambda

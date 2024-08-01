@@ -7,8 +7,25 @@ on:
     branches:
       - main
 jobs:
+  test-unit:
+    runs-on: ubuntu-latest
+    name: Run Unit Tests
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11 for testing
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Setup Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Run unit testing
+        run: make test_unit
   deploy-aws-dev:
     runs-on: ubuntu-latest
+    needs:
+      - test-unit
     concurrency:
       group: resume-book-aws-dev
       cancel-in-progress: false
@@ -27,6 +44,8 @@ jobs:
       - run: make deploy_dev
   deploy-cf-pages-dev:
     runs-on: ubuntu-latest
+    needs:
+      - test-unit
     concurrency:
       group: resume-book-cf-pages-dev
       cancel-in-progress: false
@@ -73,10 +92,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-      - name: Run unit testing
-        run: make test_unit
       - name: Run integration testing
-        run: make test_integration
+        run: make test_live_integration
         env:
           RB_JWT_SECRET: ${{ secrets.RB_JWT_SECRET }}
   deploy-aws-prod:

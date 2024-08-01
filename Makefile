@@ -29,14 +29,16 @@ deploy_dev: check_account_dev build
 
 install_deps_python:
 	pip install -r tests/live_integration/requirements.txt
+	pip install -r api/requirements-testing.txt
 
 install_deps_node:
 	cd clientv2 && yarn
 
-test_integration: install_deps_python
+test_live_integration: install_deps_python
 	pytest -rP tests/live_integration/
 
-test_unit: install_deps_node
+test_unit: install_deps_python install_deps_node
+	pytest -rP api/
 	cd clientv2 && yarn test
 
 generate_jwt:
