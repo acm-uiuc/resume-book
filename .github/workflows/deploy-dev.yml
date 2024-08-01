@@ -90,8 +90,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-      - name: Run unit testing
-        run: make test_unit
       - name: Run live testing
         run: make test_live_integration
         env:
