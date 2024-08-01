@@ -1,17 +1,15 @@
 'use client';
 
-import { Group, Divider, Box, Burger, Drawer, ScrollArea, rem, Badge } from '@mantine/core';
+import { Group, Divider, Box, Burger, Drawer, ScrollArea, rem } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import classes from './index.module.css';
 import LogoBadge from './Logo';
-import { AuthContextData, AuthRoleEnum, AuthSourceEnum } from '../AuthContext';
+import { AuthContextData, AuthRoleEnum } from '../AuthContext';
 import { AuthenticatedProfileDropdown } from '../ProfileDropdown';
 
 interface HeaderNavbarProps {
   userData?: AuthContextData | null;
 }
-
-const isActiveLink = (path: string) => location.pathname === path;
 
 const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);

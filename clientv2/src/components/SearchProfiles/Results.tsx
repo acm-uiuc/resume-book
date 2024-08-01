@@ -12,9 +12,9 @@ import {
   Pagination,
 } from '@mantine/core';
 import { IconQuestionMark } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
 import { DegreeLevel } from '../ProfileViewer/options';
 import { ViewStudentProfile } from '@/pages/recruiter/ViewStudentProfile.page';
-import { notifications } from '@mantine/notifications';
 
 export interface ProfileSearchDegreeEntry {
   level: DegreeLevel;

@@ -9,10 +9,10 @@ import {
   Anchor,
   Title,
 } from '@mantine/core';
+import { IconLock } from '@tabler/icons-react';
 import { AcmLoginButton } from './AcmLoginButton';
 import { PartnerLoginButton } from './PartnerLoginButton';
 import brandImgUrl from '@/banner-blue.png';
-import { IconLock } from '@tabler/icons-react';
 
 export function LoginComponent(props: PaperProps) {
   return (

@@ -15,7 +15,6 @@ import {
 } from '@azure/msal-browser';
 import { MantineProvider } from '@mantine/core';
 import FullScreenLoader from './LoadingScreen';
-import { notifications } from '@mantine/notifications';
 
 export enum AuthSourceEnum {
   MSAL,
@@ -78,7 +77,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated && !isLoading && !userData) {
-      const isRecruiter = getKindePermission(`recruiter:resume-book-${import.meta.env.VITE_RUN_ENVIRONMENT}`).isGranted;
+      const isRecruiter = getKindePermission(
+        `recruiter:resume-book-${import.meta.env.VITE_RUN_ENVIRONMENT}`
+      ).isGranted;
       if (!isRecruiter) {
         setUserData(null);
         setIsLoggedIn(false);
@@ -102,7 +103,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         handleMsalResponse(response);
       } else if (accounts.length > 0) {
         // User is already logged in, set the state
-        const [lastName, firstName] = accounts[0].name?.split(',')!;
+        const [lastName, firstName] = accounts[0].name?.split(',')! || [];
         setUserData({
           email: accounts[0].username,
           name: `${firstName} ${lastName}`,
@@ -175,9 +176,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [userData, instance, getKindeToken]);
 
   const loginMsal = useCallback(async () => {
-    const accounts = instance.getAllAccounts();
-    if (accounts.length > 0) {
-      instance.setActiveAccount(accounts[0]);
+    const accountsLocal = instance.getAllAccounts();
+    if (accountsLocal.length > 0) {
+      instance.setActiveAccount(accountsLocal[0]);
     } else {
       await instance.loginRedirect();
     }

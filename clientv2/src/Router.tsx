@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode, ErrorInfo } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import { AuthRoleEnum, useAuth } from './components/AuthContext';
 import { LoginPage } from './pages/Login.page';
@@ -84,14 +84,14 @@ const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children }) => {
   const [hasError, setHasError] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const onError = (error: Error, errorInfo: ErrorInfo) => {
+  const onError = (errorObj: Error) => {
     setHasError(true);
-    setError(error);
+    setError(errorObj);
   };
 
   useEffect(() => {
     const errorHandler = (event: ErrorEvent) => {
-      onError(event.error, { componentStack: '' });
+      onError(event.error);
     };
     window.addEventListener('error', errorHandler);
 
@@ -104,7 +104,7 @@ const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children }) => {
     if (error.message === '404') {
       return <Error404Page />;
     }
-    return <Error500Page />
+    return <Error500Page />;
   }
 
   return <>{children}</>;
@@ -113,11 +113,12 @@ const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children }) => {
 export const Router: React.FC = () => {
   const { isLoggedIn, userData } = useAuth();
 
-  const router = !isLoggedIn || !userData
-    ? unauthenticatedRouter
-    : userData.role === AuthRoleEnum.RECRUITER
-      ? recruiterRouter
-      : studentRouter;
+  const router =
+    !isLoggedIn || !userData
+      ? unauthenticatedRouter
+      : userData.role === AuthRoleEnum.RECRUITER
+        ? recruiterRouter
+        : studentRouter;
 
   return (
     <ErrorBoundary>

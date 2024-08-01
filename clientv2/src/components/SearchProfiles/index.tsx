@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button, em, Grid, Group, MultiSelect, NumberInput, Stack, Tooltip } from '@mantine/core';
-import { csPlusXMajors, degreeOptions, majorOptions } from '../ProfileViewer/options';
 import { IconSearch } from '@tabler/icons-react';
 import { useMediaQuery } from '@mantine/hooks';
+import { csPlusXMajors, degreeOptions, majorOptions } from '../ProfileViewer/options';
 
 interface DegreeFilterProps {
   onFilter: CallableFunction;

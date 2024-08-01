@@ -6,9 +6,7 @@ import {
   Group,
   Stack,
   Badge,
-  Anchor,
   List,
-  ThemeIcon,
   Grid,
   Box,
   Button,
@@ -34,9 +32,9 @@ import {
   IconUserCircle,
 } from '@tabler/icons-react';
 import { Document, Page, pdfjs } from 'react-pdf';
+import { useMediaQuery } from '@mantine/hooks';
 import { institutionOptions, degreeOptions, DegreeLevel, majorOptions } from './options';
 import { LinkProfileAttribute } from './LinkProfileAttribute';
-import { useMediaQuery } from '@mantine/hooks';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
@@ -74,7 +72,7 @@ const PdfViewer: React.FC<{
   setFile: CallableFunction;
   showFilePicker: boolean;
 }> = memo(({ url, file, setFile, showFilePicker }) => {
-  const [numPages, setNumPages] = useState<number>(0);
+  const [docNumPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const isMobile = useMediaQuery(`(max-width: ${em(900)})`);
@@ -84,17 +82,18 @@ const PdfViewer: React.FC<{
     setError(null);
   }, []);
 
-  const onDocumentLoadError = useCallback((error: any) => {
+  const onDocumentLoadError = useCallback((errorContext: any) => {
     setError('Failed to load PDF document.');
-    console.error('Error loading PDF document:', error);
+    console.error('Error loading PDF document:', errorContext);
   }, []);
   const [fileLoaded, setFileLoaded] = useState<boolean>(file == null);
   useEffect(() => {
     setFileLoaded(file instanceof Blob);
   }, [file]);
-  const documentOptions = useMemo(() => {
-    return { cMapUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/cmaps/', cMapPacked: true };
-  }, []);
+  const documentOptions = useMemo(
+    () => ({ cMapUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/cmaps/', cMapPacked: true }),
+    []
+  );
   return (
     <Box style={{ height: '100vh', minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
       {error && <Text color="red">{error}</Text>}
@@ -129,11 +128,11 @@ const PdfViewer: React.FC<{
           Previous
         </Button>
         <Text>
-          Page {pageNumber} of {numPages}
+          Page {pageNumber} of {docNumPages}
         </Text>
         <Button
-          onClick={() => setPageNumber((page) => Math.min(page + 1, numPages))}
-          disabled={pageNumber >= numPages}
+          onClick={() => setPageNumber((page) => Math.min(page + 1, docNumPages))}
+          disabled={pageNumber >= docNumPages}
         >
           Next
         </Button>
@@ -260,7 +259,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
               />
               <LinkProfileAttribute
                 url={studentProfile.linkedin}
-                name={'LinkedIn Profile'}
+                name="LinkedIn Profile"
                 editable={editable}
                 icon={<IconBrandLinkedin size={14} />}
                 handleInputChange={(payload: string) => {
@@ -269,7 +268,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
               />
               <LinkProfileAttribute
                 url={studentProfile.github}
-                name={'GitHub Profile'}
+                name="GitHub Profile"
                 editable={editable}
                 icon={<IconBrandGithub size={14} />}
                 handleInputChange={(payload: string) => {
@@ -278,7 +277,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
               />
               <LinkProfileAttribute
                 url={studentProfile.website}
-                name={'Website'}
+                name="Website"
                 editable={editable}
                 icon={<IconWorld size={14} />}
                 handleInputChange={(payload: string) => {
