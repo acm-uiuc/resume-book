@@ -43,6 +43,7 @@ cors_config = CORSConfig(
 app = APIGatewayRestResolver(cors=cors_config)
 session = boto3.Session(region_name=os.environ.get("AWS_REGION", "us-east-1"))
 secretsmanager = session.client("secretsmanager")
+s3_client = session.client('s3')
 db_config = get_parameter_from_sm(secretsmanager, "infra-resume-book-db-config")
 openai_client = get_oai_client(db_config['oai_key'])
 
@@ -85,6 +86,7 @@ def shared_get_profile(username):
         )
     if profile_data and 'resumePdfUrl' in profile_data:
         profile_data["resumePdfUrl"] = create_presigned_url_from_s3_url(
+            s3_client,
             profile_data["resumePdfUrl"]
         )
     return Response(
@@ -206,6 +208,7 @@ def student_get_s3_presigned():
             },
         )
     presigned_url = create_presigned_url_for_put(
+        s3_client=s3_client,
         bucket_name=S3_BUCKET,
         object_key=f"resume_{username}.pdf",
         file_size=data["file_size"],
@@ -237,7 +240,7 @@ def student_gpt():
         for prop in url_properties:
             if response[prop] != "" and "http://" not in response[prop] and "https://" not in response[prop]:
                 response[prop] = f"http://{response[prop]}"
-        response['resumePdfUrl'] = create_presigned_url_from_s3_url(f"s3://{S3_BUCKET}/resume_{username}.pdf")
+        response['resumePdfUrl'] = create_presigned_url_from_s3_url(s3_client, f"s3://{S3_BUCKET}/resume_{username}.pdf")
     except pydantic.ValidationError as e:
         return Response(
             status_code=403,
