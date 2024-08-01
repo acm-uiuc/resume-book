@@ -29,7 +29,11 @@ const LogoBadge: React.FC<LogoBadgeProps> = ({ size, linkTo, showText }) => {
         }}
       >
         <img src={brandImgUrl} alt="ACM Logo" style={{ height: '3em', marginRight: '0.5em' }} />
-        {showText ? isNonProd ? `Resume Book ${import.meta.env.VITE_RUN_ENVIRONMENT.toUpperCase()} ENV` : 'Resume Book' : null}
+        {showText
+          ? isNonProd
+            ? `Resume Book ${import.meta.env.VITE_RUN_ENVIRONMENT.toUpperCase()} ENV`
+            : 'Resume Book'
+          : null}
       </Link>
     </b>
   );

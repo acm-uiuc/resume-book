@@ -17,7 +17,6 @@ import {
 import { IconChevronDown, IconUser, IconMail, IconBuilding } from '@tabler/icons-react';
 import classes from '../Navbar/index.module.css';
 import { AuthContextData, useAuth, roleToString, AuthSourceEnum } from '../AuthContext';
-import { useKindeAuth } from '@kinde-oss/kinde-auth-react';
 
 interface ProfileDropdownProps {
   userData: AuthContextData;

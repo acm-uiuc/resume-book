@@ -13,7 +13,7 @@ const FullPageError: React.FC<FullPageErrorProps> = ({ errorCode, errorMessage, 
       <Title>{errorCode || 'An error occurred'}</Title>
       <Text color="dimmed">{errorMessage || 'Something went wrong. Please try again later.'}</Text>
       {onRetry && (
-        <Button variant="outline" onClick={onRetry}>
+        <Button variant="outline" onClick={onRetry} data-testid="errorRetryButton">
           Retry
         </Button>
       )}

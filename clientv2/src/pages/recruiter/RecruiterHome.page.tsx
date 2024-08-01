@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Title, Container, em } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
+import { useMediaQuery } from '@mantine/hooks';
 import { useAuth } from '@/components/AuthContext';
 import { HeaderNavbar } from '@/components/Navbar';
 import DegreeFilter, { Filters } from '@/components/SearchProfiles';
 import { useApi } from '@/util/api';
-import { notifications } from '@mantine/notifications';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import { ProfileSearchResults } from '@/components/SearchProfiles/Results';
-import { useMediaQuery } from '@mantine/hooks';
 
 function showErrorNotification(title?: string) {
   notifications.show({
@@ -33,12 +33,13 @@ export function RecruiterHomePage() {
       setLoading(false);
       return showErrorNotification();
     }
-    if (response.status != 200) {
+    if (response.status !== 200) {
       setLoading(false);
       return showErrorNotification();
     }
     setApiResponse(response.data);
     setLoading(false);
+    return undefined;
   };
   if (loading) {
     return <FullScreenLoader />;

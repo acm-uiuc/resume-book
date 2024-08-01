@@ -1,4 +1,4 @@
-import { Alert, Button, Group, Loader, Select, Text, TextInput, Title } from '@mantine/core';
+import { Alert, Button, Group, Loader, Select, Text, TextInput } from '@mantine/core';
 import { IconAlertTriangle, IconSparkles } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
 
@@ -34,13 +34,18 @@ export const GenerateProfileModal: React.FC<GenerateProfileModalProps> = ({
   return (
     <>
       <Alert color="yellow" title="Notice" icon={<IconAlertTriangle />}>
-        <b>This feature is in beta.</b><br /><br />
-        By using this feature, you agree to send content from your resume to OpenAI for processing and
-        response generation using a large-language model (LLM). This data is subject to OpenAI's privacy and security policies.
-        <br /><br /><b>LLMs can make mistakes. Check important information before saving.</b>
+        <b>This feature is in beta.</b>
+        <br />
+        <br />
+        By using this feature, you agree to send content from your resume to OpenAI for processing
+        and response generation using a large-language model (LLM). This data is subject to
+        OpenAI&apos;s privacy and security policies.
+        <br />
+        <br />
+        <b>LLMs can make mistakes. Check important information before saving.</b>
       </Alert>
-      <Text style={{ marginBottom: '1em', marginTop: '1em' }} size={'sm'}>
-        We'll just need some additional information from you to generate a profile.
+      <Text style={{ marginBottom: '1em', marginTop: '1em' }} size="sm">
+        We&apos;ll just need some additional information from you to generate a profile.
       </Text>
       <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
         <Select

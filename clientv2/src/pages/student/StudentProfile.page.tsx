@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Container, Grid, Text, Group, Modal, Tooltip } from '@mantine/core';
+import { Alert, Button, Container, Group, Modal, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
   IconDeviceFloppy,
@@ -8,16 +8,16 @@ import {
   IconSparkles,
   IconX,
 } from '@tabler/icons-react';
+import { useDisclosure } from '@mantine/hooks';
+import pdfToText from 'react-pdftotext';
+import * as pdfjs from 'pdfjs-dist';
 import { useAuth } from '@/components/AuthContext';
 import { HeaderNavbar } from '@/components/Navbar';
 import { useApi } from '@/util/api';
 import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import StudentProfilePage, { StudentProfileDetails } from '@/components/ProfileViewer';
 import { Error500Page as FullPageError } from '../Error500.page';
-import { useDisclosure } from '@mantine/hooks';
 import { GenerateProfileModal } from '@/components/ProfileViewer/GenerateProfileModal';
-import pdfToText from 'react-pdftotext';
-import * as pdfjs from 'pdfjs-dist';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
@@ -29,8 +29,9 @@ const genAiEnabled = true;
 async function extractTextRemote(pdf_url: string) {
   const file = await (await fetch(pdf_url)).blob();
   if (file) {
-    return await pdfToText(file);
+    return pdfToText(file);
   }
+  return null;
 }
 
 export function StudentHomePage() {
@@ -138,7 +139,7 @@ export function StudentHomePage() {
   }
 
   async function uploadFileToS3(presignedUrl: string) {
-    if (!file) return;
+    if (!file) return { status: 500 };
     try {
       const response = await fetch(presignedUrl, {
         method: 'PUT',
@@ -155,17 +156,16 @@ export function StudentHomePage() {
       }
     } catch (error) {
       console.error('Error uploading file:', error);
+      return { status: 500 };
     }
   }
 
   async function handleProfileGeneration(values: Record<string, any>) {
-    console.log(values);
     setGenAiLoading(true);
 
     try {
       let pdfText: string | undefined | null;
       if (file) {
-        console.log('have file locally to parse');
         pdfText = await pdfToText(file);
       } else {
         if (!studentData?.resumePdfUrl) {
@@ -174,7 +174,7 @@ export function StudentHomePage() {
         pdfText = await extractTextRemote(studentData?.resumePdfUrl);
       }
       if (pdfText) {
-        values['resumeText'] = pdfText;
+        values.resumeText = pdfText;
         const profile = await generateProfile(values);
         setStudentData(profile as StudentProfileDetails);
       } else {
@@ -189,7 +189,8 @@ export function StudentHomePage() {
       });
       setGenAiLoading(false);
       genProfileClose();
-      return console.error(err);
+      console.error(err);
+      return;
     }
     notifications.show({
       color: 'green',
@@ -214,7 +215,7 @@ export function StudentHomePage() {
       if (file && file.size !== 0) {
         setLoading(true);
         const response = await api.post('/student/resume_upload_url', { file_size: file.size });
-        if (response.status != 200) {
+        if (response.status !== 200) {
           setLoading(false);
           setFile(null);
           return showErrorSaveNotification('Could not upload resume.');
@@ -240,13 +241,13 @@ export function StudentHomePage() {
       }
       setLoading(true);
       const response = await api.post('/student/profile', studentData);
-      if (response.status && response.status == 201) {
+      if (response.status && response.status === 201) {
         notifications.show({
           title: 'Profile saved!',
           message: '',
         });
         setEditToggle(false);
-      } else if (response.status && response.status == 403) {
+      } else if (response.status && response.status === 403) {
         showErrorSaveNotification('Failed to validate form.');
       } else {
         showErrorSaveNotification();
@@ -258,6 +259,7 @@ export function StudentHomePage() {
       window.location.reload();
     }
     setLoading(false);
+    return true;
   }
   const toggleEdit = () => {
     if (editToggle) {
@@ -318,8 +320,8 @@ export function StudentHomePage() {
             title="Welcome to Resume Book"
             icon={<IconInfoCircle />}
           >
-            We've provided you with a basic profile to get started. Fill out the details and save
-            your profile to make it visible to recruiters.
+            We&apos;ve provided you with a basic profile to get started. Fill out the details and
+            save your profile to make it visible to recruiters.
           </Alert>
         </Container>
       ) : null}

@@ -7,12 +7,30 @@ on:
     branches:
       - main
 jobs:
+  test-unit:
+    runs-on: ubuntu-latest
+    name: Run Unit Tests
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11 for testing
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Setup Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Run unit testing
+        run: make test_unit
   deploy:
     runs-on: ubuntu-latest
     concurrency:
       group: resume-book-aws-dev
       cancel-in-progress: false
     environment: "AWS DEV"
+    name: Deploy to AWS DEV
+    needs:
+      - test-unit
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/setup-sam@v2
@@ -32,6 +50,8 @@ jobs:
     permissions:
       contents: read
       deployments: write  
+    needs:
+      - test-unit
     name: Deploy to Cloudflare Pages DEV
     environment: "Cloudflare Pages - Dev"
     steps:
@@ -58,6 +78,7 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
   test:
     runs-on: ubuntu-latest
+    name: Run Live Integration Tests
     needs:
       - deploy
       - deploy-cf-pages-dev
@@ -67,7 +88,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.11
+      - name: Setup Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
       - name: Run live testing
-        run: make test_ci
+        run: make test_live_integration
         env:
           RB_JWT_SECRET: ${{ secrets.RB_JWT_SECRET }}

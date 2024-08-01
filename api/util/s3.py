@@ -2,13 +2,9 @@ import traceback
 from util.logging import get_logger
 import boto3
 import re
-import os
-
-session = boto3.Session(region_name=os.environ.get('AWS_REGION', 'us-east-1'))
-s3_client = session.client('s3')
 logger = get_logger()
 
-def create_presigned_url_from_s3_url(s3_url, expiration=60):
+def create_presigned_url_from_s3_url(s3_client, s3_url, expiration=60):
     """
     Generate a presigned URL to share an S3 object
 
@@ -35,7 +31,7 @@ def create_presigned_url_from_s3_url(s3_url, expiration=60):
 
     return response
 
-def create_presigned_url_for_put(bucket_name, object_key, file_size, expiration=300):
+def create_presigned_url_for_put(s3_client, bucket_name, object_key, file_size, expiration=300):
     """
     Generate a presigned URL to upload an S3 object
 
