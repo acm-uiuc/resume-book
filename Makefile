@@ -34,6 +34,9 @@ install_deps_python:
 install_deps_node:
 	cd clientv2 && corepack enable && yarn
 
+install_deps_node_e2e:
+	cd e2e && corepack enable && yarn && yarn run install
+
 test_live_integration: install_deps_python
 	pytest -rP tests/live_integration/
 
@@ -41,5 +44,9 @@ test_unit: install_deps_python install_deps_node
 	pytest -rP api/
 	cd clientv2 && yarn test
 
+test_e2e: install_deps_node_e2e
+	cd e2e && yarn run test
+test_e2e_ui: install_deps_node_e2e
+	cd e2e && yarn run test --ui
 generate_jwt:
 	python utils/generate_jwt.py
