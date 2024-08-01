@@ -102,3 +102,4 @@ jobs:
           RB_PLAYWRIGHT_USERNAME: ${{ secrets.RB_PLAYWRIGHT_USERNAME }}
           RB_PLAYWRIGHT_PASSWORD: ${{ secrets.RB_PLAYWRIGHT_PASSWORD }}
           RB_JWT_SECRET: ${{ secrets.RB_JWT_SECRET }}
+          CI: true
