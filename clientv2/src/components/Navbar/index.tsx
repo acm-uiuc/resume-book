@@ -45,9 +45,6 @@ const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ userData }) => {
       >
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
-          <a href="/" className={classes.link}>
-            Home
-          </a>
           {userData?.role === AuthRoleEnum.STUDENT ? (
             <a href="/profile" className={classes.link}>
               My Profile
