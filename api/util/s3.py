@@ -2,7 +2,27 @@ import traceback
 from util.logging import get_logger
 import boto3
 import re
+import aioboto3
+import asyncio
 logger = get_logger()
+
+async def async_generate_presigned_urls(bucket_name, keys, expiration=14400):
+    async with aioboto3.client('s3') as s3_client:
+        tasks = []
+        
+        for key in keys:
+            tasks.append(
+                s3_client.generate_presigned_url(
+                    'get_object',
+                    Params={'Bucket': bucket_name, 'Key': key},
+                    ExpiresIn=expiration
+                )
+            )
+        
+        # Gather all presigned URL creation tasks asynchronously
+        presigned_urls = await asyncio.gather(*tasks)
+        
+        return presigned_urls
 
 def create_presigned_url_from_s3_url(s3_client, s3_url, expiration=60):
     """

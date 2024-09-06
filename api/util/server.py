@@ -16,6 +16,7 @@ from util.queries import DELETE_PROFILE, GET_USER_PROFILE_QUERY, INSERT_BASE_PRO
 from util.postgres import get_db_connection
 from util.structs import (
     DEFAULT_USER_PROFILE,
+    MassDownloadResumesRequest,
     ProfileSearchRequest,
     ResumeUploadPresignedRequest,
     StudentProfileDetails,
@@ -23,10 +24,11 @@ from util.structs import (
     convert_dict_keys_snake_to_camel,
 )
 from util.environ import get_run_environment
-from util.s3 import create_presigned_url_for_put, create_presigned_url_from_s3_url
+from util.s3 import create_presigned_url_for_put, create_presigned_url_from_s3_url, async_generate_presigned_urls
 from util.logging import get_logger
 from util.secretsmanager import get_parameter_from_sm
 from psycopg.rows import dict_row
+import asyncio
 
 RUN_ENV = get_run_environment()
 logger = get_logger()
@@ -311,4 +313,36 @@ def recruiter_perform_search():
         status_code=200,
         content_type=content_types.APPLICATION_JSON,
         body=search_result,
+    )
+
+@app.post("/api/v1/recruiter/mass_download")
+def recruiter_perform_search():
+    json_body: dict = app.current_event.json_body or {}
+    urls = []
+    try:
+        data = MassDownloadResumesRequest(**json_body).model_dump()
+        if len(keys) > 10:
+            logger.info("Using asyncio loop")
+            keys = [f"resume_{username}.pdf" for username in data['usernames']]
+            urls = asyncio.run(async_generate_presigned_urls(S3_BUCKET, keys))
+        else:
+            logger.info("Using blocking loop")
+            urls = [create_presigned_url_from_s3_url(s3_client, f"s3://{S3_BUCKET}/resume_{username}.pdf") for username in data['usernames'] ]
+    except pydantic.ValidationError as e:
+        return Response(
+            status_code=403,
+            content_type=content_types.APPLICATION_JSON,
+            body={"message": "Error validating payload", "details": str(e)},
+        )
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        return Response(
+            status_code=500,
+            content_type=content_types.APPLICATION_JSON,
+            body={"message": "Error performing profile search", "details": str(e)},
+        )
+    return Response(
+        status_code=200,
+        content_type=content_types.APPLICATION_JSON,
+        body=urls,
     )

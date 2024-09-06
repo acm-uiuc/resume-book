@@ -2,3 +2,4 @@ aws-lambda-powertools
 pydantic[email]
 psycopg[binary]
 openai
+aioboto3
