@@ -321,7 +321,7 @@ def recruiter_perform_search():
     urls = []
     try:
         data = MassDownloadResumesRequest(**json_body).model_dump()
-        if len(keys) > 10:
+        if len(urls) > 10:
             logger.info("Using asyncio loop")
             keys = [f"resume_{username}.pdf" for username in data['usernames']]
             urls = asyncio.run(async_generate_presigned_urls(S3_BUCKET, keys))
