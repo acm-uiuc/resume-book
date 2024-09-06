@@ -26,7 +26,7 @@ def oai_get_profile_json(client, resume_text, role_type, role_description):
                 "role": "user",
                 "content": resume_text,
             },
-                    {
+            {
                 "role": "user",
                 "content": f"I am interested in {role_type} role for jobs involving {role_description}.",
             }
