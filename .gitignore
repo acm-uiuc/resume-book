@@ -6,3 +6,4 @@ test.json
 build
 .vscode/settings.json
 node_modules/
+api/.mise.toml

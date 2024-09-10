@@ -1,5 +1,5 @@
 from typing import List, Literal, Optional
-from pydantic import BaseModel, ConfigDict, EmailStr, AnyUrl, Field, HttpUrl
+from pydantic import BaseModel, ConfigDict, EmailStr, AnyUrl, Field, HttpUrl, validator
 from .oai import LENGTH_LIMIT
 
 class DegreeListing(BaseModel):
@@ -40,6 +40,9 @@ class GenerateProfileRequest(BaseModel):
     resumeText: str = Field(..., max_length=LENGTH_LIMIT)
     roleType: Literal["Internship"] | Literal['Full-Time'] | Literal['Research Assistant']
     roleKeywords: List[str]
+
+class MassDownloadResumesRequest(BaseModel):
+    usernames: List[str]
 
 DEFAULT_USER_PROFILE = {
     "defaultResponse": True,
