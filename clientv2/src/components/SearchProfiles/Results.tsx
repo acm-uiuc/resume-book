@@ -115,7 +115,7 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
     for (const outerPromise of allPromises) {
       if (outerPromise.status === "fulfilled" && (await outerPromise.value.promise).status === 200) {
         numSuccess += 1;
-        realBlobs.push({blob: (await outerPromise.value.promise).blob(), filename: `${urlMapper[outerPromise.value.url]}.pdf`});
+        realBlobs.push({blob: (await outerPromise.value.promise).blob(), filename: `${urlMapper[outerPromise.value.url].replace("@illinois.edu", "")}.pdf`});
       } else {
         numError += 1;
       }
