@@ -47,3 +47,7 @@ def test_twenty_profiles(api_client, jwt_generator):
     assert len(rjson) == 20
     s3resp = requests.get(rjson[0])
     assert s3resp.status_code == 200
+    s3resp = requests.get(rjson[10])
+    assert s3resp.status_code == 200
+    s3resp = requests.get(rjson[19])
+    assert s3resp.status_code == 200
