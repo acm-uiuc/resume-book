@@ -186,7 +186,7 @@ paths:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunctionName}/invocations"
 
   /api/v1/recruiter/mass_download:
-    get:
+    post:
       summary: Recruiter mode - mass download resume PDFs
       operationId: recruiterMassDownloadPDFs
       responses:
