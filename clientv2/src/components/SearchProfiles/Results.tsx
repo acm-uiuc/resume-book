@@ -13,12 +13,11 @@ import {
 } from '@mantine/core';
 import { IconQuestionMark } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import { DegreeLevel } from '../ProfileViewer/options';
 import { ViewStudentProfile } from '@/pages/recruiter/ViewStudentProfile.page';
 import { useApi } from '@/util/api';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
-
 
 const MAX_RESUMES_DOWNLAOD = 2000;
 
@@ -77,45 +76,53 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
   };
   const massDownloadErrorNotification = (numErrored?: number, partial: boolean = false) => {
     notifications.show({
-      title: `Error downloading ${partial ? "some": ""} resumes`,
+      title: `Error downloading ${partial ? 'some' : ''} resumes`,
       color: numErrored ? 'yellow' : 'red',
-      message: `There was an error downloading ${numErrored ? numErrored.toString() : 'the selected'} resumes.`
-    })
-  }
+      message: `There was an error downloading ${numErrored ? numErrored.toString() : 'the selected'} resumes.`,
+    });
+  };
   const massDownloadSuccessNotification = (numSuccess: number) => {
     notifications.show({
-      title: "Downloaded resumes",
+      title: 'Downloaded resumes',
       color: 'blue',
-      message: `Successfully downloaded ${numSuccess} resumes.`
-    })
-  }
+      message: `Successfully downloaded ${numSuccess} resumes.`,
+    });
+  };
 
   const downloadResumes = async () => {
     if (selectedRows.length > MAX_RESUMES_DOWNLAOD) {
       return notifications.show({
-        title: "Error downloading resumes",
+        title: 'Error downloading resumes',
         color: 'red',
-        message: `You cannot download more than ${MAX_RESUMES_DOWNLAOD} in one request.`
-      })
+        message: `You cannot download more than ${MAX_RESUMES_DOWNLAOD} in one request.`,
+      });
     }
     let urls: string[];
     try {
-      urls = (await api.post("/recruiter/mass_download", {usernames: selectedRows})).data;
+      urls = (await api.post('/recruiter/mass_download', { usernames: selectedRows })).data;
     } catch (e) {
       return massDownloadErrorNotification();
     }
     let numError = 0;
     let numSuccess = 0;
-    let urlMapper: Record<string, string> = {};
+    const urlMapper: Record<string, string> = {};
     for (let i = 0; i < urls.length; i++) {
-      urlMapper[urls[i]] = selectedRows[i]; 
+      urlMapper[urls[i]] = selectedRows[i];
     }
-    const allPromises = await Promise.allSettled(urls.map(x => {return {url: x, promise: fetch(x)}}));
+    const allPromises = await Promise.allSettled(
+      urls.map((x) => ({ url: x, promise: fetch(x) }))
+    );
     const realBlobs = [];
     for (const outerPromise of allPromises) {
-      if (outerPromise.status === "fulfilled" && (await outerPromise.value.promise).status === 200) {
+      if (
+        outerPromise.status === 'fulfilled' &&
+        (await outerPromise.value.promise).status === 200
+      ) {
         numSuccess += 1;
-        realBlobs.push({blob: (await outerPromise.value.promise).blob(), filename: `${urlMapper[outerPromise.value.url].replace("@illinois.edu", "")}.pdf`});
+        realBlobs.push({
+          blob: (await outerPromise.value.promise).blob(),
+          filename: `${urlMapper[outerPromise.value.url].replace('@illinois.edu', '')}.pdf`,
+        });
       } else {
         numError += 1;
       }
@@ -123,18 +130,19 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
     if (numError > 0) {
       massDownloadErrorNotification(numError, !(numSuccess === 0));
     }
-    if (numSuccess === 0) return;
+    if (numSuccess === 0) return [numSuccess, numError];
     const zip = new JSZip();
     const yourDate = new Date().toISOString().split('T')[0];
-    const folderName = `ACM_UIUC_Resumes-${yourDate}`
-    for (const {blob, filename} of realBlobs) {
+    const folderName = `ACM_UIUC_Resumes-${yourDate}`;
+    for (const { blob, filename } of realBlobs) {
       zip.file(`${folderName}/${filename}`, blob);
     }
-    const zipContent = await zip.generateAsync({type: 'blob'});
+    const zipContent = await zip.generateAsync({ type: 'blob' });
 
-    saveAs(zipContent, `${folderName}.zip`)
+    saveAs(zipContent, `${folderName}.zip`);
     massDownloadSuccessNotification(numSuccess);
-  }
+    return [numSuccess, numError];
+  };
   const handleRowSelect = (id: string) => {
     setSelectedRows((prevSelectedRows) =>
       prevSelectedRows.includes(id)
