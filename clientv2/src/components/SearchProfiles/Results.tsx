@@ -109,9 +109,7 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
     for (let i = 0; i < urls.length; i++) {
       urlMapper[urls[i]] = selectedRows[i];
     }
-    const allPromises = await Promise.allSettled(
-      urls.map((x) => ({ url: x, promise: fetch(x) }))
-    );
+    const allPromises = await Promise.allSettled(urls.map((x) => ({ url: x, promise: fetch(x) })));
     const realBlobs = [];
     for (const outerPromise of allPromises) {
       if (
