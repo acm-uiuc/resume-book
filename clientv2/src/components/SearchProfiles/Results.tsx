@@ -146,8 +146,8 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
     }
     if (numSuccess === 0) {
       setTotalDownloaded(-1);
-      return [numSuccess, numError]
-    };
+      return [numSuccess, numError];
+    }
     const zip = new JSZip();
     const yourDate = new Date().toISOString().split('T')[0];
     const folderName = `ACM_UIUC_Resumes-${yourDate}`;
@@ -204,7 +204,9 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
     </Table.Tr>
   ));
   if (totalDownloaded > -1) {
-    return <ProgressFullScreenLoader totalItems={selectedRows.length} currentItems={totalDownloaded}/>
+    return (
+      <ProgressFullScreenLoader totalItems={selectedRows.length} currentItems={totalDownloaded} />
+    );
   }
   return (
     <>
