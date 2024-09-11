@@ -37,16 +37,15 @@ export function RecruiterHomePage() {
       setLoading(false);
       return showErrorNotification();
     }
-    const sortedData = response.data.sort((
-      a: Record<string, string>,
-      b: Record<string, string>
-    ) => {
-      const keyA = a.name.toLowerCase();
+    const sortedData = response.data.sort(
+      (a: Record<string, string>, b: Record<string, string>) => {
+        const keyA = a.name.toLowerCase();
         const keyB = b.name.toLowerCase();
-      if (keyA < keyB) return -1;
-      if (keyA > keyB) return 1;
-      return 0;
-    });
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
+      }
+    );
     setApiResponse(sortedData);
     setLoading(false);
     return undefined;
