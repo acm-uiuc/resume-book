@@ -211,6 +211,9 @@ export function StudentHomePage() {
     if (!isValidGithubProfile(studentData?.github)) {
       return showErrorSaveNotification('GitHub field is not a valid GitHub Profile URL.');
     }
+    if (studentData.degrees.length == 0) {
+      return showErrorSaveNotification('You must specify at least one degree.')
+    }
     try {
       if (file && file.size !== 0) {
         setLoading(true);
