@@ -10,6 +10,9 @@ describe("Test that users can edit their profile", () => {
     expect(page.getByText('Skills')).toBeTruthy()
     expect(page.getByText('Botting')).toBeTruthy()
     await page.getByRole('button', { name: 'Edit' }).click();
+    await page.getByRole('button', { name: 'Add Degree' }).click();
+    await page.getByRole('textbox', { name: 'Major' }).click();
+    await page.getByRole('option', { name: 'Computer Science', exact: true }).click();
     await page.getByRole('button', { name: 'Save' }).click();
     expect(await page.waitForSelector('text="Profile saved!"')).toBeTruthy();
   });
