@@ -80,7 +80,7 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
     notifications.show({
       title: `Error downloading ${partial ? 'some' : ''} resumes`,
       color: numErrored ? 'yellow' : 'red',
-      message: `There was an error downloading ${numErrored ? numErrored.toString() : 'the selected'} resumes. These profiles likely don't have resumes.`,
+      message: `There was an error downloading resumes for ${numErrored ? numErrored.toString() : 'the selected'} profiles. These profiles likely don't have resumes.`,
     });
   };
   const massDownloadSuccessNotification = (numSuccess: number) => {
