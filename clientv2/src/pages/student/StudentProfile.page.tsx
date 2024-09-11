@@ -103,7 +103,7 @@ export function StudentHomePage() {
   }
 
   function isValidLinkedInProfile(url?: string) {
-    const linkedinProfilePattern = /^http(s)?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/;
+    const linkedinProfilePattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/;
     if (!url || url === '') {
       return true;
     }
@@ -121,7 +121,7 @@ export function StudentHomePage() {
   }
 
   function isValidGithubProfile(url?: string) {
-    const githubProfilePattern = /^http(s)?:\/\/(www\.)?github\.com\/[a-zA-Z0-9-]+\/?$/;
+    const githubProfilePattern = /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9-]+\/?$/;
     if (!url || url === '') {
       return true;
     }
