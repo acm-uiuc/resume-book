@@ -37,8 +37,12 @@ export function RecruiterHomePage() {
       setLoading(false);
       return showErrorNotification();
     }
-    const sortedData = response.data.sort(function(a: Record<string, string>, b: Record<string, string>) {
-      const keyA = a.name.toLowerCase(), keyB = b.name.toLowerCase();
+    const sortedData = response.data.sort(function (
+      a: Record<string, string>,
+      b: Record<string, string>
+    ) {
+      const keyA = a.name.toLowerCase(),
+        keyB = b.name.toLowerCase();
       if (keyA < keyB) return -1;
       if (keyA > keyB) return 1;
       return 0;
