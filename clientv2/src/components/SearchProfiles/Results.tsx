@@ -18,6 +18,7 @@ import { saveAs } from 'file-saver';
 import { DegreeLevel } from '../ProfileViewer/options';
 import { ViewStudentProfile } from '@/pages/recruiter/ViewStudentProfile.page';
 import { useApi } from '@/util/api';
+import ProgressFullScreenLoader from '@/components/AuthContext/ProgressLoadingScreen';
 
 const MAX_RESUMES_DOWNLAOD = 2000;
 
@@ -43,6 +44,7 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
   const [modalOpened, setModalOpened] = useState(false);
   const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
   const [activePage, setActivePage] = useState(1);
+  const [totalDownloaded, setTotalDownloaded] = useState(-1);
   const itemsPerPage = 10;
   const api = useApi();
 
@@ -97,10 +99,12 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
         message: `You cannot download more than ${MAX_RESUMES_DOWNLAOD} in one request.`,
       });
     }
+    setTotalDownloaded(0);
     let urls: string[];
     try {
       urls = (await api.post('/recruiter/mass_download', { usernames: selectedRows })).data;
     } catch (e) {
+      setTotalDownloaded(-1);
       return massDownloadErrorNotification();
     }
     let numError = 0;
@@ -109,17 +113,29 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
     for (let i = 0; i < urls.length; i++) {
       urlMapper[urls[i]] = selectedRows[i];
     }
-    const allPromises = await Promise.allSettled(urls.map((x) => ({ url: x, promise: fetch(x) })));
+    const allPromises = urls.map((url) =>
+      fetch(url)
+        .then((response) => {
+          // Increment the counter when the promise resolves
+          setTotalDownloaded((prev) => prev + 1);
+          return { url, status: 'fulfilled', value: response };
+        })
+        .catch((error) => {
+          // Increment the counter when the promise rejects
+          setTotalDownloaded((prev) => prev + 1);
+          return { url, status: 'rejected', value: error };
+        })
+    );
     const realBlobs = [];
     for (const outerPromise of allPromises) {
       if (
-        outerPromise.status === 'fulfilled' &&
-        (await outerPromise.value.promise).status === 200
+        (await outerPromise).status === 'fulfilled' &&
+        (await outerPromise).value.status === 200
       ) {
         numSuccess += 1;
         realBlobs.push({
-          blob: (await outerPromise.value.promise).blob(),
-          filename: `${urlMapper[outerPromise.value.url].replace('@illinois.edu', '')}.pdf`,
+          blob: (await outerPromise).value.blob(),
+          filename: `${urlMapper[(await outerPromise).url].replace('@illinois.edu', '')}.pdf`,
         });
       } else {
         numError += 1;
@@ -128,7 +144,10 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
     if (numError > 0) {
       massDownloadErrorNotification(numError, !(numSuccess === 0));
     }
-    if (numSuccess === 0) return [numSuccess, numError];
+    if (numSuccess === 0) {
+      setTotalDownloaded(-1);
+      return [numSuccess, numError]
+    };
     const zip = new JSZip();
     const yourDate = new Date().toISOString().split('T')[0];
     const folderName = `ACM_UIUC_Resumes-${yourDate}`;
@@ -136,7 +155,7 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
       zip.file(`${folderName}/${filename}`, blob);
     }
     const zipContent = await zip.generateAsync({ type: 'blob' });
-
+    setTotalDownloaded(-1);
     saveAs(zipContent, `${folderName}.zip`);
     massDownloadSuccessNotification(numSuccess);
     return [numSuccess, numError];
@@ -184,7 +203,9 @@ export const ProfileSearchResults: React.FC<ProfileSearchResultsProp> = ({ data 
       </Table.Td>
     </Table.Tr>
   ));
-
+  if (totalDownloaded > -1) {
+    return <ProgressFullScreenLoader totalItems={selectedRows.length} currentItems={totalDownloaded}/>
+  }
   return (
     <>
       <div>
