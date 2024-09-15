@@ -1,5 +1,5 @@
 from typing import List, Literal, Optional
-from pydantic import BaseModel, ConfigDict, EmailStr, AnyUrl, Field, HttpUrl, validator
+from pydantic import BaseModel, ConfigDict, EmailStr, AnyUrl, Field, HttpUrl
 from .oai import LENGTH_LIMIT
 
 class DegreeListing(BaseModel):
@@ -8,7 +8,7 @@ class DegreeListing(BaseModel):
     yearStarted: int
     yearEnded: Optional[int] = None
     institution: str
-    major: List[str]
+    major: List[str] = Field(min_length=1)
     minor: List[str]
     gpa: float
 

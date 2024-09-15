@@ -29,7 +29,7 @@ export function LoginComponent(props: PaperProps) {
       <Divider label="Student Login" labelPosition="center" my="md" size="lg" />
 
       <Group grow mb="md" mt="md">
-        <AcmLoginButton radius="xl">Sign in with Illinois NetID</AcmLoginButton>
+        <AcmLoginButton radius="lg">Sign in with Illinois NetID</AcmLoginButton>
       </Group>
       <Alert
         title={<Title order={5}>Paid ACM@UIUC Members Only</Title>}
@@ -45,7 +45,7 @@ export function LoginComponent(props: PaperProps) {
       </Alert>
       <Divider label="Recruiter Login" labelPosition="center" my="md" size="lg" />
       <Group grow mb="md" mt="md">
-        <PartnerLoginButton radius="xl">ACM@UIUC Partner Login</PartnerLoginButton>
+        <PartnerLoginButton radius="lg">ACM@UIUC Partner Login</PartnerLoginButton>
       </Group>
     </Paper>
   );
