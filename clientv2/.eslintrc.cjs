@@ -1,5 +1,5 @@
 module.exports = {
-    extends: ['mantine'],
+    extends: ['mantine', 'prettier'],
     parserOptions: {
       project: './tsconfig.json',
     },
