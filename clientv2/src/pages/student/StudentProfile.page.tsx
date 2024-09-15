@@ -217,7 +217,7 @@ export function StudentHomePage() {
     for (let i = 0; i < studentData.degrees.length; i++) {
       const item = studentData.degrees[i];
       if (item.major.length === 0) {
-        return showErrorSaveNotification(`Degree ${i+1} does not have a major.`);
+        return showErrorSaveNotification(`Degree ${i + 1} does not have a major.`);
       }
     }
     try {
@@ -257,7 +257,9 @@ export function StudentHomePage() {
         });
         setEditToggle(false);
       } else if (response.status && response.status === 403) {
-        showErrorSaveNotification('Failed to validate profile. Please ensure all fields are valid and try again.');
+        showErrorSaveNotification(
+          'Failed to validate profile. Please ensure all fields are valid and try again.'
+        );
       } else {
         showErrorSaveNotification();
       }
