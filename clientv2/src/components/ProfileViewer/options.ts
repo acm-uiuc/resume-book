@@ -165,6 +165,7 @@ export const otherMajors = [
   'Theatre',
   'Urban Planning',
   'Writing Studies',
+  'Engineering Undeclared'
 ];
 
 export const degreeOptions = [
