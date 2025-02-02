@@ -103,7 +103,7 @@ Resources:
     Properties:
       CodeUri: ../api 
       AutoPublishAlias: live
-      Runtime: python3.10
+      Runtime: python3.12
       Description: Resume Book API Lambda - No VPC attachment
       FunctionName: !Sub ${LambdaFunctionName}-novpc
       Handler: app.lambda_handler
@@ -131,7 +131,7 @@ Resources:
     Properties:
       CodeUri: ../api 
       AutoPublishAlias: live
-      Runtime: python3.10
+      Runtime: python3.12
       Description: Resume Book API Lambda
       FunctionName: !Ref LambdaFunctionName
       Handler: app.lambda_handler
@@ -161,7 +161,7 @@ Resources:
     Properties:
       CodeUri: ../api/authorizers/
       AutoPublishAlias: live
-      Runtime: python3.10
+      Runtime: python3.12
       Description: Resume Book Auth Lambda
       FunctionName: !Ref AuthLambdaFunctionName
       Handler: combined.lambda_handler
@@ -299,14 +299,14 @@ Resources:
     Condition: IsProd
     Properties:
       AlarmName: !Sub '${ResumeBookApiGWName}-latency-alarm'
-      AlarmDescription: !Sub 'Alarm if ${ResumeBookApiGWName} API gateway latency is > 3s.'
+      AlarmDescription: !Sub 'Alarm if ${ResumeBookApiGWName} API gateway latency is too high.'
       Namespace: 'AWS/ApiGateway'
       MetricName: 'Latency'
-      Statistic: 'Average'
+      ExtendedStatistic: 'tm99'
       Period: '60'
-      EvaluationPeriods: '1'
+      EvaluationPeriods: '5'
       ComparisonOperator: 'GreaterThanThreshold'
-      Threshold: '8000'
+      Threshold: '2000'
       AlarmActions:
         - !Ref AlertSNSArn
       Dimensions:
