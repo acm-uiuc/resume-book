@@ -29,6 +29,9 @@ jobs:
     concurrency:
       group: resume-book-aws-dev
       cancel-in-progress: false
+    permissions:
+      id-token: write
+      contents: read
     environment: "AWS DEV"
     name: Deploy to AWS DEV
     steps:
@@ -40,10 +43,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
-      - uses: aws-actions/configure-aws-credentials@v2
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::427040638965:role/GitHubActionsRole
+          role-session-name: ResumeBook_Dev_Prod_Deployment
           aws-region: us-east-1
       - run: make deploy_dev
   deploy-cf-pages-dev:
@@ -55,7 +58,7 @@ jobs:
       cancel-in-progress: false
     permissions:
       contents: read
-      deployments: write  
+      deployments: write
     name: Deploy to Cloudflare Pages DEV
     environment: "Cloudflare Pages - Dev"
     steps:
@@ -114,6 +117,9 @@ jobs:
     concurrency:
       group: resume-book-aws-prod
       cancel-in-progress: false
+    permissions:
+      id-token: write
+      contents: read
     needs:
       - test-dev
       - deploy-aws-dev
@@ -123,10 +129,10 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v2
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::298118738376:role/GitHubActionsRole
+          role-session-name: ResumeBook_Dev_Prod_Deployment
           aws-region: us-east-1
       - run: make deploy_prod
   deploy-cf-pages-prod:
@@ -171,6 +177,6 @@ jobs:
       - deploy-cf-pages-prod
     steps:
       - name: Call the API healthz endpoint
-        run: curl -f https://resumes.aws.acmuiuc.org/api/v1/healthz 
+        run: curl -f https://resumes.aws.acmuiuc.org/api/v1/healthz
       - name: Call the base UI endpoint
         run: curl -f https://resumes.acm.illinois.edu

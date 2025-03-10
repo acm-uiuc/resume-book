@@ -27,6 +27,9 @@ jobs:
     concurrency:
       group: resume-book-aws-dev
       cancel-in-progress: false
+    permissions:
+      id-token: write
+      contents: read
     environment: "AWS DEV"
     name: Deploy to AWS DEV
     needs:
@@ -40,10 +43,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
-      - uses: aws-actions/configure-aws-credentials@v2
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::427040638965:role/GitHubActionsRole
+          role-session-name: ResumeBook_Dev_Deployment
           aws-region: us-east-1
       - run: make deploy_dev
   deploy-cf-pages-dev:
@@ -53,7 +56,7 @@ jobs:
       cancel-in-progress: false
     permissions:
       contents: read
-      deployments: write  
+      deployments: write
     needs:
       - test-unit
     name: Deploy to Cloudflare Pages DEV
