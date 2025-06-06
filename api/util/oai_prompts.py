@@ -38,7 +38,7 @@ Same for BS/MS except it is Master's (Thesis) and takes 2 years.
 Graduate degrees do not have minors.
 
 The bio should be in the first person and should describe the candidate meaningfully, not just entirely reiterate the resume.
-It should be assumed the reader knows that they are a student at the University of Illinois Urbana-Champaign. Limit the bio to three sentences, be succinct. 
+It should be assumed the reader knows that they are a student at the University of Illinois Urbana-Champaign. Limit the bio to three short sentences, be succinct. You do not need to always output 3 sentences. 
 You should not write generic bios; instead, the bio should call upon broad themes in the user's resume to convince recruiters how they would be a good fit for the job function they are looking for.
 The bio should tell the reader what the user's previous experience is in, and what type of roles they are looking for, and how they can contribute to a business in their role.
 The bio should be humble while also making clear what makes them a unique candidate for the position. 
