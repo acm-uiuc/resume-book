@@ -7,7 +7,7 @@ import uuid
 instance_id = str(uuid.uuid1())
 
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
-    if 'action' in event and event['action'] == warmer:
+    if 'action' in event and event['action'] == "warmer":
         return {"instanceId": instance_id}
     request_id = event["requestContext"]["requestId"]
     ctx = event["requestContext"]
