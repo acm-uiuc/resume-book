@@ -3,8 +3,12 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from util.server import app
 from util.logging import configure_request_id, get_logger
 import traceback
+import uuid
+instance_id = str(uuid.uuid1())
 
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
+    if 'action' in event and event['action'] == "warmer":
+        return {"instanceId": instance_id}
     request_id = event["requestContext"]["requestId"]
     ctx = event["requestContext"]
     configure_request_id(request_id)  # Configure the logger with the request ID
