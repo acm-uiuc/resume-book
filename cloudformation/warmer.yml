@@ -61,7 +61,7 @@ Resources:
       - WarmerLambdaLogGroup
     Properties:
       Architectures: [arm64]
-      CodeUri: ../dist/warmer
+      CodeUri: ../warmer
       AutoPublishAlias: live
       Runtime: nodejs22.x
       Description: !Sub "Lambda warmer for function ${FunctionToWarm}"
