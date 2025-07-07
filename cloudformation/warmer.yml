@@ -12,7 +12,7 @@ Parameters:
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
   NumInstances:
     Type: Number
-    Default: 3
+    Default: 2
 
 Resources:
   WarmerLambdaLogGroup:
