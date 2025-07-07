@@ -74,6 +74,15 @@ Mappings:
         - subnet-0cbe89f6ab2665610
 
 Resources:
+  ResumeBookApiLambdaFunctionWarmer:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - ResumeBookApiLambdaFunction
+    Properties:
+      Location: ./warmer.yml
+      Parameters:
+        FunctionToWarm: !Ref LambdaFunctionName
+
   ResumeBookIAMRoles:
     Type: AWS::Serverless::Application
     Properties:
