@@ -403,14 +403,6 @@ Resources:
             Transitions:
               - StorageClass: INTELLIGENT_TIERING
                 TransitionInDays: 7
-      IntelligentTieringConfigurations:
-        - Id: 'DefaultTiering'
-          Status: Enabled
-          Tierings:
-            - AccessTier: ARCHIVE_ACCESS
-              Days: 90
-            - AccessTier: DEEP_ARCHIVE_ACCESS
-              Days: 180
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:
