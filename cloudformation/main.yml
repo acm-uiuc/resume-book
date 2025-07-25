@@ -396,10 +396,14 @@ Resources:
     UpdateReplacePolicy: Retain
     Properties:
       BucketName: !Sub "${ResumeS3BucketName}-${RunEnvironment}"
-      IntelligentTieringConfiguration:
-        Id: base
-        Status: Enabled
-        Tierings: [ARCHIVE_ACCESS, DEEP_ARCHIVE_ACCESS]
+     IntelligentTieringConfigurations:
+        - Id: 'DefaultTiering'
+          Status: Enabled
+          Tierings:
+            - AccessTier: ARCHIVE_ACCESS
+              Days: 90
+            - AccessTier: DEEP_ARCHIVE_ACCESS
+              Days: 180
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:
