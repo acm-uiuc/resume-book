@@ -396,7 +396,7 @@ Resources:
     UpdateReplacePolicy: Retain
     Properties:
       BucketName: !Sub "${ResumeS3BucketName}-${RunEnvironment}"
-     IntelligentTieringConfigurations:
+      IntelligentTieringConfigurations:
         - Id: 'DefaultTiering'
           Status: Enabled
           Tierings:
