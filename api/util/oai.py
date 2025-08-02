@@ -9,7 +9,7 @@ LENGTH_LIMIT = 30000
 
 def get_oai_client(oai_api_key):
     return OpenAI(
-    # This is the default and can be omitted
+    base_url="https://openrouter.ai/api/v1",
     api_key=oai_api_key,
 )
 
@@ -31,10 +31,10 @@ def oai_get_profile_json(client, resume_text, role_type, role_description):
                 "content": f"I am interested in {role_type} role for jobs involving {role_description}.",
             }
         ],
-        model="gpt-4o-mini",
+        model="openai/gpt-4.1-nano",
         temperature=0.8,
         n=1,
-        max_tokens=8192
+        max_tokens=8192,
     )
     result = chat_completion.choices[0]
     finish_reason = result.finish_reason

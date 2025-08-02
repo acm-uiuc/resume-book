@@ -47,7 +47,7 @@ session = boto3.Session(region_name=os.environ.get("AWS_REGION", "us-east-1"))
 secretsmanager = session.client("secretsmanager")
 s3_client = session.client('s3')
 db_config = get_parameter_from_sm(secretsmanager, "infra-resume-book-db-config")
-openai_client = get_oai_client(db_config['oai_key'])
+openai_client = get_oai_client(db_config['openrouter_key'])
 
 PROFILE_TABLE_NAME = "infra-resume-book-profile-data"
 S3_BUCKET = f"infra-resume-book-pdfs-{RUN_ENV if RUN_ENV != 'local' else 'dev'}"
