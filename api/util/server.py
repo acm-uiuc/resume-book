@@ -194,7 +194,7 @@ def student_get_s3_presigned():
             body={"message": "Error validating payload", "details": str(e)},
         )
     except Exception as e:
-        logger.error(traceback.format_exc(), flush=True)
+        logger.error(traceback.format_exc())
         return Response(
             status_code=500,
             content_type=content_types.APPLICATION_JSON,
@@ -316,7 +316,7 @@ def recruiter_perform_search():
     )
 
 @app.post("/api/v1/recruiter/mass_download")
-def recruiter_perform_search():
+def recruiter_mass_download():
     json_body: dict = app.current_event.json_body or {}
     urls = []
     try:
