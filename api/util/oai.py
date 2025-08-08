@@ -31,7 +31,7 @@ def oai_get_profile_json(client, resume_text, role_type, role_description):
                 "content": f"I am interested in {role_type} role for jobs involving {role_description}.",
             }
         ],
-        model="openai/gpt-4.1-nano",
+        model="openai/gpt-5-nano",
         temperature=0.8,
         n=1,
         max_tokens=8192,
