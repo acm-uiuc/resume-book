@@ -24,7 +24,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-const genAiEnabled = true;
+const genAiEnabled = false;
 
 async function extractTextRemote(pdf_url: string) {
   const file = await (await fetch(pdf_url)).blob();
