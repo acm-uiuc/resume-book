@@ -1,3 +1,5 @@
+from psycopg import sql
+
 GET_USER_PROFILE_QUERY = """
 SELECT 
     spd.*,
@@ -30,8 +32,10 @@ DELETE_PROFILE = """
 DELETE FROM student_profile_details WHERE username = %s;
 """
 
+
 def generate_search_query(degree_types, gpa, graduation_years, majors):
-    query = """
+    query = sql.SQL(
+        """
     SELECT 
         spd.username,
         spd.name, 
@@ -40,40 +44,44 @@ def generate_search_query(degree_types, gpa, graduation_years, majors):
         jsonb_agg(jsonb_build_object('yearEnded', dl.yearEnded, 'level', dl.level, 'major', dl.major)) AS degrees
     FROM student_profile_details spd
     JOIN degree_listings dl ON spd.username = dl.username
-    WHERE
+    WHERE 1=1
     """
-    
+    )
+
     conditions = []
 
     # Degree types condition
     if degree_types:
-        degree_condition = "dl.level IN ({})".format(
-            ', '.join(["'{}'".format(degree) for degree in degree_types])
+        placeholders = sql.SQL(", ").join(
+            [sql.Literal(degree) for degree in degree_types]
         )
-        conditions.append(degree_condition)
-    
-    # GPA condition
-    if gpa:
-        gpa_condition = "dl.gpa >= {}".format(gpa)
-        conditions.append(gpa_condition)
-    
+        conditions.append(sql.SQL("dl.level IN ({})").format(placeholders))
+
+    # GPA condition - use 'is not None' to allow 0 as a valid value
+    if gpa is not None:
+        conditions.append(sql.SQL("dl.gpa >= {}").format(sql.Literal(gpa)))
+
     # Graduation years condition
     if graduation_years:
-        graduation_condition = "dl.yearEnded IN ({})".format(
-            ', '.join(graduation_years)
+        placeholders = sql.SQL(", ").join(
+            [sql.Literal(year) for year in graduation_years]
         )
-        conditions.append(graduation_condition)
-    
+        conditions.append(sql.SQL("dl.yearEnded IN ({})").format(placeholders))
+
     # Majors condition
     if majors:
-        majors_condition = " OR ".join(
-            ["'{}' = ANY(dl.major)".format(major) for major in majors]
+        major_conditions = sql.SQL(" OR ").join(
+            [
+                sql.SQL("{} = ANY(dl.major)").format(sql.Literal(major))
+                for major in majors
+            ]
         )
-        majors_condition = "({})".format(majors_condition)
-        conditions.append(majors_condition)
-    
-    # Combine all conditions
-    query += " AND ".join(conditions)
-    query += "\nGROUP BY spd.username;"
-    
+        conditions.append(sql.SQL("({})").format(major_conditions))
+
+    # Add all conditions
+    for condition in conditions:
+        query = sql.SQL("{}\n    AND {}").format(query, condition)
+
+    query = sql.SQL("{}\nGROUP BY spd.username;").format(query)
+
     return query
