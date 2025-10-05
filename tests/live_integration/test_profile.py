@@ -1,6 +1,7 @@
 import json
 from uuid import uuid4
 
+
 def test_unauthenticated(api_client):
     """Sad Path: Test that accessing the profile when not correctly authenticated returns a failure."""
     response = api_client.get(
@@ -8,8 +9,9 @@ def test_unauthenticated(api_client):
     )
     assert response.status_code == 403
     assert response.json() == {
-        "Message": "User is not authorized to access this resource with an explicit deny"
+        "Message": "User is not authorized to access this resource with an explicit deny in an identity-based policy"
     }
+
 
 def test_recruiter_noaccess_profile(api_client, jwt_generator):
     """Sad Path: Test that accessing the profile when authenticated as a recruiter returns a failure."""
@@ -19,8 +21,9 @@ def test_recruiter_noaccess_profile(api_client, jwt_generator):
     )
     assert response.status_code == 403
     assert response.json() == {
-        "Message": "User is not authorized to access this resource"
+        "Message": "User is not authorized to access this resource because no identity-based policy allows the execute-api:Invoke action"
     }
+
 
 def test_default_profile(api_client, jwt_generator):
     """Happy Path: Test that the default profile is returned when the user doesn't exist"""
@@ -66,7 +69,7 @@ def test_invalid_profile_email(api_client, jwt_generator):
                 "minor": [],
                 "gpa": 4,
                 "yearStarted": 2022,
-                "yearEnded": 2026
+                "yearEnded": 2026,
             },
         ],
         "bio": "Student at the University of Illinois Urbana-Champaign seeking software engineering roles as an absolute bot.",
@@ -75,11 +78,13 @@ def test_invalid_profile_email(api_client, jwt_generator):
         "sponsorship_required": False,
     }
     response = api_client.post(
-        "/api/v1/student/profile", headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"}, data=json.dumps(profile)
+        "/api/v1/student/profile",
+        headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"},
+        data=json.dumps(profile),
     )
     resp_json = response.json()
     assert response.status_code == 403
-    assert 'message' in resp_json and resp_json['message'] == 'Error validating payload'
+    assert "message" in resp_json and resp_json["message"] == "Error validating payload"
 
 
 def test_valid_profile(api_client, jwt_generator):
@@ -102,7 +107,7 @@ def test_valid_profile(api_client, jwt_generator):
                 "minor": [],
                 "gpa": 4,
                 "yearStarted": 2022,
-                "yearEnded": 2026
+                "yearEnded": 2026,
             },
         ],
         "bio": "Student at the University of Illinois Urbana-Champaign seeking software engineering roles as an absolute bot.",
@@ -111,19 +116,23 @@ def test_valid_profile(api_client, jwt_generator):
         "sponsorship_required": False,
     }
     response = api_client.post(
-        "/api/v1/student/profile", headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"}, data=json.dumps(profile)
+        "/api/v1/student/profile",
+        headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"},
+        data=json.dumps(profile),
     )
     assert response.status_code == 201
-    assert response.json() == {'message': 'Profile saved'}
+    assert response.json() == {"message": "Profile saved"}
     response = api_client.get(
-        "/api/v1/student/profile", headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"}
+        "/api/v1/student/profile",
+        headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"},
     )
     original_response = response.json()
-    assert 'resumePdfUrl' in original_response
-    profile['resumePdfUrl'] = original_response['resumePdfUrl']
+    assert "resumePdfUrl" in original_response
+    profile["resumePdfUrl"] = original_response["resumePdfUrl"]
     assert response.status_code == 200
     assert original_response == profile
     # TODO: Test deleting the profile (test cleanup)
+
 
 def test_valid_profile_sparse(api_client, jwt_generator):
     """Happy Path: Test that a valid profile (with the bare minimum information) can be submitted, retrieved, and deleted correctly."""
@@ -141,20 +150,22 @@ def test_valid_profile_sparse(api_client, jwt_generator):
         "sponsorship_required": True,
     }
     response = api_client.post(
-        "/api/v1/student/profile", headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"}, data=json.dumps(profile)
+        "/api/v1/student/profile",
+        headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"},
+        data=json.dumps(profile),
     )
     assert response.status_code == 201
-    assert response.json() == {'message': 'Profile saved'}
+    assert response.json() == {"message": "Profile saved"}
     response = api_client.get(
-        "/api/v1/student/profile", headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"}
+        "/api/v1/student/profile",
+        headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"},
     )
     original_response = response.json()
-    assert 'resumePdfUrl' in original_response
-    profile['resumePdfUrl'] = original_response['resumePdfUrl']
-    profile['github'] = ''
-    profile['linkedin'] = ''
-    profile['website'] = ''
+    assert "resumePdfUrl" in original_response
+    profile["resumePdfUrl"] = original_response["resumePdfUrl"]
+    profile["github"] = ""
+    profile["linkedin"] = ""
+    profile["website"] = ""
     assert response.status_code == 200
     assert original_response == profile
     # TODO: Test deleting the profile (test cleanup)
-

@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { Title, Container, em } from '@mantine/core';
+import { Title, Container, em, LoadingOverlay } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useMediaQuery } from '@mantine/hooks';
 import { useAuth } from '@/components/AuthContext';
 import { HeaderNavbar } from '@/components/Navbar';
 import DegreeFilter, { Filters } from '@/components/SearchProfiles';
 import { useApi } from '@/util/api';
-import FullScreenLoader from '@/components/AuthContext/LoadingScreen';
 import { ProfileSearchResults } from '@/components/SearchProfiles/Results';
 
 function showErrorNotification(title?: string) {
@@ -50,13 +49,12 @@ export function RecruiterHomePage() {
     setLoading(false);
     return undefined;
   };
-  if (loading) {
-    return <FullScreenLoader />;
-  }
+
   return (
     <>
       <HeaderNavbar userData={userData} />
-      <Container>
+      <Container style={{ position: 'relative' }}>
+        <LoadingOverlay visible={loading} overlayProps={{ blur: 2 }} />
         <div
           style={{
             display: 'flex',
