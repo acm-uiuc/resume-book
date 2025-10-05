@@ -20,7 +20,7 @@ def test_student_noaccess(api_client, jwt_generator):
     )
     assert response.status_code == 403
     assert response.json() == {
-        "Message": "User is not authorized to access this resource"
+        "Message": "User is not authorized to access this resource because no identity-based policy allows the execute-api:Invoke action"
     }
 
 
