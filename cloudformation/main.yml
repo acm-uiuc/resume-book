@@ -75,6 +75,7 @@ Mappings:
 
 Resources:
   ResumeBookApiLambdaFunctionWarmer:
+    Condition: IsProd
     Type: AWS::Serverless::Application
     DependsOn:
       - ResumeBookApiLambdaFunction
@@ -82,6 +83,16 @@ Resources:
       Location: ./warmer.yml
       Parameters:
         FunctionToWarm: !Ref LambdaFunctionName
+
+  ResumeBookAuthLambdaFunctionWarmer:
+    Condition: IsProd
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - ResumeBookApiLambdaFunction
+    Properties:
+      Location: ./warmer.yml
+      Parameters:
+        FunctionToWarm: !Ref AuthLambdaFunctionName
 
   ResumeBookIAMRoles:
     Type: AWS::Serverless::Application
@@ -116,7 +127,7 @@ Resources:
       Description: Resume Book API Lambda - No VPC attachment
       FunctionName: !Sub ${LambdaFunctionName}-novpc
       Handler: app.lambda_handler
-      MemorySize: 768
+      MemorySize: 2048
       Role: !GetAtt ResumeBookIAMRoles.Outputs.MainFunctionRoleArn
       Timeout: 30
       LoggingConfig:
@@ -144,7 +155,7 @@ Resources:
       Description: Resume Book API Lambda
       FunctionName: !Ref LambdaFunctionName
       Handler: app.lambda_handler
-      MemorySize: 512
+      MemorySize: 2048
       Role: !GetAtt ResumeBookIAMRoles.Outputs.MainFunctionRoleArn
       Timeout: 60
       Environment:
