@@ -7,10 +7,14 @@ from shared import AuthPolicy
 import os 
 import jwt
 import logging
+import uuid
+instance_id = str(uuid.uuid1())
 
 run_env = os.environ.get("RunEnvironment") # assume prod by default as it is the most restrictive environment
 
 def lambda_handler(event, context):
+    if 'action' in event and event['action'] == "warmer":
+      return {"instanceId": instance_id}
     tmp = event['methodArn'].split(':')
     apiGatewayArnTmp = tmp[5].split('/')
     awsAccountId = tmp[4]
