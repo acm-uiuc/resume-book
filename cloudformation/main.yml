@@ -330,7 +330,7 @@ Resources:
       MetricName: 'Latency'
       ExtendedStatistic: 'tm99'
       Period: '60'
-      EvaluationPeriods: '5'
+      EvaluationPeriods: '10'
       ComparisonOperator: 'GreaterThanThreshold'
       Threshold: '2000'
       AlarmActions:
