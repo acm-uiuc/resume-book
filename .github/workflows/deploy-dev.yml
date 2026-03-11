@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Run Unit Tests
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up Python 3.12 for testing
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.12
       - name: Setup Node LTS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 18
       - name: Run unit testing
@@ -35,15 +35,15 @@ jobs:
     needs:
       - test-unit
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.12
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: arn:aws:iam::427040638965:role/GitHubActionsRole
           role-session-name: ResumeBook_QA_Deployment
@@ -63,9 +63,9 @@ jobs:
     environment: "Cloudflare Pages - Dev"
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: Setup Node LTS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 18
       - name: Build
@@ -90,13 +90,13 @@ jobs:
       - deploy
       - deploy-cf-pages-qa
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up Python 3.12 for testing
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.12
       - name: Setup Node LTS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 18
       - name: Run live testing
