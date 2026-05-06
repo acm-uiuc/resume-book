@@ -36,14 +36,14 @@ jobs:
     name: Deploy to AWS DEV
     steps:
       - uses: actions/checkout@v6
-      - uses: aws-actions/setup-sam@v2
+      - uses: aws-actions/setup-sam@v3
         with:
           use-installer: true
       - name: Set up Python 3.12
         uses: actions/setup-python@v6
         with:
           python-version: 3.12
-      - uses: aws-actions/configure-aws-credentials@v5
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::427040638965:role/GitHubActionsRole
           role-session-name: ResumeBook_QA+Prod_Deployment
@@ -126,10 +126,10 @@ jobs:
     environment: "AWS PROD"
     steps:
       - uses: actions/checkout@v6
-      - uses: aws-actions/setup-sam@v2
+      - uses: aws-actions/setup-sam@v3
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v5
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::298118738376:role/GitHubActionsRole
           role-session-name: ResumeBook_QA+Prod_Deployment
