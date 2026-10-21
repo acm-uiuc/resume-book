@@ -30,6 +30,11 @@ Parameters:
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
     Default: infra-resume-book-auth-lambda
 
+  EmbeddingLambdaFunctionName:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+    Default: infra-resume-book-embedding-lambda
+
 Conditions:
   IsProd: !Equals [!Ref RunEnvironment, 'prod']
 
@@ -103,6 +108,7 @@ Resources:
         LambdaFunctionName: !Ref LambdaFunctionName
         ResumeS3BucketName: !Ref ResumeS3BucketName
         AuthLambdaFunctionName: !Ref AuthLambdaFunctionName
+        EmbeddingLambdaFunctionName: !Ref EmbeddingLambdaFunctionName
 
   ResumeBookLogGroups:
     Type: AWS::Serverless::Application
@@ -111,6 +117,7 @@ Resources:
       Parameters:
         LambdaFunctionName: !Ref LambdaFunctionName
         AuthLambdaFunctionName: !Ref AuthLambdaFunctionName
+        EmbeddingLambdaFunctionName: !Ref EmbeddingLambdaFunctionName
         LogRetentionDays: !FindInMap [General, !Ref RunEnvironment, LogRetentionDays]
 
   # Since having a Lambda in a VPC disables IPv4 network access to WAN
@@ -166,6 +173,7 @@ Resources:
         Variables:
           RunEnvironment: !Ref RunEnvironment
           ValidCorsOrigins: !Join [",", !FindInMap [ApiGwConfig, !Ref RunEnvironment, ValidCorsOrigins]]
+          EmbeddingLambdaFunctionName: !Ref EmbeddingLambdaFunctionName
       VpcConfig: 
         Ipv6AllowedForDualStack: True
         SecurityGroupIds: !FindInMap [EnvironmentToCidr, !Ref RunEnvironment, SecurityGroupIds]
@@ -199,6 +207,21 @@ Resources:
           RunEnvironment: !Ref RunEnvironment
           AadValidClientId: !FindInMap [ApiGwConfig, !Ref RunEnvironment, AadValidClientId]
           KindeValidClientId: !FindInMap [ApiGwConfig, !Ref RunEnvironment, KindeValidClientId]
+
+  ResumeBookEmbeddingLambdaFunction:
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - ResumeBookLogGroups
+    Properties:
+      Architectures:
+        - arm64
+      CodeUri: ../embeddings
+      Runtime: python3.12
+      Description: Resume Book Embedding Lambda
+      FunctionName: !Ref EmbeddingLambdaFunctionName
+      Handler: app.lambda_handler
+      Role: !GetAtt ResumeBookIAMRoles.Outputs.EmbeddingFunctionRoleArn
+
  
 # API Gateway
   ResumeBookApiGateway:

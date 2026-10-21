@@ -16,6 +16,9 @@ Parameters:
   AuthLambdaFunctionName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+  EmbeddingLambdaFunctionName:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
 
 Resources:
   ResumeBookAuthLambdaIAMRole:
@@ -106,6 +109,47 @@ Resources:
                 Resource:
                   - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:infra-resume-book-db-config*
           PolicyName: lambda-db-secrets
+        - PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Action:
+                  - lambda:InvokeFunction
+                Effect: Allow
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:${EmbeddingLambdaFunctionName}"
+          PolicyName: invoke-embedding-lambda
+          
+  ResumeBookEmbeddingLambdaIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Policies:
+        - PolicyName: invoke-titan-embeddings
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource: 
+                - !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}::foundation-model/amazon.titan-embed-text-v2:0"
+        - PolicyName: write-embedding-logs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action: 
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource:
+                - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${EmbeddingLambdaFunctionName}:log-stream:*"
 
 Outputs:
   MainFunctionRoleArn:
@@ -114,3 +158,6 @@ Outputs:
   AuthFunctionRoleArn:
     Description: "Authorizer lambda IAM role ARN"
     Value: !GetAtt ResumeBookAuthLambdaIAMRole.Arn
+  EmbeddingFunctionRoleArn:
+    Description: "Embedding Lambda execution role ARN"
+    Value: !GetAtt ResumeBookEmbeddingLambdaIAMRole.Arn

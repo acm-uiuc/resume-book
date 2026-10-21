@@ -10,6 +10,9 @@ Parameters:
   AuthLambdaFunctionName:
     Type: String
     AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+  EmbeddingLambdaFunctionName:
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
   LogRetentionDays:
     Type: Number
 
@@ -25,4 +28,10 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /aws/lambda/${AuthLambdaFunctionName}
+      RetentionInDays: !Ref LogRetentionDays
+
+  ResumeBookEmbeddingLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${EmbeddingLambdaFunctionName}
       RetentionInDays: !Ref LogRetentionDays
