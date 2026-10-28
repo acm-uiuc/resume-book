@@ -2,6 +2,8 @@ import json
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from util.server import app
 from util.logging import configure_request_id, get_logger
+from util.environ import get_run_environment
+from util.embeddings import get_lambda_client, embed_texts
 import traceback
 import uuid
 instance_id = str(uuid.uuid1())
@@ -9,6 +11,14 @@ instance_id = str(uuid.uuid1())
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     if 'action' in event and event['action'] == "warmer":
         return {"instanceId": instance_id}
+
+    # embedding smoke test
+    if 'action' in event and event['action'] == "embedding_smoke_test":
+        if get_run_environment() != "dev":
+            raise RuntimeError("Embedding smoke test only available in dev")
+        client = get_lambda_client()
+        embeddings = embed_texts(["Sample candidate with Python and SQL experience"], client)
+        return {"embeddings": embeddings}    
     request_id = event["requestContext"]["requestId"]
     ctx = event["requestContext"]
     configure_request_id(request_id)  # Configure the logger with the request ID
