@@ -1,5 +1,6 @@
 from typing import Annotated
 from pydantic import BaseModel, Field, StringConstraints, ValidationError
+from botocore.config import Config
 import json
 import boto3
 
@@ -16,7 +17,11 @@ _bedrock_client = None
 def get_bedrock_client():
     global _bedrock_client
     if _bedrock_client is None:
-        _bedrock_client = boto3.client("bedrock-runtime")
+        _bedrock_client = boto3.client("bedrock-runtime", config=Config(
+            connect_timeout=3,
+            read_timeout=15,
+            retries={"mode": "standard", "total_max_attempts": 1}
+        ))
     return _bedrock_client
 
 def lambda_handler(event, context): 
