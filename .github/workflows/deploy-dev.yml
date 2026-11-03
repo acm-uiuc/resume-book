@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node LTS
         uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 22
       - name: Run unit testing
         run: make test_unit
   deploy:
@@ -67,7 +67,7 @@ jobs:
       - name: Setup Node LTS
         uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 22
       - name: Build
         run: cd clientv2 && corepack enable && yarn && yarn run build
         env:
@@ -97,7 +97,7 @@ jobs:
       - name: Setup Node LTS
         uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 22
       - name: Run live testing
         run: make test_live_integration
         env:
