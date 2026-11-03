@@ -76,24 +76,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
-    if (isAuthenticated && !isLoading && !userData) {
-      const isRecruiter = getKindePermission(
+    if (!isAuthenticated || isLoading || userData) {
+      return;
+    }
+    const checkRecruiter = async () => {
+      const permission = await getKindePermission(
         `recruiter:resume-book-${import.meta.env.VITE_RUN_ENVIRONMENT}`
-      ).isGranted;
-      if (!isRecruiter) {
+      );
+      if (!permission?.isGranted) {
         setUserData(null);
         setIsLoggedIn(false);
         kindeLogout();
       } else {
         setUserData({
           email: user?.email!,
-          name: `${user?.given_name} ${user?.family_name}`,
+          name: `${user?.givenName} ${user?.familyName}`,
           authenticationMethod: AuthSourceEnum.LOCAL,
           role: AuthRoleEnum.RECRUITER,
         });
         setIsLoggedIn(true);
       }
-    }
+    };
+    checkRecruiter();
   }, [isAuthenticated, isLoading, user, userData, getKindePermission]);
 
   useEffect(() => {

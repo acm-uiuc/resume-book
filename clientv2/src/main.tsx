@@ -15,7 +15,6 @@ const msalConfiguration: Configuration = {
   },
   cache: {
     cacheLocation: 'sessionStorage',
-    storeAuthStateInCookie: true,
   },
 };
 

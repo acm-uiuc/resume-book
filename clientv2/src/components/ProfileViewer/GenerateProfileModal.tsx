@@ -19,8 +19,8 @@ export const GenerateProfileModal: React.FC<GenerateProfileModalProps> = ({
     },
 
     validate: {
-      roleType: (value) => (validRoles.includes(value) ? null : 'Invalid role type'),
-      roleKeywords: (value) =>
+      roleType: (value: string) => (validRoles.includes(value) ? null : 'Invalid role type'),
+      roleKeywords: (value: string) =>
         value.length > 0 && value.split(',') ? null : 'You must provide at least one job function',
     },
   });

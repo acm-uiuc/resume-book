@@ -9,7 +9,7 @@ export function AcmLoginButton(props: ButtonProps & React.ComponentPropsWithoutR
   const { inProgress } = useMsal();
   return (
     <Button
-      disabled={inProgress === InteractionStatus.Login}
+      disabled={inProgress === InteractionStatus.AcquireToken}
       leftSection={
         <Image
           src={blockI}
