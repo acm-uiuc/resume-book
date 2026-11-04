@@ -28,8 +28,7 @@ deploy_qa: check_account_qa build
 	sam deploy $(common_params) --parameter-overrides $(run_env)=dev
 
 install_deps_python:
-	pip install -r tests/live_integration/requirements.txt
-	pip install -r api/requirements-testing.txt
+	python -m pip install -r tests/live_integration/requirements.txt -r api/requirements-testing.txt -r embeddings/requirements.txt
 
 install_deps_node:
 	cd clientv2 && corepack enable && yarn
@@ -41,7 +40,7 @@ test_live_integration: install_deps_python
 	pytest -rP tests/live_integration/
 
 test_unit: install_deps_python install_deps_node
-	pytest -rP api/
+	python -m pytest -rP api/ embeddings/
 	cd clientv2 && yarn test
 
 test_e2e: install_deps_node_e2e
