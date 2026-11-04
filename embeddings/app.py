@@ -4,11 +4,14 @@ from botocore.config import Config
 import json
 import boto3
 
-NonEmptyStr = Annotated[str, StringConstraints(strict=True, pattern=r"\S")]
+MAX_TEXT_CHARS = 30000
+MAX_BATCH_SIZE = 8
+
+NonEmptyStr = Annotated[str, StringConstraints(strict=True, pattern=r"\S", max_length=MAX_TEXT_CHARS)]
 FiniteNumber = Annotated[float, Field(strict=True, allow_inf_nan=False)]
 
 class EmbeddingRequest(BaseModel):
-    texts: list[NonEmptyStr] = Field(min_length=1, strict=True)
+    texts: list[NonEmptyStr] = Field(min_length=1, max_length=MAX_BATCH_SIZE, strict=True)
 
 class EmbeddingResponse(BaseModel):
     embedding: list[FiniteNumber] = Field(min_length=1024, max_length=1024, strict=True)

@@ -1,4 +1,4 @@
-from embeddings.app import lambda_handler, EmbeddingRequest, embed_text
+from embeddings.app import lambda_handler, EmbeddingRequest, embed_text, MAX_TEXT_CHARS, MAX_BATCH_SIZE
 from pydantic import ValidationError
 import pytest
 import json
@@ -93,3 +93,18 @@ def test_handler_returns_embeddings_in_order():
         call(text1, client),
         call(text2, client)
     ]
+
+#size limits
+def test_rejects_too_many_texts():
+    with pytest.raises(ValidationError) as exc_info:
+        EmbeddingRequest.model_validate({"texts": ["test"] * (MAX_BATCH_SIZE + 1)})
+    assert exc_info.value.errors()[0]["loc"] == ("texts",)
+
+def test_rejects_text_over_max_length():
+    with pytest.raises(ValidationError) as exc_info:
+        EmbeddingRequest.model_validate({"texts": ["a" * (MAX_TEXT_CHARS + 1)]})
+    assert exc_info.value.errors()[0]["loc"] == ("texts", 0)
+
+def test_accepts_text_at_max_length():
+    request = EmbeddingRequest.model_validate({"texts": ["a" * MAX_TEXT_CHARS]})
+    assert len(request.texts[0]) == MAX_TEXT_CHARS

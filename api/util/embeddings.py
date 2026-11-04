@@ -3,7 +3,13 @@ from botocore.config import Config
 
 _lambda_client = None
 
+MAX_TEXT_CHARS = 30000
+MAX_BATCH_SIZE = 8
+
 def embed_texts(texts, client):
+    if len(texts) > MAX_BATCH_SIZE:
+        raise ValueError(f"Cannot embed more than {MAX_BATCH_SIZE} texts in one call")
+    texts = [text[:MAX_TEXT_CHARS] for text in texts]
     function_name = os.environ["EmbeddingLambdaFunctionName"]
     payload = json.dumps({"texts": texts})
     response = client.invoke(
