@@ -1,5 +1,8 @@
 .aws-sam/
 venv/
+.venv/
+.venv-python39/
+.pytest_cache/
 __pycache__
 .DS_Store
 test.json
