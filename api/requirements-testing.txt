@@ -1,3 +1,4 @@
 pytest
 moto
 pyjwt
+pypdf
