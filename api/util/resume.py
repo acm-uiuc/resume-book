@@ -4,7 +4,7 @@ from io import BytesIO
 
 from pypdf import PdfReader
 
-from util.logging import get_logger
+from .logging import get_logger
 
 logger = get_logger()
 
