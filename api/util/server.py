@@ -138,7 +138,14 @@ def student_post_profile():
         data = json.loads(
             StudentProfileDetails(**json_body).model_dump_json(), parse_float=Decimal
         )
-        resume_text = extract_resume_text(s3_client, S3_BUCKET, email)
+        try:
+            resume_text = extract_resume_text(s3_client, S3_BUCKET, email)
+        except Exception:
+            logger.error(traceback.format_exc())
+            # A missing or unparseable resume must not prevent a student from
+            # saving their profile; store empty resume text instead and let the
+            # rest of the profile save proceed.
+            resume_text = ""
         db_connection = get_db_connection(db_config, "resume_book_post_profile")
         with db_connection.transaction():
             with db_connection.cursor() as cur:
