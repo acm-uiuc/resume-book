@@ -83,7 +83,7 @@ jobs:
           command: pages deploy clientv2/dist/ --project-name=resume-book-dev --branch=${{ github.head_ref || github.ref_name }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
   test-qa:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - deploy-aws-qa
       - deploy-cf-pages-qa
