@@ -130,6 +130,10 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.12
       - uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: arn:aws:iam::298118738376:role/GitHubActionsRole
