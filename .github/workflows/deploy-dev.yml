@@ -85,6 +85,8 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     name: Run Live Integration Tests
+    permissions:
+      contents: read
     needs:
       - deploy
       - deploy-cf-pages-qa

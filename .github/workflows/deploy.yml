@@ -88,6 +88,8 @@ jobs:
       - deploy-aws-qa
       - deploy-cf-pages-qa
     name: Perform live testing
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v6
       - name: Set up Python 3.12 for testing
