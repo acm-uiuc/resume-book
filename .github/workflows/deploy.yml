@@ -83,11 +83,13 @@ jobs:
           command: pages deploy clientv2/dist/ --project-name=resume-book-dev --branch=${{ github.head_ref || github.ref_name }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
   test-qa:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - deploy-aws-qa
       - deploy-cf-pages-qa
     name: Perform live testing
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v6
       - name: Set up Python 3.12 for testing

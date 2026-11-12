@@ -4,3 +4,4 @@ psycopg[binary]
 openai
 aioboto3
 pyjwt
+pypdf

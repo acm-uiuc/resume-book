@@ -20,6 +20,7 @@ from util.queries import (
     generate_search_query,
 )
 from util.postgres import get_db_connection
+from util.resume import extract_resume_text, insert_resume_text
 from util.structs import (
     DEFAULT_USER_PROFILE,
     MassDownloadResumesRequest,
@@ -137,6 +138,14 @@ def student_post_profile():
         data = json.loads(
             StudentProfileDetails(**json_body).model_dump_json(), parse_float=Decimal
         )
+        try:
+            resume_text = extract_resume_text(s3_client, S3_BUCKET, email)
+        except Exception:
+            logger.error(traceback.format_exc())
+            # A missing or unparseable resume must not prevent a student from
+            # saving their profile; store empty resume text instead and let the
+            # rest of the profile save proceed.
+            resume_text = ""
         db_connection = get_db_connection(db_config, "resume_book_post_profile")
         with db_connection.transaction():
             with db_connection.cursor() as cur:
@@ -172,6 +181,7 @@ def student_post_profile():
                         ]
                     )
                 cur.executemany(INSERT_DEGREES, degree_payloads)
+                insert_resume_text(cur, email, resume_text)
     except pydantic.ValidationError as e:
         return Response(
             status_code=403,
