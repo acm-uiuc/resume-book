@@ -20,7 +20,8 @@ from util.queries import (
     generate_search_query,
 )
 from util.postgres import get_db_connection
-from util.resume import extract_resume_text, insert_resume_text
+from util.resume import extract_resume_text, upsert_resume_data
+from util.embeddings import embed_texts, get_lambda_client
 from util.structs import (
     DEFAULT_USER_PROFILE,
     MassDownloadResumesRequest,
@@ -125,6 +126,9 @@ def student_get_profile():
 
 @app.post("/api/v1/student/profile")
 def student_post_profile():
+    embedding = None
+    model = None
+    resume_processing_status = "skipped"
     email = app.current_event.request_context.authorizer["username"]
     json_body: dict = app.current_event.json_body or {}
     if "defaultResponse" in json_body:
@@ -146,6 +150,16 @@ def student_post_profile():
             # saving their profile; store empty resume text instead and let the
             # rest of the profile save proceed.
             resume_text = ""
+            resume_processing_status = "failed"
+        if resume_text.strip():
+            try:
+                client = get_lambda_client()
+                embedding = embed_texts([resume_text], client)[0]
+                model = "amazon.titan-embed-text-v2:0"
+                resume_processing_status = "complete"
+            except Exception:
+                logger.error(traceback.format_exc())
+                resume_processing_status = "failed"
         db_connection = get_db_connection(db_config, "resume_book_post_profile")
         with db_connection.transaction():
             with db_connection.cursor() as cur:
@@ -181,7 +195,7 @@ def student_post_profile():
                         ]
                     )
                 cur.executemany(INSERT_DEGREES, degree_payloads)
-                insert_resume_text(cur, email, resume_text)
+                upsert_resume_data(cur, email, resume_text, model, embedding)
     except pydantic.ValidationError as e:
         return Response(
             status_code=403,
@@ -198,7 +212,7 @@ def student_post_profile():
     return Response(
         status_code=201,
         content_type=content_types.APPLICATION_JSON,
-        body={"message": "Profile saved"},
+        body={"message": "Profile saved", "resumeProcessingStatus": resume_processing_status},
     )
 
 

@@ -10,7 +10,7 @@ from ..resume import (
     download_resume_pdf,
     extract_resume_text,
     extract_text_from_pdf,
-    insert_resume_text,
+    upsert_resume_data,
     resume_text_hash,
     save_resume_text,
     save_resume_text_query,
@@ -137,46 +137,51 @@ class FakeConnection:
         return False
 
 
-def test_save_resume_text_fills_non_null_columns():
+def test_save_resume_text_with_embedding():
     conn = FakeConnection()
     text = "Hello, resume!"
-    save_resume_text(conn, "bob@example.com", text)
+    model = "amazon.titan-embed-text-v2:0"
+    embedding = [1.0] + [0.0] * 1023
+    save_resume_text(conn, "bob@example.com", text, model, embedding)
 
     assert len(conn._cursor.executed) == 1
     query, params = conn._cursor.executed[0]
     assert query == save_resume_text_query
-    _assert_insert_omits_embedding_and_model(query)
+    _assert_upsert_includes_embedding_and_model(query)
     assert params == [
         "bob@example.com",
         RESUME_INDEX,
         text,
+        model,
+        embedding,
         hashlib.sha256(text.encode("utf-8")).hexdigest(),
     ]
 
 
-def test_insert_resume_text_uses_cursor():
+def test_upsert_resume_data_without_embedding():
     cur = FakeCursor()
     text = "Hello, resume!"
-    insert_resume_text(cur, "carol@example.com", text)
+    upsert_resume_data(cur, "carol@example.com", text, None, None)
 
     assert len(cur.executed) == 1
     query, params = cur.executed[0]
     assert query == save_resume_text_query
-    _assert_insert_omits_embedding_and_model(query)
+    _assert_upsert_includes_embedding_and_model(query)
     assert params == [
         "carol@example.com",
         RESUME_INDEX,
         text,
+        None,
+        None,
         hashlib.sha256(text.encode("utf-8")).hexdigest(),
     ]
 
 
-def _assert_insert_omits_embedding_and_model(query):
-    # Columns the query references
-    for col in ["username", "index", "text", "hash", "updated_at"]:
-        assert col in query
-    # embedding / model are not touched yet (note: the table name
-    # resume_embeddings itself contains the substring "embedding")
-    query_without_table = query.replace("resume_embeddings", "")
-    assert "embedding" not in query_without_table
-    assert "model" not in query
+def _assert_upsert_includes_embedding_and_model(query):
+    normalized = " ".join(query.split())
+    insert_part = normalized.split("VALUES", 1)[0]
+
+    assert "model" in insert_part
+    assert "embedding" in insert_part
+    assert "model = EXCLUDED.model" in normalized
+    assert "embedding = EXCLUDED.embedding" in normalized
