@@ -251,11 +251,35 @@ export function StudentHomePage() {
       setLoading(true);
       const response = await api.post('/student/profile', studentData);
       if (response.status && response.status === 201) {
+        const processingStatus = response.data.resumeProcessingStatus;
+        let message: string;
+        let color = 'yellow';
+        if (processingStatus === 'complete') {
+          message = 'Your resume has been processed.';
+          color = 'green';
+        } else if (processingStatus === 'failed') {
+          message = 'Resume processing failed. Try saving again.';
+        } else if (processingStatus === 'skipped') {
+          message = 'No readable resume text was available.';
+        } else {
+          message = 'Resume processing status is unavailable.';
+        }
         notifications.show({
           title: 'Profile saved!',
-          message: '',
+          message,
+          color,
         });
         setEditToggle(false);
+        setFile(null);
+        try {
+          await fetchProfile(false);
+        } catch {
+          notifications.show({
+            title: 'Could not refresh profile',
+            message: 'Your changes were saved. Refresh the page to see them.',
+            color: 'yellow',
+          });
+        }
       } else if (response.status && response.status === 403) {
         showErrorSaveNotification(
           'Failed to validate profile. Please ensure all fields are valid and try again.'
@@ -265,9 +289,6 @@ export function StudentHomePage() {
       }
     } catch (err: any) {
       showErrorSaveNotification();
-    }
-    if (file) {
-      window.location.reload();
     }
     setLoading(false);
     return true;
