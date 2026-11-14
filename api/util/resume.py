@@ -112,3 +112,14 @@ def save_resume_text(db_connection, username, resume_text, model, embedding):
     with db_connection.transaction():
         with db_connection.cursor() as cur:
             upsert_resume_data(cur, username, resume_text, model, embedding)
+
+def get_resume_data(cursor, username):
+    cursor.execute(
+        """
+        SELECT hash, model, embedding::real[]
+        FROM resume_embeddings
+        WHERE username = %s AND index = %s;
+        """,
+        [username, RESUME_INDEX]
+    )
+    return cursor.fetchone()

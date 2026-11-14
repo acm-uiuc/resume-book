@@ -95,8 +95,7 @@ def test_update_resume_embedding(db_connection):
             model,
             [1.0] + [0.0] * 1023,
         )
-        upsert_resume_data(cur, username, text, model, embedding)
-    
+        upsert_resume_data(cur, username, text, model, embedding)    
         cur.execute(
             """
             SELECT text, hash, model,
