@@ -121,7 +121,7 @@ def test_valid_profile(api_client, jwt_generator):
         data=json.dumps(profile),
     )
     assert response.status_code == 201
-    assert response.json() == {"message": "Profile saved"}
+    assert response.json() == {"message": "Profile saved", "resumeProcessingStatus": "failed"}
     response = api_client.get(
         "/api/v1/student/profile",
         headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"},
@@ -155,7 +155,7 @@ def test_valid_profile_sparse(api_client, jwt_generator):
         data=json.dumps(profile),
     )
     assert response.status_code == 201
-    assert response.json() == {"message": "Profile saved"}
+    assert response.json() == {"message": "Profile saved", "resumeProcessingStatus": "failed"}
     response = api_client.get(
         "/api/v1/student/profile",
         headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"},

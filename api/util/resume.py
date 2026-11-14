@@ -70,23 +70,23 @@ def extract_resume_text(s3_client, bucket, username):
 
 
 save_resume_text_query = """
-INSERT INTO resume_embeddings (username, index, text, hash, updated_at)
-VALUES (%s, %s, %s, %s, now())
+INSERT INTO resume_embeddings (username, index, text, model, embedding, hash, updated_at)
+VALUES (%s, %s, %s, %s, %s, %s, now())
 ON CONFLICT (username, index)
 DO UPDATE SET text = EXCLUDED.text,
               hash = EXCLUDED.hash,
+              model = EXCLUDED.model,
+              embedding = EXCLUDED.embedding,
               updated_at = now();
 """
 
 
-def insert_resume_text(cursor, username, resume_text):
+def upsert_resume_data(cursor, username, resume_text, model, embedding):
     """
     Upsert a user's resume text into resume_embeddings using an already-open
     cursor (e.g. within the caller's transaction).
 
-    The embedding and model columns are intentionally left untouched for now,
-    since embeddings cannot be generated yet. The (username, index) primary key
-    is upserted so saving a profile multiple times overwrites the previous text
+    The (username, index) primary key is upserted so saving a profile multiple times overwrites the previous text
     and refreshes the hash rather than creating duplicate rows.
 
     :param cursor: An open psycopg cursor.
@@ -96,11 +96,11 @@ def insert_resume_text(cursor, username, resume_text):
     text_hash = resume_text_hash(resume_text)
     cursor.execute(
         save_resume_text_query,
-        [username, RESUME_INDEX, resume_text, text_hash],
+        [username, RESUME_INDEX, resume_text, model, embedding, text_hash],
     )
 
 
-def save_resume_text(db_connection, username, resume_text):
+def save_resume_text(db_connection, username, resume_text, model, embedding):
     """
     Persist a user's resume text into resume_embeddings on a dedicated
     connection/transaction.
@@ -111,4 +111,15 @@ def save_resume_text(db_connection, username, resume_text):
     """
     with db_connection.transaction():
         with db_connection.cursor() as cur:
-            insert_resume_text(cur, username, resume_text)
+            upsert_resume_data(cur, username, resume_text, model, embedding)
+
+def get_resume_data(cursor, username):
+    cursor.execute(
+        """
+        SELECT hash, model, embedding::real[]
+        FROM resume_embeddings
+        WHERE username = %s AND index = %s;
+        """,
+        [username, RESUME_INDEX]
+    )
+    return cursor.fetchone()
