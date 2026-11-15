@@ -83,15 +83,15 @@ DO UPDATE SET text = EXCLUDED.text,
 
 def upsert_resume_data(cursor, username, resume_text, model, embedding):
     """
-    Upsert a user's resume text into resume_embeddings using an already-open
-    cursor (e.g. within the caller's transaction).
-
-    The (username, index) primary key is upserted so saving a profile multiple times overwrites the previous text
-    and refreshes the hash rather than creating duplicate rows.
+    Upsert resume text, hash, model, and embedding using an open cursor.
+    Replace the existing (username, index) row on conflict.
+    Passing None for model or embedding clears that value.
 
     :param cursor: An open psycopg cursor.
     :param username: The user's email, matching student_profile_details.username.
     :param resume_text: The extracted resume text to store.
+    :param model: The embedding model ID to store, or None to clear it.
+    :param embedding: The generated or reused vector to store, or None to clear it.
     """
     text_hash = resume_text_hash(resume_text)
     cursor.execute(
@@ -102,12 +102,14 @@ def upsert_resume_data(cursor, username, resume_text, model, embedding):
 
 def save_resume_text(db_connection, username, resume_text, model, embedding):
     """
-    Persist a user's resume text into resume_embeddings on a dedicated
-    connection/transaction.
+    Persist a user's resume text, hash, model, and embedding into
+    resume_embeddings within a transaction on the supplied connection.
 
     :param db_connection: A psycopg connection.
     :param username: The user's email, matching student_profile_details.username.
     :param resume_text: The extracted resume text to store.
+    :param model: The embedding model ID to store, or None to clear it.
+    :param embedding: The generated or reused vector to store, or None to clear it.
     """
     with db_connection.transaction():
         with db_connection.cursor() as cur:
