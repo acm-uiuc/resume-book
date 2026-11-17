@@ -311,7 +311,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
                   <Group>
                     <IconSchool size={18} />
                     <Text>
-                      <b>Education</b>
+                      <b>Education asdf</b>
                     </Text>
                   </Group>
                 </Title>
