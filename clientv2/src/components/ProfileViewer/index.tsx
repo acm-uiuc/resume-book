@@ -17,7 +17,6 @@ import {
   NumberInput,
   Autocomplete,
   FileButton,
-  em,
   rem,
 } from '@mantine/core';
 import {
@@ -32,7 +31,7 @@ import {
   IconUserCircle,
 } from '@tabler/icons-react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { useMediaQuery } from '@mantine/hooks';
+import { useElementSize } from '@mantine/hooks';
 import { institutionOptions, degreeOptions, DegreeLevel, majorOptions } from './options';
 import { LinkProfileAttribute } from './LinkProfileAttribute';
 
@@ -75,7 +74,10 @@ const PdfViewer: React.FC<{
   const [docNumPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
-  const isMobile = useMediaQuery(`(max-width: ${em(900)})`);
+  // Size the page to the column instead of a fixed scale, so the PDF never
+  // overflows its column or the screen. Subtract the frame's padding + border.
+  const { ref: containerRef, width: containerWidth } = useElementSize();
+  const pageWidth = containerWidth > 0 ? Math.min(containerWidth - 20, 850) : undefined;
 
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -95,7 +97,10 @@ const PdfViewer: React.FC<{
     []
   );
   return (
-    <Box style={{ height: '100vh', minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
+    <Box
+      ref={containerRef}
+      style={{ height: '100vh', minHeight: '600px', display: 'flex', flexDirection: 'column' }}
+    >
       {error && <Text color="red">{error}</Text>}
       <Document
         file={url}
@@ -111,9 +116,8 @@ const PdfViewer: React.FC<{
             display: 'inline-block',
           }}
         >
-          {/*TODO: Fix this scaling hack*/}
           <Page
-            scale={isMobile ? window.innerWidth / 700 : 1}
+            width={pageWidth}
             pageNumber={pageNumber}
             renderTextLayer={false}
             renderAnnotationLayer={false}
@@ -219,11 +223,10 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
     }
     return parseFloat(gpa);
   };
-  const isMobile = useMediaQuery(`(max-width: ${em(900)})`);
   return (
-    <Container size={rem(1000)} style={{ marginTop: '2vh' }}>
-      <Grid gutter="xs" columns={isMobile ? 4 : 22}>
-        <Grid.Col span={isMobile ? 4 : 6}>
+    <Container size={rem(1000)} w="100%" style={{ marginTop: '2vh' }}>
+      <Grid gutter="xs">
+        <Grid.Col span={{ base: 12, sm: 4 }}>
           <Container>
             {editable ? (
               <Title order={5} mb="xs">
@@ -486,7 +489,7 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
           </Container>
         </Grid.Col>
 
-        <Grid.Col span={8} style={{ maxWidth: '100vw' }}>
+        <Grid.Col span={{ base: 12, sm: 8 }}>
           {!enrolling && file && file.size > 0 && file.type === 'application/pdf' ? (
             <Text>PDF has been modified; save to view new PDF.</Text>
           ) : null}
