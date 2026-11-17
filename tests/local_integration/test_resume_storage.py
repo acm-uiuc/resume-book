@@ -23,7 +23,7 @@ Each test uses a temporary table. No AWS services are called.
 
 import psycopg
 import pytest
-from api.util.resume import upsert_resume_data, resume_text_hash
+from api.util.resume import upsert_resume_embedding, resume_text_hash
 
 @pytest.fixture
 def db_connection():
@@ -61,7 +61,7 @@ def test_insert_resume_embedding(db_connection):
     embedding = [1.0] + [0.0] * 1023
 
     with db_connection.cursor() as cur:
-        upsert_resume_data(cur, username, text, model, embedding)
+        upsert_resume_embedding(cur, username, text, model, embedding)
 
         cur.execute(
             """
@@ -88,14 +88,14 @@ def test_update_resume_embedding(db_connection):
     embedding = [0.0, 1.0] + [0.0] * 1022
 
     with db_connection.cursor() as cur:
-        upsert_resume_data(
+        upsert_resume_embedding(
             cur,
             username,
             "Python and SQL experience",
             model,
             [1.0] + [0.0] * 1023,
         )
-        upsert_resume_data(cur, username, text, model, embedding)    
+        upsert_resume_embedding(cur, username, text, model, embedding)    
         cur.execute(
             """
             SELECT text, hash, model,
@@ -126,14 +126,14 @@ def test_upsert_clears_previous_embedding(db_connection):
     model = "amazon.titan-embed-text-v2:0"
 
     with db_connection.cursor() as cur:
-        upsert_resume_data(
+        upsert_resume_embedding(
             cur,
             username,
             "Python and SQL experience",
             model,
             [1.0] + [0.0] * 1023,
         )
-        upsert_resume_data(cur, username, text, None, None)
+        upsert_resume_embedding(cur, username, text, None, None)
     
         cur.execute(
             """

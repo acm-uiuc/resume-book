@@ -20,8 +20,7 @@ from util.queries import (
     generate_search_query,
 )
 from util.postgres import get_db_connection
-from util.resume import extract_resume_text, upsert_resume_data, get_resume_data, resume_text_hash
-from util.embeddings import embed_texts, get_lambda_client
+from util.resume import process_resume, upsert_resume_embedding
 from util.structs import (
     DEFAULT_USER_PROFILE,
     MassDownloadResumesRequest,
@@ -127,9 +126,6 @@ def student_get_profile():
 
 @app.post("/api/v1/student/profile")
 def student_post_profile():
-    embedding = None
-    model = None
-    resume_processing_status = "skipped"
     email = app.current_event.request_context.authorizer["username"]
     json_body: dict = app.current_event.json_body or {}
     if "defaultResponse" in json_body:
@@ -143,33 +139,9 @@ def student_post_profile():
         data = json.loads(
             StudentProfileDetails(**json_body).model_dump_json(), parse_float=Decimal
         )
-        try:
-            resume_text = extract_resume_text(s3_client, S3_BUCKET, email)
-        except Exception:
-            logger.error(traceback.format_exc())
-            # A missing or unparseable resume must not prevent a student from
-            # saving their profile; store empty resume text instead and let the
-            # rest of the profile save proceed.
-            resume_text = ""
-            resume_processing_status = "failed"
-        if resume_text.strip():
-            new_hash = resume_text_hash(resume_text)
-            with get_db_connection(db_config, "resume_book_read_embedding") as read_connection:
-                with read_connection.cursor() as cur:
-                    existing = get_resume_data(cur, email)
-            if existing is not None and existing[0] == new_hash and existing[1] == EMBEDDING_MODEL and existing[2] is not None:
-                model = existing[1]
-                embedding = existing[2]
-                resume_processing_status = "complete"
-            else:
-                try:
-                    client = get_lambda_client()
-                    embedding = embed_texts([resume_text], client)[0]
-                    model = EMBEDDING_MODEL
-                    resume_processing_status = "complete"
-                except Exception:
-                    logger.error(traceback.format_exc())
-                    resume_processing_status = "failed"
+        resume_text, model, embedding, resume_processing_status = process_resume(
+            s3_client, S3_BUCKET, db_config, email, EMBEDDING_MODEL
+        )
         with get_db_connection(db_config, "resume_book_post_profile") as db_connection:
             with db_connection.transaction():
                 with db_connection.cursor() as cur:
@@ -205,7 +177,8 @@ def student_post_profile():
                             ]
                         )
                     cur.executemany(INSERT_DEGREES, degree_payloads)
-                    upsert_resume_data(cur, email, resume_text, model, embedding)
+                    if resume_text is not None:
+                        upsert_resume_embedding(cur, email, resume_text, model, embedding)
     except pydantic.ValidationError as e:
         return Response(
             status_code=403,

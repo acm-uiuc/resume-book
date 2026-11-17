@@ -32,6 +32,23 @@ DELETE_PROFILE = """
 DELETE FROM student_profile_details WHERE username = %s;
 """
 
+UPSERT_RESUME_EMBEDDING = """
+INSERT INTO resume_embeddings (username, index, text, model, embedding, hash, updated_at)
+VALUES (%s, %s, %s, %s, %s, %s, now())
+ON CONFLICT (username, index)
+DO UPDATE SET text = EXCLUDED.text,
+              hash = EXCLUDED.hash,
+              model = EXCLUDED.model,
+              embedding = EXCLUDED.embedding,
+              updated_at = now();
+"""
+
+GET_RESUME_EMBEDDING = """
+SELECT hash, model, embedding::real[]
+FROM resume_embeddings
+WHERE username = %s AND index = %s;
+"""
+
 
 def generate_search_query(degree_types, gpa, graduation_years, majors):
     query = sql.SQL(
