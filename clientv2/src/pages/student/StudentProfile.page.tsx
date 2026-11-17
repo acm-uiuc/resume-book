@@ -361,8 +361,7 @@ export function StudentHomePage() {
             icon={<IconInfoCircle />}
           >
             We&apos;ve provided you with a basic profile to get started. Fill out the details and
-            save your profile to make it visible to recruiters.
-            adflakjshdfalshjsdf
+            save your profile to make it visible to recruiters. adflakjshdfalshjsdf
           </Alert>
         </Container>
       ) : null}
