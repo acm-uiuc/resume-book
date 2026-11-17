@@ -80,7 +80,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy clientv2/dist/ --project-name=resume-book-dev --branch=${{ github.head_ref || github.ref_name }}
+          command: pages deploy clientv2/dist/ --project-name=resume-book-dev --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
   test:
     runs-on: ubuntu-24.04
