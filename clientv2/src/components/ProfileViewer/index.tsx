@@ -74,8 +74,6 @@ const PdfViewer: React.FC<{
   const [docNumPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
-  // Size the page to the column instead of a fixed scale, so the PDF never
-  // overflows its column or the screen. Subtract the frame's padding + border.
   const { ref: containerRef, width: containerWidth } = useElementSize();
   const pageWidth = containerWidth > 0 ? Math.min(containerWidth - 20, 850) : undefined;
 
