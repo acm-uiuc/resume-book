@@ -2,3 +2,4 @@ pytest
 moto
 pyjwt
 pypdf
+psycopg[binary]

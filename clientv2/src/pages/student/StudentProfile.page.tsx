@@ -37,6 +37,7 @@ async function extractTextRemote(pdf_url: string) {
 export function StudentHomePage() {
   const { userData } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [genAiLoading, setGenAiLoading] = useState(false);
   const [enrolled, setEnrolled] = useState(false);
   const [editToggle, setEditToggle] = useState(false);
@@ -222,10 +223,10 @@ export function StudentHomePage() {
     }
     try {
       if (file && file.size !== 0) {
-        setLoading(true);
+        setSaving(true);
         const response = await api.post('/student/resume_upload_url', { file_size: file.size });
         if (response.status !== 200) {
-          setLoading(false);
+          setSaving(false);
           setFile(null);
           return showErrorSaveNotification('Could not upload resume.');
         }
@@ -239,7 +240,7 @@ export function StudentHomePage() {
             throw new Error('S3 failed to upload.');
           }
         } catch {
-          setLoading(false);
+          setSaving(false);
           setFile(null);
           return showErrorSaveNotification('Could not upload resume.');
         }
@@ -248,14 +249,43 @@ export function StudentHomePage() {
         delete studentData.defaultResponse;
         setStudentData(studentData);
       }
-      setLoading(true);
+      setSaving(true);
       const response = await api.post('/student/profile', studentData);
       if (response.status && response.status === 201) {
+        const processingStatus = response.data.resumeProcessingStatus;
+        let message: string;
+        let color = 'yellow';
+        if (processingStatus === 'complete') {
+          message = 'Your resume has been processed.';
+          color = 'green';
+        } else if (processingStatus === 'failed') {
+          message = 'Resume processing failed. Try saving again.';
+        } else if (processingStatus === 'skipped') {
+          message = 'No readable resume text was available.';
+        } else {
+          message = 'Resume processing status is unavailable.';
+        }
+        setEditToggle(false);
+        setFile(null);
+        let refreshFailed = false;
+        try {
+          await fetchProfile(false);
+        } catch {
+          refreshFailed = true;
+        }
+        setSaving(false);
         notifications.show({
           title: 'Profile saved!',
-          message: '',
+          message,
+          color,
         });
-        setEditToggle(false);
+        if (refreshFailed) {
+          notifications.show({
+            title: 'Could not refresh profile',
+            message: 'Your changes were saved. Refresh the page to see them.',
+            color: 'yellow',
+          });
+        }
       } else if (response.status && response.status === 403) {
         showErrorSaveNotification(
           'Failed to validate profile. Please ensure all fields are valid and try again.'
@@ -266,10 +296,7 @@ export function StudentHomePage() {
     } catch (err: any) {
       showErrorSaveNotification();
     }
-    if (file) {
-      window.location.reload();
-    }
-    setLoading(false);
+    setSaving(false);
     return true;
   }
   const toggleEdit = () => {
@@ -293,6 +320,7 @@ export function StudentHomePage() {
               leftSection={editToggle ? <IconDeviceFloppy size={16} /> : <IconPencil size={16} />}
               onClick={toggleEdit}
               color={editToggle ? 'green' : undefined}
+              loading={saving}
             >
               {editToggle ? 'Save' : 'Edit'}
             </Button>
@@ -316,6 +344,7 @@ export function StudentHomePage() {
                 onClick={() => {
                   setEditToggle(false);
                 }}
+                disabled={saving}
               >
                 Close
               </Button>

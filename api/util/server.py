@@ -20,7 +20,7 @@ from util.queries import (
     generate_search_query,
 )
 from util.postgres import get_db_connection
-from util.resume import extract_resume_text, insert_resume_text
+from util.resume import process_resume, upsert_resume_embedding
 from util.structs import (
     DEFAULT_USER_PROFILE,
     MassDownloadResumesRequest,
@@ -64,6 +64,7 @@ openai_client = get_oai_client(db_config["openrouter_key"])
 
 PROFILE_TABLE_NAME = "infra-resume-book-profile-data"
 S3_BUCKET = f"infra-resume-book-pdfs-{RUN_ENV if RUN_ENV != 'local' else 'dev'}"
+EMBEDDING_MODEL = "amazon.titan-embed-text-v2:0"
 
 
 def shared_get_profile(username):
@@ -138,50 +139,46 @@ def student_post_profile():
         data = json.loads(
             StudentProfileDetails(**json_body).model_dump_json(), parse_float=Decimal
         )
-        try:
-            resume_text = extract_resume_text(s3_client, S3_BUCKET, email)
-        except Exception:
-            logger.error(traceback.format_exc())
-            # A missing or unparseable resume must not prevent a student from
-            # saving their profile; store empty resume text instead and let the
-            # rest of the profile save proceed.
-            resume_text = ""
-        db_connection = get_db_connection(db_config, "resume_book_post_profile")
-        with db_connection.transaction():
-            with db_connection.cursor() as cur:
-                cur.execute(DELETE_PROFILE, [email])
-                cur.execute(
-                    INSERT_BASE_PROFILE,
-                    [
-                        email,
-                        data["name"],
-                        data["email"],
-                        data["linkedin"] or "",
-                        data["github"] or "",
-                        data["website"] or "",
-                        data["bio"] or "",
-                        data["skills"],
-                        data["work_auth_required"],
-                        data["sponsorship_required"],
-                        data["resumePdfUrl"],
-                    ],
-                )
-                degree_payloads = []
-                for item in data["degrees"]:
-                    degree_payloads.append(
+        resume_text, model, embedding, resume_processing_status = process_resume(
+            s3_client, S3_BUCKET, db_config, email, EMBEDDING_MODEL
+        )
+        with get_db_connection(db_config, "resume_book_post_profile") as db_connection:
+            with db_connection.transaction():
+                with db_connection.cursor() as cur:
+                    cur.execute(DELETE_PROFILE, [email])
+                    cur.execute(
+                        INSERT_BASE_PROFILE,
                         [
                             email,
-                            item["level"],
-                            item["yearStarted"],
-                            item["yearEnded"],
-                            item["institution"],
-                            item["major"],
-                            item["minor"],
-                            item["gpa"],
-                        ]
+                            data["name"],
+                            data["email"],
+                            data["linkedin"] or "",
+                            data["github"] or "",
+                            data["website"] or "",
+                            data["bio"] or "",
+                            data["skills"],
+                            data["work_auth_required"],
+                            data["sponsorship_required"],
+                            data["resumePdfUrl"],
+                        ],
                     )
-                cur.executemany(INSERT_DEGREES, degree_payloads)
-                insert_resume_text(cur, email, resume_text)
+                    degree_payloads = []
+                    for item in data["degrees"]:
+                        degree_payloads.append(
+                            [
+                                email,
+                                item["level"],
+                                item["yearStarted"],
+                                item["yearEnded"],
+                                item["institution"],
+                                item["major"],
+                                item["minor"],
+                                item["gpa"],
+                            ]
+                        )
+                    cur.executemany(INSERT_DEGREES, degree_payloads)
+                    if resume_text is not None:
+                        upsert_resume_embedding(cur, email, resume_text, model, embedding)
     except pydantic.ValidationError as e:
         return Response(
             status_code=403,
@@ -198,7 +195,7 @@ def student_post_profile():
     return Response(
         status_code=201,
         content_type=content_types.APPLICATION_JSON,
-        body={"message": "Profile saved"},
+        body={"message": "Profile saved", "resumeProcessingStatus": resume_processing_status},
     )
 
 
