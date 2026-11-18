@@ -1,4 +1,6 @@
 import traceback
+from util.dynamodb import get_attended_events
+
 from aws_lambda_powertools.event_handler import (
     APIGatewayRestResolver,
     CORSConfig,
@@ -66,6 +68,13 @@ S3_BUCKET = f"infra-resume-book-pdfs-{RUN_ENV if RUN_ENV != 'local' else 'dev'}"
 
 
 def shared_get_profile(username):
+    #added the function from dynamodb.py
+    try:
+        attended_events = get_attended_events(username)
+    except Exception:
+        attended_events = []
+        logger.error(traceback.format_exc())
+        
     try:
         db_connection = get_db_connection(db_config, "resume_book_get_profile")
         with db_connection.transaction():
@@ -79,11 +88,13 @@ def shared_get_profile(username):
             return Response(
                 status_code=200,
                 content_type=content_types.APPLICATION_JSON,
-                body=DEFAULT_USER_PROFILE,
+                body={**DEFAULT_USER_PROFILE, "attendedEvents": attended_events},
             )
         else:
+            
             if profile_data and "resumepdfurl" in profile_data:
                 profile_data["resumePdfUrl"] = profile_data["resumepdfurl"]
+
                 del profile_data["resumepdfurl"]
             if "degrees" not in profile_data or profile_data["degrees"] == [None]:
                 profile_data["degrees"] = []
@@ -102,6 +113,7 @@ def shared_get_profile(username):
         profile_data["resumePdfUrl"] = create_presigned_url_from_s3_url(
             s3_client, profile_data["resumePdfUrl"]
         )
+    profile_data["attendedEvents"] = attended_events
     return Response(
         status_code=200, content_type=content_types.APPLICATION_JSON, body=profile_data
     )
@@ -128,6 +140,7 @@ def student_post_profile():
     json_body: dict = app.current_event.json_body or {}
     if "defaultResponse" in json_body:
         del json_body["defaultResponse"]
+    json_body.pop("attendedEvents", None)
     json_body["name"] = json_body["name"].lstrip()
     if "email" not in json_body or json_body["email"] == "":
         json_body["email"] = email
